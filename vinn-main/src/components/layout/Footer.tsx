@@ -22,30 +22,30 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
   };
 
   return (
-    <footer className="bg-[#1c1c1e] text-[#e0dedb] border-t border-[#dedcd7]/20">
+    <footer className="bg-[#C81E51] text-white border-t border-white/20">
       {/* Quick Contact Inquiry Banner Box */}
-      <div className="bg-[#252427]/95 backdrop-blur-xl border-b border-[#dedcd7]/20 py-10">
+      <div className="bg-[#C81E51] border-b border-white/20 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-[#363539]/85 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-400/30 shadow-2xl">
+          <div className="bg-[#A0163E] p-6 sm:p-8 rounded-3xl border border-white/30 shadow-2xl">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
               
               <div className="lg:col-span-5 space-y-2">
-                <span className="text-[#F7DC84] font-extrabold uppercase text-xs tracking-widest font-cinzel">Quick Inquiry</span>
+                <span className="text-white font-extrabold uppercase text-xs tracking-widest font-cinzel opacity-90 block">Quick Inquiry</span>
                 <h3 className="text-xl sm:text-2xl font-bold font-playfair text-white leading-snug">
                   Get in Touch with Admissions Office
                 </h3>
-                <p className="text-sm text-white/70">
+                <p className="text-sm text-white/90 font-medium">
                   Enter your details below for degree counseling, fee structure, scholarship assistance, and campus visits.
                 </p>
               </div>
 
               <div className="lg:col-span-7">
                 {submitted ? (
-                  <div className="bg-[#28272b]/90 border border-amber-400/40 p-6 rounded-2xl flex items-center gap-4 text-[#f2f1ef] backdrop-blur-md shadow-lg">
-                    <CheckCircle2 className="w-8 h-8 text-[#D4A843] shrink-0" />
+                  <div className="bg-white text-slate-900 border border-white p-6 rounded-2xl flex items-center gap-4 shadow-lg">
+                    <CheckCircle2 className="w-8 h-8 text-[#C81E51] shrink-0" />
                     <div>
-                      <h4 className="font-bold text-base text-white">Inquiry Submitted Successfully!</h4>
-                      <p className="text-xs text-[#d4d2ce]">
+                      <h4 className="font-bold text-base text-slate-900">Inquiry Submitted Successfully!</h4>
+                      <p className="text-xs text-slate-700 font-medium">
                         Thank you {formState.name || 'Student'}. Our admissions officer will call or email you shortly.
                       </p>
                     </div>
@@ -53,47 +53,47 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
                 ) : (
                   <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-[11px] font-bold text-white/80 mb-1">Your Name *</label>
+                      <label className="block text-[11px] font-bold text-white mb-1">Your Name *</label>
                       <input
                         type="text"
                         required
                         value={formState.name}
                         onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                         placeholder="Enter full name"
-                        className="w-full bg-black/35 border border-white/20 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#D4A843] focus:ring-1 focus:ring-[#D4A843] transition-colors"
+                        className="w-full bg-white text-slate-900 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm placeholder-slate-400 font-semibold focus:outline-none focus:ring-2 focus:ring-white transition-colors"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-white/80 mb-1">Mail ID *</label>
+                      <label className="block text-[11px] font-bold text-white mb-1">Mail ID *</label>
                       <input
                         type="email"
                         required
                         value={formState.email}
                         onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                         placeholder="name@email.com"
-                        className="w-full bg-black/35 border border-white/20 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#D4A843] focus:ring-1 focus:ring-[#D4A843] transition-colors"
+                        className="w-full bg-white text-slate-900 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm placeholder-slate-400 font-semibold focus:outline-none focus:ring-2 focus:ring-white transition-colors"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-white/80 mb-1">Phone Number *</label>
+                      <label className="block text-[11px] font-bold text-white mb-1">Phone Number *</label>
                       <input
                         type="tel"
                         required
                         value={formState.phone}
                         onChange={(e) => setFormState({ ...formState, phone: e.target.value })}
                         placeholder="10-digit mobile"
-                        className="w-full bg-black/35 border border-white/20 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#D4A843] focus:ring-1 focus:ring-[#D4A843] transition-colors"
+                        className="w-full bg-white text-slate-900 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm placeholder-slate-400 font-semibold focus:outline-none focus:ring-2 focus:ring-white transition-colors"
                       />
                     </div>
 
                     <div className="sm:col-span-3 flex items-center justify-end gap-3 pt-1">
                       <button
                         type="submit"
-                        className="btn-valer-green text-xs uppercase tracking-widest px-8 py-3 rounded-full cursor-pointer shadow-lg active:scale-95 transition-all w-full sm:w-auto justify-center"
+                        className="bg-white hover:bg-slate-100 text-[#C81E51] font-black text-xs uppercase tracking-widest px-8 py-3 rounded-full cursor-pointer shadow-lg active:scale-95 transition-all w-full sm:w-auto justify-center flex items-center gap-2"
                       >
-                        <Send className="w-4 h-4 text-white" />
+                        <Send className="w-4 h-4 text-[#C81E51]" />
                         <span>Submit Inquiry</span>
                       </button>
                     </div>

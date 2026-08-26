@@ -9,7 +9,7 @@ html {
   body {
     font-family: 'Inter', 'Poppins', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #252528;
-    background: linear-gradient(180deg, #f7f6f3 0%, #edebe6 35%, #f4f3ef 70%, #eae8e2 100%);
+    background: #fafaf9;
     background-attachment: fixed;
     overflow-x: hidden;
     max-width: 100vw;
@@ -198,39 +198,36 @@ html {
 .text-7xl {
   font-size: clamp(2.75rem, 9vw, 5.25rem) !important;
   line-height: 1.04 !important;
-}/* ============================================================
-   PREMIUM GLASSY CEMENT GREY THEME — Global Color & Glass Tokens
-   ============================================================ */
+}
+
 :root {
-  /* Core Cement Grey Spectrum */
-  --cement-50:  #faf9f6;
-  --cement-100: #f6f5f2;
-  --cement-150: #f0eee9;
-  --cement-200: #ebe9e4;
-  --cement-250: #e3e1db;
-  --cement-300: #dedcd7;
-  --cement-400: #c9c7c2;
-  --cement-500: #9e9c96;
-  --cement-600: #6e6c67;
-  --cement-700: #54524e;
-  --cement-800: #363539;
-  --cement-900: #252528;
-  --cement-950: #1c1c1e;
+  /* Strict 4-Color Palette System */
+  --primary-color: #C81E51;      /* Dark Pink / Magenta */
+  --primary-hover: #A0163E;
+  --primary-dark: #7A0F2E;
+  
+  --status-blue: #0084c7;        /* Live Announcements / Circulars Blue */
+  --status-blue-light: #e0f2fe;
 
-  /* Frosted Glass Layers — Cement Palette */
-  --glass-cement-base: linear-gradient(180deg, #f7f6f3 0%, #eceae5 35%, #f4f3ef 70%, #eae8e2 100%);
-  --glass-bg-subtle: rgba(246, 245, 242, 0.65);
-  --glass-bg-card: rgba(255, 255, 255, 0.72);
-  --glass-bg-hover: rgba(255, 255, 255, 0.88);
-  --glass-bg-dark: rgba(37, 36, 40, 0.88);
-  --glass-bg-darker: rgba(28, 28, 30, 0.94);
-  --glass-bg-dark-card: rgba(48, 47, 52, 0.85);
+  --canvas-white: #FFFFFF;       /* Clean White Canvas */
 
-  /* Glass Borders & Highlights */
-  --glass-border-light: rgba(255, 255, 255, 0.8);
-  --glass-border-cement: rgba(222, 220, 215, 0.65);
-  --glass-border-dark: rgba(222, 220, 215, 0.22);
-  --glass-border-gold: rgba(212, 168, 67, 0.45);
+  --text-dark: #0F172A;          /* High contrast Black / Slate typography */
+  --text-light: #FFFFFF;         /* Crisp White typography */
+
+  /* Surface & Border System */
+  --glass-cement-base: #FFFFFF;
+  --glass-bg-subtle: #FFFFFF;
+  --glass-bg-card: #FFFFFF;
+  --glass-bg-hover: #FFFFFF;
+  --glass-bg-dark: #C81E51;
+  --glass-bg-darker: #A0163E;
+  --glass-bg-dark-card: #7A0F2E;
+
+  --glass-border-light: #E2E8F0;
+  --glass-border-cement: #E2E8F0;
+  --glass-border-dark: rgba(255, 255, 255, 0.2);
+  --glass-border-gold: #C81E51;
+}
 
   /* Glass Shadows & Elevation */
   --glass-shadow-sm: 0 4px 16px -2px rgba(37, 36, 40, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85);
@@ -387,8 +384,8 @@ button:active {
 /* ── PRIMARY CTA PILL BUTTONS ── */
 .btn-valer-green,
 .btn-hero-crimson {
-  background: linear-gradient(135deg, #48474b 0%, #343337 100%);
-  color: #f7f6f4;
+  background: linear-gradient(135deg, #C81E51 0%, #A0163E 100%);
+  color: #ffffff;
   font-family: 'Inter', 'Poppins', sans-serif;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -398,33 +395,33 @@ button:active {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  border: 1px solid rgba(220, 218, 214, 0.3);
-  box-shadow: 0 4px 14px rgba(50, 49, 53, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 14px rgba(200, 30, 81, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
 }
 
-/* Gold hover — primary buttons */
+/* Primary hover state */
 .btn-valer-green:hover,
 .btn-hero-crimson:hover {
-  background: linear-gradient(135deg, #D4A843 0%, #EEC84A 50%, #C8A040 100%);
-  color: #1C1A16;
-  border-color: rgba(200, 162, 58, 0.6);
-  box-shadow: 0 8px 24px rgba(170, 130, 24, 0.35), inset 0 1px 0 rgba(255, 248, 210, 0.5);
+  background: linear-gradient(135deg, #E02860 0%, #C81E51 50%, #A0163E 100%);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 24px rgba(200, 30, 81, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transform: translateY(-2px) scale(1.01);
 }
 
 .btn-valer-green:active,
 .btn-hero-crimson:active {
-  background: linear-gradient(135deg, #B8882A 0%, #D4A843 100%);
-  color: #1C1A16;
+  background: linear-gradient(135deg, #7A0F2E 0%, #A0163E 100%);
+  color: #FFFFFF;
   transform: translateY(0) scale(0.98);
-  box-shadow: 0 3px 10px rgba(170, 130, 24, 0.25);
+  box-shadow: 0 3px 10px rgba(200, 30, 81, 0.3);
 }
 
 .btn-valer-green:focus-visible,
 .btn-hero-crimson:focus-visible {
-  outline: 2px solid #D4A843;
+  outline: 2px solid #C81E51;
   outline-offset: 3px;
 }
 
@@ -466,39 +463,40 @@ button:active {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   GOLD INTERACTION SYSTEM — Hover / Active / Focus / Touch
-   Apply these classes anywhere a gold interaction is needed
+   PRIMARY INTERACTION SYSTEM — Strict 4-Color Theme
    ═══════════════════════════════════════════════════════════ */
 
-/* Standard gold button — any secondary button */
+/* Standard secondary button — white with Dark Pink text */
 .btn-gold {
-  background: linear-gradient(135deg, #D4A843 0%, #EEC84A 50%, #C8A040 100%);
-  color: #1C1A16;
+  background: #FFFFFF;
+  color: #C81E51;
   font-weight: 700;
   letter-spacing: 0.04em;
-  border: 1px solid rgba(200, 162, 58, 0.5);
+  border: 1.5px solid #C81E51;
   border-radius: 9999px;
   padding: 0.65rem 1.5rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 16px rgba(170, 130, 24, 0.25), inset 0 1px 0 rgba(255, 248, 210, 0.6);
+  box-shadow: 0 4px 16px rgba(200, 30, 81, 0.15);
 }
 
 .btn-gold:hover {
-  background: linear-gradient(135deg, #EEC84A 0%, #F7DC84 50%, #EEC84A 100%);
-  box-shadow: 0 8px 24px rgba(170, 130, 24, 0.4);
+  background: #C81E51;
+  color: #FFFFFF;
+  box-shadow: 0 8px 24px rgba(200, 30, 81, 0.35);
   transform: translateY(-2px) scale(1.01);
 }
 
 .btn-gold:active {
-  background: linear-gradient(135deg, #B8882A 0%, #D4A843 100%);
+  background: #A0163E;
+  color: #FFFFFF;
   transform: translateY(0) scale(0.97);
 }
 
 .btn-gold:focus-visible {
-  outline: 2px solid #D4A843;
+  outline: 2px solid #C81E51;
   outline-offset: 3px;
 }
 
@@ -619,36 +617,39 @@ button:active {
   border-radius: 8px;
 }
 
-/* Backward-compatible Theme Palette Mapping — Lighter Cement Grey */
+/* Backward-compatible Theme Palette Mapping — Strict 4-Color Theme */
 .bg-university-crimson,
 .bg-university-navy,
 .bg-university-dark,
-.bg-low-black {
-  background-color: #252528;
+.bg-low-black,
+.bg-valer-dark,
+.bg-valer-deep {
+  background-color: #C81E51 !important;
+  color: #FFFFFF !important;
 }
 
 .bg-university-crimson-dark,
 .bg-university-crimson-deep,
-.bg-low-black-card {
-  background-color: #363538;
+.bg-low-black-card,
+.bg-valer-card,
+.bg-valer-green {
+  background-color: #A0163E !important;
+  color: #FFFFFF !important;
 }
 
 .bg-university-crimson-tint,
 .bg-university-crimson-tint-2 {
-  background-color: #ebe9e4;
+  background-color: #FFFFFF !important;
 }
 
 .text-university-crimson,
 .text-university-crimson-dark {
-  color: #54524e;
+  color: #C81E51 !important;
 }
 
-.border-university-crimson {
-  border-color: #c9c7c2;
-}
-
+.border-university-crimson,
 .border-university-crimson-light {
-  border-color: #dedcd7;
+  border-color: #C81E51 !important;
 }
 
 .bg-cement-canvas,
@@ -778,30 +779,28 @@ button:active {
     0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
-/* Valer Event Row & Card Styles — CHAMPAGNE GOLD */
+/* Valer Event Row & Card Styles — STRICT 4-COLOR THEME */
 .valer-event-row {
   display: flex;
   align-items: stretch;
-  background: linear-gradient(145deg, #FEF6DC 0%, #F7E5A8 55%, #FEF6DC 100%);
-  border: 1px solid rgba(200, 162, 58, 0.45);
+  background: #FFFFFF;
+  border: 1px solid rgba(200, 30, 81, 0.2);
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 16px rgba(170, 130, 24, 0.1);
+  box-shadow: 0 4px 16px rgba(200, 30, 81, 0.08);
 }
 
 .valer-event-row:hover {
-  background: linear-gradient(145deg, #FEF9E8 0%, #FAE9B4 55%, #FEF9E8 100%);
-  border-color: rgba(200, 162, 58, 0.7);
-  box-shadow: 0 10px 28px rgba(170, 130, 24, 0.18);
+  background: #FFFFFF;
+  border-color: rgba(200, 30, 81, 0.4);
+  box-shadow: 0 10px 28px rgba(200, 30, 81, 0.15);
   transform: translateY(-2px);
 }
 
 .valer-date-badge {
-  background: linear-gradient(135deg, #8A6418 0%, #C8A040 60%, #8A6418 100%);
-  color: #FEF6DC;
+  background: #C81E51;
+  color: #FFFFFF;
   padding: 1.25rem 1.75rem;
   display: flex;
   align-items: center;
@@ -812,38 +811,35 @@ button:active {
   text-align: center;
   min-width: 160px;
   letter-spacing: 0.01em;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.25);
 }
 
-/* University Feature Card Styles — CHAMPAGNE GOLD */
+/* University Feature Card Styles — STRICT 4-COLOR THEME */
 .uni-card-active {
-  background: linear-gradient(135deg, #8A6418 0%, #C8A040 55%, #7A5614 100%);
-  color: #FEF6DC;
-  border: 1.5px solid rgba(200, 162, 58, 0.6);
-  box-shadow: 0 12px 32px -4px rgba(138, 100, 24, 0.35);
+  background: #C81E51;
+  color: #FFFFFF;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 32px -4px rgba(200, 30, 81, 0.4);
 }
 
 .uni-card-inactive {
-  background: linear-gradient(145deg, #FEF6DC 0%, #F7E5A8 55%, #FEF6DC 100%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: #1C1A16;
-  border: 1.5px solid rgba(200, 162, 58, 0.4);
-  box-shadow: 0 4px 16px rgba(170, 130, 24, 0.08);
+  background: #FFFFFF;
+  color: #000000;
+  border: 1.5px solid rgba(200, 30, 81, 0.2);
+  box-shadow: 0 4px 16px rgba(200, 30, 81, 0.06);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .uni-card-inactive:hover {
-  background: linear-gradient(145deg, #FEF9E8 0%, #FAECBC 55%, #FEF9E8 100%);
-  color: #1C1A16;
+  background: #FFFFFF;
+  color: #C81E51;
   transform: translateY(-3px);
-  box-shadow: 0 14px 28px -4px rgba(170, 130, 24, 0.18);
-  border-color: rgba(200, 162, 58, 0.65);
+  box-shadow: 0 14px 28px -4px rgba(200, 30, 81, 0.18);
+  border-color: rgba(200, 30, 81, 0.5);
 }
 
-/* Card tags — gold theme */
+/* Card tags — strict 4-color theme */
 .uni-tag-crimson {
-  color: #8A6418;
+  color: #C81E51;
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -851,7 +847,7 @@ button:active {
 }
 
 .uni-tag-blue {
-  color: #B8882A;
+  color: #0084c7;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -859,57 +855,55 @@ button:active {
 }
 
 /* ============================================================
-   GOLD CARD UTILITY SYSTEM — apply to all content boxes
+   CARD UTILITY SYSTEM — Strict 4-Color Theme
    ============================================================ */
 
-/* Primary champagne gold card */
+/* Primary white card */
 .gold-card {
-  background: linear-gradient(145deg, #FEF6DC 0%, #F7E5A8 55%, #FEF6DC 100%);
-  border: 1px solid rgba(200, 162, 58, 0.45);
-  box-shadow: 0 4px 20px rgba(170, 130, 24, 0.1), inset 0 1px 0 rgba(255, 248, 210, 0.7);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  color: #1C1A16;
+  background: #FFFFFF;
+  border: 1px solid rgba(200, 30, 81, 0.15);
+  box-shadow: 0 4px 20px rgba(200, 30, 81, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: #000000;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .gold-card:hover {
-  background: linear-gradient(145deg, #FEF9E8 0%, #FAECBC 55%, #FEF9E8 100%);
-  box-shadow: 0 10px 32px rgba(170, 130, 24, 0.18), inset 0 1px 0 rgba(255, 248, 210, 0.8);
+  background: #FFFFFF;
+  box-shadow: 0 10px 32px rgba(200, 30, 81, 0.14);
   transform: translateY(-2px);
-  border-color: rgba(200, 162, 58, 0.65);
+  border-color: rgba(200, 30, 81, 0.35);
 }
 
-/* Dark gold card — for accent/header panels */
+/* Dark card — Primary Dark Pink #C81E51 */
 .gold-card-dark {
-  background: linear-gradient(135deg, #5C4010 0%, #9A7428 50%, #6B4C14 100%);
-  border: 1px solid rgba(200, 162, 58, 0.4);
-  box-shadow: 0 8px 28px rgba(90, 60, 10, 0.35);
-  color: #FEF6DC;
+  background: #C81E51;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 28px rgba(200, 30, 81, 0.35);
+  color: #FFFFFF;
 }
 
-/* Subtle gold surface — for nested inner panels */
+/* Subtle light surface — for nested inner panels */
 .gold-surface {
-  background: rgba(254, 246, 220, 0.7);
-  border: 1px solid rgba(200, 162, 58, 0.3);
+  background: rgba(200, 30, 81, 0.04);
+  border: 1px solid rgba(200, 30, 81, 0.12);
 }
 
 .gold-surface-mid {
-  background: rgba(247, 229, 168, 0.55);
-  border: 1px solid rgba(200, 162, 58, 0.35);
+  background: rgba(200, 30, 81, 0.08);
+  border: 1px solid rgba(200, 30, 81, 0.18);
 }
 
-/* Gold pill / badge */
+/* Primary brand pill / badge */
 .gold-badge {
-  background: linear-gradient(135deg, #D4A843 0%, #EEC84A 100%);
-  color: #2E1E06;
+  background: #C81E51;
+  color: #FFFFFF;
   font-weight: 800;
   letter-spacing: 0.06em;
 }
 
-/* Gold border accent */
+/* Brand border accent */
 .gold-border {
-  border-color: rgba(200, 162, 58, 0.5) !important;
+  border-color: rgba(200, 30, 81, 0.4) !important;
 }
 
 /* Ken Burns & Image Animation Classes */

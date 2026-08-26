@@ -106,70 +106,43 @@ export const TopBar: React.FC<TopBarProps> = ({ onNavigate, currentTab }) => {
 
   return (
     <>
-      {/* Top Bar - Glassy Dark Charcoal / Cement Palette */}
-      <div className="text-white text-[12px] sm:text-[13px] border-b border-[#b0aea9]/20 select-none shadow-md bg-gradient-to-r from-[#1c1c1e] via-[#2c2c2e] to-[#1c1c1e] backdrop-blur-md transition-all">
+      {/* Top Bar - Solid Deep Dark Pink / Magenta (#C81E51) */}
+      <div className="bg-[#C81E51] text-white text-[12px] sm:text-[13px] border-b border-white/20 select-none shadow-md transition-all">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-4">
           
-          {/* Left: Search Trigger */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-2 text-[#f2f1ef] hover:text-white transition-all cursor-pointer py-1.5 px-3 rounded-lg bg-[#3a3a3c]/70 hover:bg-[#4e4c49]/80 border border-[#c8c6c2]/30 shadow-sm backdrop-blur-sm"
-              title="Search VINS College"
-              aria-label="Search VINS College"
-            >
-              <Search className="w-3.5 h-3.5 text-[#c8c6c2]" />
-              <span className="hidden sm:inline text-xs text-[#e0dedb] font-semibold">Search website...</span>
-            </button>
+          {/* Left: Email & Phone Number */}
+          <div className="flex items-center gap-4 text-xs sm:text-[13px] font-medium text-white/95">
+            <a href="mailto:info@vinschristiancollege.in" className="flex items-center gap-1.5 hover:underline transition-all">
+              <Mail className="w-3.5 h-3.5 text-white" />
+              <span>info@vinschristiancollege.in</span>
+            </a>
+            <span className="text-white/40">|</span>
+            <a href="tel:+914651255000" className="flex items-center gap-1.5 hover:underline transition-all">
+              <Phone className="w-3.5 h-3.5 text-white" />
+              <span>+91 4651 255 000</span>
+            </a>
           </div>
 
-          {/* Right: Sub-Navigation Utility Links + Dynamic Custom Buttons */}
-          <div className="flex items-center gap-2 sm:gap-3 text-[#d4d2ce] font-semibold text-xs sm:text-[13px] overflow-x-auto no-scrollbar">
-            
-            {/* Dynamic Custom TopBar Buttons added by Admin */}
-            {topbarButtons.map((btn) => (
-              <button
-                key={btn.id}
-                onClick={() => handleCustomButtonClick(btn)}
-                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md font-bold transition-all text-xs whitespace-nowrap cursor-pointer ${
-                  btn.buttonStyle === 'solid'
-                    ? 'bg-[#3a3a3c] text-white hover:bg-[#4e4c49] border border-[#c8c6c2]/30'
-                    : btn.buttonStyle === 'accent'
-                    ? 'bg-[#2c2c2e]/90 text-[#e0dedb] border border-[#b0aea9]/40 hover:bg-[#3a3a3c]'
-                    : 'text-white/80 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                {renderButtonIcon(btn.iconName)}
-                <span>{btn.label}</span>
-                {btn.badge && (
-                  <span className="px-1 py-0.2 bg-[#4e4c49] text-white font-bold text-[9px] rounded uppercase tracking-wider">
-                    {btn.badge}
-                  </span>
-                )}
-              </button>
-            ))}
-
-            <button 
-              onClick={() => onNavigate?.('admissions')} 
-              className="hover:text-white transition-colors cursor-pointer whitespace-nowrap px-1.5 py-0.5 rounded hover:bg-white/5"
-            >
-              FAQ
-            </button>
-
-            <button
-              onClick={() => onNavigate?.('admin')}
-              className="bg-white/10 hover:bg-[#3a3a3c] text-white px-2.5 sm:px-3 py-1 rounded-md font-bold flex items-center gap-1.5 transition-all whitespace-nowrap text-xs shadow-xs cursor-pointer border border-white/20"
-              title="Open Admin Content Portal"
-            >
-              <Lock className="w-3 h-3 text-[#c8c6c2]" />
-              <span>Admin Portal</span>
-            </button>
-
-            {/* Flag */}
-            <div className="flex items-center gap-1 pl-2 border-l border-white/20 text-xs shrink-0" title="VINS Christian College, Nagercoil, India">
-              <span className="text-base leading-none" role="img" aria-label="India">🇮🇳</span>
+          {/* Right: Social Icons & Admin Portal Button */}
+          <div className="flex items-center gap-3 text-white font-medium text-xs sm:text-[13px]">
+            {/* Social Icons */}
+            <div className="flex items-center gap-2.5 text-white">
+              <a href="#" className="hover:opacity-80 transition-opacity" title="Facebook"><span className="font-bold text-xs">f</span></a>
+              <a href="#" className="hover:opacity-80 transition-opacity" title="Instagram"><span className="font-bold text-xs">📷</span></a>
+              <a href="#" className="hover:opacity-80 transition-opacity" title="YouTube"><span className="font-bold text-xs">▶</span></a>
             </div>
 
+            <span className="text-white/40">|</span>
+
+            {/* Admin Portal Button */}
+            <button 
+              onClick={() => onNavigate?.('admin')}
+              className="bg-white/20 hover:bg-white/30 text-white px-2.5 sm:px-3 py-1 rounded-md font-bold flex items-center gap-1.5 transition-all whitespace-nowrap text-xs shadow-xs cursor-pointer border border-white/30"
+              title="Open Admin Content Portal"
+            >
+              <Lock className="w-3 h-3 text-white" />
+              <span>Admin Portal</span>
+            </button>
           </div>
 
         </div>

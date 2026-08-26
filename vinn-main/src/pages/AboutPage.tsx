@@ -37,21 +37,21 @@ export const AboutPage: React.FC<AboutPageProps> = ({ initialAnchor = 'vision' }
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 font-sans">
       
-      {/* Header Banner - Lighter Glassy Cement Theme */}
-      <div className="bg-[#363539]/90 backdrop-blur-md text-white p-8 sm:p-12 rounded-3xl border border-amber-400/40/30 shadow-xl space-y-3 relative overflow-hidden">
+      {/* Header Banner - Dark Pink / Magenta Theme */}
+      <div className="bg-[#C81E51] text-white p-8 sm:p-12 rounded-3xl border border-white/20 shadow-xl space-y-3 relative overflow-hidden">
         <img
           src="/images/college events and news galeery/h9.jpg"
           alt="VINS College Campus"
-          className="absolute inset-0 w-full h-full object-cover opacity-25 filter brightness-90 pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover opacity-20 filter brightness-90 pointer-events-none"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#252528] via-[#363539]/80 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#C81E51] via-[#A0163E]/80 to-transparent pointer-events-none" />
         <div className="relative z-10 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#d3d1cc] text-xs font-semibold border border-white/20">
-            <Sparkles className="w-3.5 h-3.5 text-[#eceae6]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-semibold border border-white/30">
+            <Sparkles className="w-3.5 h-3.5 text-white" />
             <span>Established 2004 · Chunkankadai, Nagercoil</span>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white">About VINS Group of Engineering Colleges</h1>
-          <p className="text-xs sm:text-sm text-white/80 max-w-3xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-white/90 max-w-3xl leading-relaxed font-medium">
             Founded by Shri Nanjil M. Vincent in Chunkankadai, Nagercoil, Kanyakumari District. Approved by AICTE, New Delhi & Affiliated to Anna University, Chennai.
           </p>
         </div>

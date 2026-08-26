@@ -63,26 +63,26 @@ export const AdmissionsPage: React.FC<AdmissionsPageProps> = ({ initialAnchor = 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       
-      {/* Header Banner */}
-      <div className="bg-[#363539]/90 backdrop-blur-md text-white p-8 sm:p-12 rounded-3xl border border-amber-400/40/30 shadow-xl space-y-4 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#d3d1cc] text-xs font-bold font-cinzel">
-          <Sparkles className="w-4 h-4 text-[#eceae6]" />
+      {/* Header Banner - Dark Pink / Magenta Theme */}
+      <div className="bg-[#C81E51] text-white p-8 sm:p-12 rounded-3xl border border-white/20 shadow-xl space-y-4 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 border border-white/30 text-white text-xs font-bold font-cinzel">
+          <Sparkles className="w-4 h-4 text-white" />
           <span>Academic Year 2026 - 2027 Admissions Open</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-bold font-playfair text-white tracking-tight">Engineering &amp; Management Admissions</h1>
-        <p className="text-xs sm:text-sm text-white/80 max-w-3xl leading-relaxed">
-          VINS Christian College of Engineering (Counselling Code: <span className="text-[#eceae6] font-bold">4982</span>). Approved by AICTE, New Delhi &amp; Affiliated to Anna University, Chennai.
+        <p className="text-xs sm:text-sm text-white/90 max-w-3xl leading-relaxed font-medium">
+          VINS Christian College of Engineering (Counselling Code: <span className="text-white font-bold">4982</span>). Approved by AICTE, New Delhi &amp; Affiliated to Anna University, Chennai.
         </p>
         
         {/* Quick Helpline Strip */}
-        <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-white/80">
-          <div className="flex items-center gap-2 bg-[#28272b] px-3.5 py-2 rounded-xl border border-white/10">
-            <Phone className="w-4 h-4 text-[#d3d1cc]" />
+        <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-white">
+          <div className="flex items-center gap-2 bg-[#A0163E] px-3.5 py-2 rounded-xl border border-white/20">
+            <Phone className="w-4 h-4 text-white" />
             <span>Admission Hotline: <strong className="text-white">+91 9787747072 / +91 9787747071</strong></span>
           </div>
-          <div className="flex items-center gap-2 bg-[#28272b] px-3 py-1.5 rounded-xl border border-amber-400/40/20">
-            <Mail className="w-4 h-4 text-[#d3d1cc]" />
+          <div className="flex items-center gap-2 bg-[#A0163E] px-3 py-1.5 rounded-xl border border-white/20">
+            <Mail className="w-4 h-4 text-white" />
             <span>Email: <strong className="text-white">vinsengg@gmail.com</strong></span>
           </div>
         </div>

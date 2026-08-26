@@ -88,11 +88,11 @@ export const FacilitiesPage: React.FC = () => {
               onClick={() => setSelectedFacility(fac.id)}
               className={`p-3 rounded-xl transition-all flex flex-col items-center text-center gap-1.5 cursor-pointer ${
                 selectedFacility === fac.id
-                  ? 'bg-[#363538] text-white shadow-md border border-amber-400/40/20'
+                  ? 'bg-[#fef3c7] text-[#0f172a] shadow-md border border-amber-400/40/20'
                   : 'text-[#54524e] hover:bg-[#ebe9e4]'
               }`}
             >
-              <span className={selectedFacility === fac.id ? 'text-white' : 'text-[#54524e]'}>
+              <span className={selectedFacility === fac.id ? 'text-[#0f172a]' : 'text-[#54524e]'}>
                 {facilityIconMap[fac.id]}
               </span>
               <span className="truncate w-full">{fac.name}</span>

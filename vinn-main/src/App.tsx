@@ -108,9 +108,11 @@ export default function App() {
     <AdminDataProvider>
       <div className="min-h-screen bg-[#f6f5f2] text-[#222224] font-sans selection:bg-[#363538] selection:text-white flex flex-col justify-between">
         <div>
-          {/* Global Layout Header & TopBar */}
-          <TopBar onNavigate={handleTabChange} currentTab={currentTab} />
-          <Navbar currentTab={currentTab} onTabChange={handleTabChange} />
+          {/* Global Sticky Layout Header (TopBar + Navbar) */}
+          <div className="sticky top-0 z-50 shadow-md">
+            <TopBar onNavigate={handleTabChange} currentTab={currentTab} />
+            <Navbar currentTab={currentTab} onTabChange={handleTabChange} />
+          </div>
 
           {/* Main View Page */}
           <main className="transition-all duration-200">

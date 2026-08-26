@@ -60,260 +60,151 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onTabChange }) => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 shadow-lg transition-all">
-        {/* TOP BRANDING ROW: PURE WHITE */}
-        <div className="bg-white border-b border-gray-200 shadow-sm relative overflow-hidden">
-          <div className="relative max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
+      <header className="relative w-full transition-all">
+        {/* MAIN BRAND HEADER ROW: PURE WHITE */}
+        <div className="bg-white border-b border-gray-200 shadow-sm relative">
+          <div className="max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3.5">
             
-            {/* TOP ROW: Flex Responsive Layout */}
-            <div className="flex flex-col xl:flex-row items-center justify-between py-1.5 sm:py-3.5 gap-0 sm:gap-4 w-full">
+            <div className="flex items-center justify-between gap-3 sm:gap-6 w-full">
               
-              {/* ═══════════════════════════════════════════════════════════ */}
-              {/* MOBILE LAYOUT (hidden on xl+)                              */}
-              {/* ═══════════════════════════════════════════════════════════ */}
-
-              {/* MOBILE ROW 1: VINS Logo CENTERED + Hamburger floating right */}
-              <div className="w-full xl:hidden relative flex items-center justify-center py-1.5">
-                
-                {/* VINSPELL LOGO — Centered */}
+              {/* BRANDING LEFT COLUMN: Logo + College Title */}
+              <div className="flex items-center gap-3 sm:gap-5 min-w-0">
+                {/* VINS LOGO & TITLE */}
                 <div 
                   onClick={() => handleNavClick('home')}
-                  className="cursor-pointer group"
+                  className="cursor-pointer group flex items-center gap-3 shrink-0 py-1"
                   title="VINS Christian College of Engineering - Home"
                 >
-                  <div className="px-3 py-2 bg-white rounded-xl border border-gray-200 shadow-sm group-hover:border-gray-400 transition-all flex items-center justify-center">
-                    <img
-                      src="/images/logo/vins spell logo.png"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/images/logo/vins logooo.jpg';
-                      }}
-                      alt="VINS Spell Logo"
-                      className="h-12 min-[360px]:h-13 min-[390px]:h-14 sm:h-16 w-auto max-w-[240px] min-[360px]:max-w-[260px] min-[390px]:max-w-[290px] sm:max-w-[380px] object-contain drop-shadow-xl group-hover:scale-[1.02] transition-transform"
-                    />
-                  </div>
-                </div>
-
-                {/* Hamburger — Absolutely positioned to the right */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2">
-                  <button
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className="p-2 sm:p-2.5 rounded-lg text-gray-700 hover:bg-gray-100 bg-gray-50 border border-gray-200 transition-colors shadow-sm active:scale-95 cursor-pointer touch-manipulation"
-                    aria-label="Toggle Navigation Menu"
-                  >
-                    {mobileMenuOpen ? <X className="w-5 h-5 text-gray-700" /> : <Menu className="w-5 h-5 text-amber-500" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* MOBILE ROW 2: All Badges & Icons in a centered balanced row */}
-              <div className="w-full xl:hidden flex items-center justify-center gap-2 sm:gap-3 pb-2">
-                {/* NIRF */}
-                <div className="p-1 sm:p-1.5 bg-white rounded-md shadow-sm border border-gray-200 hover:border-gray-400 hover:scale-105 transition-all cursor-pointer shrink-0">
-                  <img src="/images/logo/nirf.jpeg" alt="NIRF" className="h-7 sm:h-9 object-contain rounded-xs" title="NIRF Ranked Institution" />
-                </div>
-                {/* NAAC */}
-                <div className="p-1 sm:p-1.5 bg-white rounded-md shadow-sm border border-gray-200 hover:border-gray-400 hover:scale-105 transition-all cursor-pointer shrink-0">
-                  <img src="/images/logo/naac.png" alt="NAAC" className="h-7 sm:h-9 object-contain" title="NAAC Accredited" />
-                </div>
-                {/* CODE */}
-                <div 
-                  className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-md bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-400 text-slate-950 font-black shadow-md border border-yellow-300 hover:scale-105 transition-transform cursor-pointer select-none flex flex-col items-center justify-center shrink-0"
-                  title="Anna University Counselling Code: 4982"
-                >
-                  <span className="text-[6px] sm:text-[7px] font-black uppercase tracking-wider text-amber-950 leading-tight">CODE</span>
-                  <span className="text-[10px] sm:text-[11px] font-black tracking-tight leading-none text-slate-950">{siteTheme?.tneaCode || '4982'}</span>
-                </div>
-                {/* IIC */}
-                <div className="p-1 sm:p-1.5 bg-white rounded-md shadow-sm border border-gray-200 hover:border-gray-400 hover:scale-105 transition-all cursor-pointer shrink-0">
-                  <img src="/images/logo/iic.png" alt="IIC" className="h-7 sm:h-9 object-contain" title="Institution's Innovation Council" />
-                </div>
-                {/* ERP */}
-                <div className="p-1 sm:p-1.5 bg-white rounded-md shadow-sm border border-gray-200 hover:border-gray-400 hover:scale-105 transition-all cursor-pointer shrink-0">
-                  <img src="/images/logo/erp.png" alt="ERP" className="h-7 sm:h-9 object-contain" title="ERP Automation System" />
-                </div>
-              </div>
-
-              {/* ═══════════════════════════════════════════════════════════ */}
-              {/* DESKTOP LAYOUT (hidden below xl)                           */}
-              {/* ═══════════════════════════════════════════════════════════ */}
-
-              {/* DESKTOP LEFT COLUMN: Accreditations */}
-              <div className="hidden xl:flex xl:w-auto xl:flex-1 items-center justify-start gap-2.5">
-                <div className="p-1.5 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-gray-400 hover:scale-105 transition-all cursor-pointer shrink-0">
-                  <img src="/images/logo/nirf.jpeg" alt="NIRF" className="h-12 object-contain rounded-xs" title="NIRF Ranked Institution" />
-                </div>
-                <div className="p-1.5 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-gray-400 hover:scale-105 transition-all cursor-pointer shrink-0">
-                  <img src="/images/logo/naac.png" alt="NAAC" className="h-12 object-contain" title="NAAC Accredited" />
-                </div>
-                <div 
-                  className="px-3 py-1.5 rounded-lg bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-400 text-slate-950 font-black shadow-md border border-yellow-300 hover:scale-105 transition-transform cursor-pointer select-none flex flex-col items-center justify-center min-w-[80px] shrink-0"
-                  title="Anna University Counselling Code: 4982"
-                >
-                  <span className="text-[8px] font-black uppercase tracking-wider text-amber-950 leading-tight text-center">CODE</span>
-                  <span className="text-lg font-black tracking-tight leading-none text-slate-950">{siteTheme?.tneaCode || '4982'}</span>
-                </div>
-              </div>
-
-              {/* DESKTOP CENTER COLUMN: VINS SPELL LOGO */}
-              <div 
-                onClick={() => handleNavClick('home')}
-                className="hidden xl:flex xl:flex-none items-center justify-center cursor-pointer group py-0.5 text-center px-1 mx-4"
-                title="VINS Christian College of Engineering - Home"
-              >
-                <div className="p-2.5 bg-white rounded-2xl border border-gray-200 shadow-sm group-hover:border-gray-400 transition-all flex items-center justify-center w-[580px]">
                   <img
                     src="/images/logo/vins spell logo.png"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = '/images/logo/vins logooo.jpg';
                     }}
-                    alt="VINS Spell Logo"
-                    className="h-24 object-contain drop-shadow-2xl group-hover:scale-[1.02] transition-transform"
+                    alt="VINS Logo"
+                    className="h-12 min-[360px]:h-14 min-[390px]:h-16 sm:h-20 lg:h-24 w-auto max-w-[260px] min-[360px]:max-w-[290px] min-[390px]:max-w-[340px] sm:max-w-[480px] lg:max-w-[620px] object-contain drop-shadow-lg group-hover:scale-[1.01] transition-transform"
                   />
                 </div>
               </div>
 
-              {/* DESKTOP RIGHT COLUMN: Icons (IIC, ERP) + Contact Button */}
-              <div className="hidden xl:flex xl:flex-1 items-center justify-end gap-3 shrink-0">
-                
-                <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-gray-400 hover:scale-105 transition-all cursor-pointer">
-                    <img
-                      src="/images/logo/iic.png"
-                      alt="IIC"
-                      className="h-12 object-contain"
-                      title="Institution's Innovation Council"
-                    />
-                  </div>
-                  <div className="p-1.5 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-gray-400 hover:scale-105 transition-all cursor-pointer">
-                    <img
-                      src="/images/logo/erp.png"
-                      alt="ERP"
-                      className="h-12 object-contain"
-                      title="ERP Automation System"
-                    />
-                  </div>
+              {/* ACCREDITATION LOGOS RIGHT COLUMN (NIRF, NAAC, CODE 4982, IIC, ERP) */}
+              <div className="hidden lg:flex items-center gap-2.5 shrink-0">
+                {/* NIRF */}
+                <div className="p-1 bg-white rounded shadow-2xs border border-gray-200 hover:scale-105 transition-transform cursor-pointer shrink-0">
+                  <img src="/images/logo/nirf.jpeg" alt="NIRF" className="h-10 lg:h-11 object-contain rounded-xs" title="NIRF Ranked Institution" />
                 </div>
-
-                {/* Contact Button */}
-                <div className="flex items-center pl-1">
-                  <button
-                    onClick={() => handleNavClick('contact')}
-                    className="btn-valer-green text-xs uppercase tracking-widest px-4 py-2 cursor-pointer active:scale-95 transition-transform font-bold whitespace-nowrap shadow-md"
-                  >
-                    <span>CONTACT</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-white" />
-                  </button>
+                {/* NAAC */}
+                <div className="p-1 bg-white rounded shadow-2xs border border-gray-200 hover:scale-105 transition-transform cursor-pointer shrink-0">
+                  <img src="/images/logo/naac.png" alt="NAAC" className="h-10 lg:h-11 object-contain" title="NAAC Accredited" />
                 </div>
+                {/* CODE */}
+                <div 
+                  className="px-2.5 py-1 rounded bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-400 text-slate-950 font-black shadow-2xs border border-yellow-300 hover:scale-105 transition-transform cursor-pointer select-none flex flex-col items-center justify-center shrink-0 min-w-[70px]"
+                  title="Anna University Counselling Code: 4982"
+                >
+                  <span className="text-[7px] font-black uppercase tracking-wider text-amber-950 leading-tight">CODE</span>
+                  <span className="text-base font-black tracking-tight leading-none text-slate-950">{siteTheme?.tneaCode || '4982'}</span>
+                </div>
+                {/* IIC */}
+                <div className="p-1 bg-white rounded shadow-2xs border border-gray-200 hover:scale-105 transition-transform cursor-pointer shrink-0">
+                  <img src="/images/logo/iic.png" alt="IIC" className="h-10 lg:h-11 object-contain" title="Institution's Innovation Council" />
+                </div>
+                {/* ERP */}
+                <div className="p-1 bg-white rounded shadow-2xs border border-gray-200 hover:scale-105 transition-transform cursor-pointer shrink-0">
+                  <img src="/images/logo/erp.png" alt="ERP" className="h-10 lg:h-11 object-contain" title="ERP Automation System" />
+                </div>
+              </div>
 
+              {/* MOBILE HAMBURGER BUTTON */}
+              <div className="xl:hidden flex items-center gap-2">
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="p-2 rounded-lg text-gray-700 hover:bg-gray-100 bg-gray-50 border border-gray-200 transition-colors shadow-xs active:scale-95 cursor-pointer touch-manipulation"
+                  aria-label="Toggle Navigation Menu"
+                >
+                  {mobileMenuOpen ? <X className="w-6 h-6 text-gray-700" /> : <Menu className="w-6 h-6 text-[#C81E51]" />}
+                </button>
+              </div>
+
+            </div>
+
+            {/* MOBILE ACCREDITATION LOGOS HORIZONTAL SCROLL ROW */}
+            <div className="lg:hidden flex items-center justify-start gap-2 pt-2.5 overflow-x-auto no-scrollbar border-t border-gray-100 mt-2">
+              <div className="p-1 bg-white rounded border border-gray-200 shrink-0">
+                <img src="/images/logo/nirf.jpeg" alt="NIRF" className="h-7 object-contain rounded-xs" />
+              </div>
+              <div className="p-1 bg-white rounded border border-gray-200 shrink-0">
+                <img src="/images/logo/naac.png" alt="NAAC" className="h-7 object-contain" />
+              </div>
+              <div className="px-2 py-0.5 rounded bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-400 text-slate-950 font-black border border-yellow-300 shrink-0 flex flex-col items-center justify-center">
+                <span className="text-[6px] font-black uppercase text-amber-950 leading-tight">CODE</span>
+                <span className="text-[10px] font-black leading-none text-slate-950">{siteTheme?.tneaCode || '4982'}</span>
+              </div>
+              <div className="p-1 bg-white rounded border border-gray-200 shrink-0">
+                <img src="/images/logo/iic.png" alt="IIC" className="h-7 object-contain" />
+              </div>
+              <div className="p-1 bg-white rounded border border-gray-200 shrink-0">
+                <img src="/images/logo/erp.png" alt="ERP" className="h-7 object-contain" />
               </div>
             </div>
+
           </div>
         </div>
 
-        {/* BOTTOM ROW: DESKTOP NAVIGATION MENU — Soft Cement Grey Glass */}
-        <div className="border-t border-[#dedcd7]/15 py-2.5 w-full bg-[#252427]/92 backdrop-blur-xl shadow-[0_2px_20px_rgba(37,36,39,0.35)]">
+        {/* BOTTOM ROW: DESKTOP NAVIGATION MENU — Dark Pink Magenta Accent */}
+        <div className="border-t border-white/15 py-2.5 w-full bg-[#C81E51] backdrop-blur-xl shadow-[0_2px_20px_rgba(200,30,81,0.35)]">
           <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="hidden xl:flex items-center justify-center w-full">
-            <nav className="flex items-center justify-center space-x-1.5 2xl:space-x-2.5 font-sans-clean flex-nowrap mx-auto">
+            <div className="hidden xl:flex items-center justify-center relative w-full">
+            <nav className="flex items-center space-x-1.5 2xl:space-x-3 font-sans-clean flex-nowrap mx-auto">
               
               {/* Home */}
               <button
                 onClick={() => handleNavClick('home')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-widest transition-all duration-[220ms] cursor-pointer whitespace-nowrap relative ${
+                className={`px-3 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-wider transition-all duration-[220ms] cursor-pointer whitespace-nowrap relative ${
                   currentTab === 'home'
-                    ? 'text-[#F7DC84] bg-gradient-to-r from-amber-500/20 to-amber-400/12 shadow-[0_0_0_1px_rgba(212,168,67,0.3)_inset]'
-                    : 'text-white/75 hover:text-[#F7DC84] hover:bg-gradient-to-r hover:from-amber-500/18 hover:to-amber-400/10'
+                    ? 'text-white bg-white/20 shadow-[0_0_0_1px_rgba(255,255,255,0.4)_inset]'
+                    : 'text-white/85 hover:text-white hover:bg-white/15'
                 }`}
               >
                 Home
               </button>
 
-              {/* Pages Dropdown (About, Placements, Campus, Facilities, NAAC) */}
-              <div 
-                className="relative"
-                onMouseEnter={() => setActiveDropdown('pages')}
-                onMouseLeave={() => setActiveDropdown(null)}
-              >
-                <button
-                  onClick={() => handleNavClick('about')}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-widest transition-all duration-[220ms] flex items-center gap-1 cursor-pointer whitespace-nowrap ${
-                    ['about', 'placement', 'facilities', 'campus', 'naac', 'iqac', 'committees'].includes(currentTab)
-                      ? 'text-[#F7DC84] bg-gradient-to-r from-amber-500/20 to-amber-400/12 shadow-[0_0_0_1px_rgba(212,168,67,0.3)_inset]'
-                      : 'text-white/85 hover:text-[#F7DC84] hover:bg-gradient-to-r hover:from-amber-500/18 hover:to-amber-400/10'
-                  }`}
-                >
-                  <span>Pages</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-white/60 group-hover:rotate-180 transition-transform" />
-                </button>
-
-                {activeDropdown === 'pages' && (
-                  <div className="absolute top-full left-0 w-72 bg-[#28272b]/95 backdrop-blur-2xl text-white rounded-2xl shadow-2xl border border-[#dedcd7]/25 py-2.5 animate-fade-in z-50">
-                    <div className="px-4 py-2 text-[10px] font-extrabold uppercase tracking-widest text-amber-400/90 border-b border-white/10">
-                      College &amp; Institutional Pages
-                    </div>
-                    <button
-                      onClick={() => handleNavClick('about', 'vision')}
-                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-white/85 hover:bg-gradient-to-r hover:from-amber-500/15 hover:to-transparent hover:text-[#F7DC84] transition-all pl-4 hover:pl-5"
-                    >
-                      About VINS Legacy &amp; Vision
-                    </button>
-                    <button
-                      onClick={() => handleNavClick('about', 'chairman')}
-                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-white/85 hover:bg-gradient-to-r hover:from-amber-500/15 hover:to-transparent hover:text-[#F7DC84] transition-all pl-4 hover:pl-5"
-                    >
-                      Founder Chairman Desk
-                    </button>
-                    <button
-                      onClick={() => handleNavClick('about', 'principal')}
-                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-white/85 hover:bg-gradient-to-r hover:from-amber-500/15 hover:to-transparent hover:text-[#F7DC84] transition-all pl-4 hover:pl-5"
-                    >
-                      Principal&apos;s Desk
-                    </button>
-                    <button
-                      onClick={() => handleNavClick('facilities')}
-                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-white/85 hover:bg-gradient-to-r hover:from-amber-500/15 hover:to-transparent hover:text-[#F7DC84] transition-all pl-4 hover:pl-5 border-t border-amber-500/10"
-                    >
-                      Campus Infrastructure &amp; Labs
-                    </button>
-                    <button
-                      onClick={() => handleNavClick('committees')}
-                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-white/85 hover:bg-gradient-to-r hover:from-amber-500/15 hover:to-transparent hover:text-[#F7DC84] transition-all pl-4 hover:pl-5"
-                    >
-                      Statutory Committees &amp; Grievance
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* News & Circulars */}
+              {/* About */}
               <button
-                onClick={() => handleNavClick('notifications')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-widest transition-all duration-[220ms] flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
-                  currentTab === 'notifications'
-                    ? 'text-[#F7DC84] bg-gradient-to-r from-amber-500/20 to-amber-400/12 shadow-[0_0_0_1px_rgba(212,168,67,0.3)_inset]'
-                    : 'text-white/75 hover:text-[#F7DC84] hover:bg-gradient-to-r hover:from-amber-500/18 hover:to-amber-400/10'
+                onClick={() => handleNavClick('about')}
+                className={`px-3 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-wider transition-all duration-[220ms] cursor-pointer whitespace-nowrap ${
+                  currentTab === 'about'
+                    ? 'text-white bg-white/20 shadow-[0_0_0_1px_rgba(255,255,255,0.4)_inset]'
+                    : 'text-white/85 hover:text-white hover:bg-white/15'
                 }`}
               >
-                <span>News</span>
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c8c6c2] opacity-60"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#e0dedb]"></span>
-                </span>
+                About
               </button>
 
-              {/* Events */}
+              {/* Academics */}
               <button
-                onClick={() => handleNavClick('campus')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-widest transition-all duration-[220ms] cursor-pointer whitespace-nowrap ${
-                  currentTab === 'campus'
-                    ? 'text-[#F7DC84] bg-gradient-to-r from-amber-500/20 to-amber-400/12 shadow-[0_0_0_1px_rgba(212,168,67,0.3)_inset]'
-                    : 'text-white/75 hover:text-[#F7DC84] hover:bg-gradient-to-r hover:from-amber-500/18 hover:to-amber-400/10'
+                onClick={() => handleNavClick('department')}
+                className={`px-3 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-wider transition-all duration-[220ms] cursor-pointer whitespace-nowrap ${
+                  currentTab === 'department'
+                    ? 'text-white bg-white/20 shadow-[0_0_0_1px_rgba(255,255,255,0.4)_inset]'
+                    : 'text-white/85 hover:text-white hover:bg-white/15'
                 }`}
               >
-                Events
+                Academics
               </button>
 
-              {/* Courses / Departments Dropdown */}
+              {/* Admissions */}
+              <button
+                onClick={() => handleNavClick('admissions')}
+                className={`px-3 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-wider transition-all duration-[220ms] cursor-pointer whitespace-nowrap ${
+                  currentTab === 'admissions'
+                    ? 'text-white bg-white/20 shadow-[0_0_0_1px_rgba(255,255,255,0.4)_inset]'
+                    : 'text-white/85 hover:text-white hover:bg-white/15'
+                }`}
+              >
+                Admissions
+              </button>
+
+              {/* Departments */}
               <div 
                 className="relative"
                 onMouseEnter={() => setActiveDropdown('courses')}
@@ -321,116 +212,86 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onTabChange }) => {
               >
                 <button
                   onClick={() => handleNavClick('department')}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-widest transition-all duration-[220ms] flex items-center gap-1 cursor-pointer whitespace-nowrap ${
+                  className={`px-3 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-wider transition-all duration-[220ms] flex items-center gap-1 cursor-pointer whitespace-nowrap ${
                     currentTab === 'department'
-                      ? 'text-[#F7DC84] bg-gradient-to-r from-amber-500/20 to-amber-400/12 shadow-[0_0_0_1px_rgba(212,168,67,0.3)_inset]'
-                      : 'text-white/85 hover:text-[#F7DC84] hover:bg-gradient-to-r hover:from-amber-500/18 hover:to-amber-400/10'
+                      ? 'text-white bg-white/20 shadow-[0_0_0_1px_rgba(255,255,255,0.4)_inset]'
+                      : 'text-white/85 hover:text-white hover:bg-white/15'
                   }`}
                 >
-                  <span>Courses</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-white/60 group-hover:rotate-180 transition-transform" />
+                  <span>Departments</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-white/70 group-hover:rotate-180 transition-transform" />
                 </button>
 
                 {activeDropdown === 'courses' && (
-                  <div className="absolute top-full left-0 w-[540px] max-w-[calc(100vw-2rem)] bg-[#28272b]/95 backdrop-blur-2xl text-white rounded-2xl shadow-2xl border border-[#dedcd7]/25 p-4 grid grid-cols-2 gap-2 animate-fade-in z-50">
-                    <div className="col-span-2 pb-2 mb-1 border-b border-white/10 flex items-center justify-between">
-                      <span className="text-[11px] font-extrabold text-amber-400/90 uppercase tracking-widest">Engineering &amp; Management Programs</span>
-                      <button
-                        onClick={() => handleNavClick('department')}
-                        className="text-xs text-white/80 hover:text-[#F7DC84] font-bold transition-colors"
-                      >
-                        All Departments →
-                      </button>
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[520px] max-w-[calc(100vw-2rem)] bg-white text-slate-900 rounded-2xl shadow-2xl border border-gray-200 p-4 grid grid-cols-2 gap-2 animate-fade-in z-50">
+                    <div className="col-span-2 pb-2 mb-1 border-b border-gray-100 flex items-center justify-between">
+                      <span className="text-[11px] font-extrabold text-[#C81E51] uppercase tracking-widest">Engineering &amp; Management Programs</span>
                     </div>
                     {DEPARTMENTS_DATA.map((dept) => (
                       <button
                         key={dept.id}
                         onClick={() => handleNavClick('department', undefined, dept.id)}
-                        className="text-left px-3 py-2 rounded-lg bg-white/5 hover:bg-gradient-to-r hover:from-amber-500/15 hover:to-transparent text-xs font-semibold text-white/85 hover:text-[#F7DC84] transition-all flex items-center justify-between border border-white/8 hover:border-amber-500/30"
+                        className="text-left px-3 py-2 rounded-xl bg-gray-50 hover:bg-[#C81E51] text-xs font-bold text-slate-800 hover:text-white transition-all flex items-center justify-between border border-gray-200/60 hover:border-[#C81E51] shadow-2xs group cursor-pointer"
                       >
                         <span className="truncate pr-1">{dept.shortName ? `${dept.shortName} - ` : ''}{dept.name}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 bg-[#1c1c1e]/80 text-amber-400/80 rounded font-black shrink-0 border border-amber-500/20">
-                          {dept.degree}
-                        </span>
                       </button>
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Admissions Tab */}
-              <button
-                onClick={() => handleNavClick('admissions')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-widest transition-all duration-[220ms] cursor-pointer whitespace-nowrap ${
-                  currentTab === 'admissions'
-                    ? 'text-[#F7DC84] bg-gradient-to-r from-amber-500/20 to-amber-400/12 shadow-[0_0_0_1px_rgba(212,168,67,0.3)_inset]'
-                    : 'text-white/75 hover:text-[#F7DC84] hover:bg-gradient-to-r hover:from-amber-500/18 hover:to-amber-400/10'
-                }`}
-              >
-                Admissions
-              </button>
-
-              {/* Placement Tab */}
+              {/* Placements */}
               <button
                 onClick={() => handleNavClick('placement')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-widest transition-all duration-[220ms] cursor-pointer whitespace-nowrap ${
+                className={`px-3 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-wider transition-all duration-[220ms] cursor-pointer whitespace-nowrap ${
                   currentTab === 'placement'
-                    ? 'text-[#F7DC84] bg-gradient-to-r from-amber-500/20 to-amber-400/12 shadow-[0_0_0_1px_rgba(212,168,67,0.3)_inset]'
-                    : 'text-white/75 hover:text-[#F7DC84] hover:bg-gradient-to-r hover:from-amber-500/18 hover:to-amber-400/10'
+                    ? 'text-white bg-white/20 shadow-[0_0_0_1px_rgba(255,255,255,0.4)_inset]'
+                    : 'text-white/85 hover:text-white hover:bg-white/15'
                 }`}
               >
-                Placement
+                Placements
               </button>
 
-              {/* NAAC Tab */}
+              {/* NAAC */}
               <button
                 onClick={() => handleNavClick('naac')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-widest transition-all duration-[220ms] cursor-pointer whitespace-nowrap ${
+                className={`px-3 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-wider transition-all duration-[220ms] cursor-pointer whitespace-nowrap ${
                   currentTab === 'naac'
-                    ? 'text-[#F7DC84] bg-gradient-to-r from-amber-500/20 to-amber-400/12 shadow-[0_0_0_1px_rgba(212,168,67,0.3)_inset]'
-                    : 'text-white/75 hover:text-[#F7DC84] hover:bg-gradient-to-r hover:from-amber-500/18 hover:to-amber-400/10'
+                    ? 'text-white bg-white/20 shadow-[0_0_0_1px_rgba(255,255,255,0.4)_inset]'
+                    : 'text-white/85 hover:text-white hover:bg-white/15'
                 }`}
               >
                 NAAC
               </button>
 
-              {/* Dynamic Custom Navbar Action Buttons */}
-              {navbarButtons.map((btn) => (
-                <button
-                  key={btn.id}
-                  onClick={() => handleCustomButtonClick(btn)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-[220ms] flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-gradient-to-r from-amber-500/12 to-amber-400/8 hover:from-amber-500/22 hover:to-amber-400/16 text-amber-300/90 hover:text-[#F7DC84] border border-amber-500/20 hover:border-amber-400/40 shadow-xs"
-                >
-                  {renderIcon(btn.iconName)}
-                  <span>{btn.label}</span>
-                  {btn.badge && (
-                    <span className="px-1 py-0.2 bg-amber-900/60 text-amber-300 text-[9px] rounded font-black uppercase border border-amber-500/30">
-                      {btn.badge}
-                    </span>
-                  )}
-                </button>
-              ))}
-
-              {/* Admin Console Shortcut */}
+              {/* Contact */}
               <button
-                onClick={() => handleNavClick('admin')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-[220ms] flex items-center gap-1.5 cursor-pointer whitespace-nowrap border ${
-                  currentTab === 'admin'
-                    ? 'text-[#F7DC84] bg-gradient-to-r from-amber-500/20 to-amber-400/12 border-amber-500/35'
-                    : 'text-white/65 bg-white/5 hover:bg-gradient-to-r hover:from-amber-500/15 hover:to-amber-400/8 hover:text-[#F7DC84] border-white/10 hover:border-amber-500/30'
+                onClick={() => handleNavClick('contact')}
+                className={`px-3 py-1.5 rounded-lg text-xs 2xl:text-[13px] font-extrabold uppercase tracking-wider transition-all duration-[220ms] cursor-pointer whitespace-nowrap ${
+                  currentTab === 'contact'
+                    ? 'text-white bg-white/20 shadow-[0_0_0_1px_rgba(255,255,255,0.4)_inset]'
+                    : 'text-white/85 hover:text-white hover:bg-white/15'
                 }`}
-                title="Admin Content Management Portal"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-400/80" />
-                <span className="text-[11px] uppercase tracking-wider">Admin</span>
+                Contact
               </button>
 
             </nav>
+
+            {/* APPLY ONLINE NOW CTA BUTTON */}
+            <button
+              onClick={() => handleNavClick('admissions', 'online-form')}
+              className="absolute right-0 top-1/2 -translate-y-1/2 bg-white text-[#C81E51] font-black text-xs uppercase tracking-wider px-5 py-2 rounded-full hover:bg-slate-100 transition-all shadow-md flex items-center gap-1.5 cursor-pointer shrink-0"
+            >
+              <span>APPLY ONLINE NOW</span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#C81E51]" />
+            </button>
+
+            </div>
           </div>
         </div>
-      </div>
 
-        {/* Mobile Drawer Menu - Styled in Frosted Dark Cement Glass */}
+        {/* Mobile Drawer Menu */}
         {mobileMenuOpen && (
           <div className="xl:hidden bg-[#1e1e20]/95 backdrop-blur-2xl border-t border-[#dedcd7]/20 px-4 py-6 space-y-3 max-h-[calc(100vh-5rem)] overflow-y-auto animate-fade-in shadow-2xl text-white mobile-dropdown-menu">
             <button

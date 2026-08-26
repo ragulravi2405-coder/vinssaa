@@ -683,21 +683,22 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
 
         </section>
 
-        {/* DEDICATED FEATURED YOUTUBE VIDEOS SECTION - WITH UNIQUE ASYMMETRIC GLASS FRAMES */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-          
-          <div className="text-center max-w-3xl mx-auto space-y-3">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full gold-badge rounded-full shadow-xs text-xs font-bold text-[#2E1E06] tracking-widest uppercase">
-              <Video className="w-3.5 h-3.5 text-[#252528]" />
-              <span>OFFICIAL VIDEO BROADCASTS</span>
+        {/* DEDICATED FEATURED YOUTUBE VIDEOS SECTION - WITH SOLID DARK PINK / MAGENTA (#C81E51) CANVAS */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-[#C81E51] rounded-3xl p-6 sm:p-10 shadow-2xl border border-white/20 space-y-8">
+            
+            <div className="text-center max-w-3xl mx-auto space-y-3">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 text-white text-xs font-bold tracking-widest uppercase border border-white/30">
+                <Video className="w-3.5 h-3.5 text-white" />
+                <span>OFFICIAL VIDEO BROADCASTS</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white leading-tight">
+                Experience VINS in Motion
+              </h2>
+              <p className="text-xs sm:text-sm text-white/90 leading-relaxed max-w-2xl mx-auto font-medium">
+                Watch our official institutional documentaries, state-of-the-art laboratory infrastructure, student innovations, and campus celebrations directly below.
+              </p>
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-[#252528] leading-tight">
-              Experience VINS in Motion
-            </h2>
-            <p className="text-xs sm:text-sm text-[#3A2A08] leading-relaxed max-w-2xl mx-auto">
-              Watch our official institutional documentaries, state-of-the-art laboratory infrastructure, student innovations, and campus celebrations directly below.
-            </p>
-          </div>
 
           {/* 2 Responsive Video Frames: Side-by-Side on Desktop, Stacked on Mobile */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-stretch">
@@ -809,8 +810,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
             </div>
 
           </div>
-
-        </section>
+        </div>
+      </section>
 
         {/* SECTION F: CAMPUS PHOTO & VIDEO TOUR GALLERY */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
