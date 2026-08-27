@@ -7,7 +7,7 @@ html {
 
 @layer base {
   body {
-    font-family: 'Inter', 'Poppins', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: #252528;
     background: #fafaf9;
     background-attachment: fixed;
@@ -27,7 +27,7 @@ html {
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Poppins', 'Inter', -apple-system, sans-serif;
+    font-family: 'Poppins', -apple-system, sans-serif;
     letter-spacing: -0.025em;
     word-break: break-word;
     font-weight: 700;
@@ -38,10 +38,11 @@ html {
   p {
     line-height: 1.75;
     font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
   }
 
   input, select, textarea, button {
-    font-family: 'Inter', 'Poppins', 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 0.95rem;
   }
 
@@ -58,7 +59,7 @@ html {
 
   /* Better table typography */
   table {
-    font-family: 'Inter', 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 0.95rem;
   }
 
@@ -69,7 +70,7 @@ html {
 
   /* Labels and form elements */
   label {
-    font-family: 'Inter', 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-weight: 500;
     font-size: 0.9rem;
   }
@@ -77,37 +78,40 @@ html {
 
 /* ============================================================
    TYPOGRAPHY — FONT FAMILY CLASSES
-   Primary: Inter (body/UI) + Poppins (headings)
-   Accent: Playfair Display / Cinzel (decorative/branding)
+   Primary: Poppins (universal) 
+   Accent: Cinzel (decorative labels) | Poppins bold (headings)
    ============================================================ */
 
 .font-serif-academic,
 .font-cinzel {
-  font-family: 'Cinzel', Georgia, serif;
+  font-family: 'Poppins', sans-serif;
   letter-spacing: 0.05em;
+  font-weight: 700;
 }
 
 .font-playfair,
 .font-serif-university,
 .font-serif {
-  font-family: 'Playfair Display', Georgia, Cambria, "Times New Roman", Times, serif;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
   font-feature-settings: 'kern' 1;
 }
 
 .font-poppins {
-  font-family: 'Poppins', 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .font-inter {
-  font-family: 'Inter', 'Poppins', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .font-outfit,
 .font-montserrat,
 .font-sans-clean,
 .font-sans {
-  font-family: 'Inter', 'Poppins', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
 }
+
 
 /* ============================================================
    GLOBAL TYPOGRAPHY SCALING SYSTEM
@@ -201,17 +205,19 @@ html {
 }
 
 :root {
-  /* Strict 4-Color Palette System */
-  --primary-color: #C81E51;      /* Dark Pink / Magenta */
-  --primary-hover: #A0163E;
-  --primary-dark: #7A0F2E;
+  /* Global Color Palette System */
+  --primary-color: #0A2540;      /* Deep Navy Blue */
+  --primary-hover: #1E40AF;      /* Royal Indigo */
+  --primary-dark: #061727;       /* Darkest Navy */
+  --accent-orange: #FF6B00;      /* Vibrant Amber Orange */
+  --accent-orange-hover: #E05E00;
   
-  --status-blue: #0084c7;        /* Live Announcements / Circulars Blue */
-  --status-blue-light: #e0f2fe;
+  --status-blue: #1E40AF;        /* Live Announcements Blue */
+  --status-blue-light: #eff6ff;
 
   --canvas-white: #FFFFFF;       /* Clean White Canvas */
 
-  --text-dark: #0F172A;          /* High contrast Black / Slate typography */
+  --text-dark: #0A2540;          /* Deep Navy typography */
   --text-light: #FFFFFF;         /* Crisp White typography */
 
   /* Surface & Border System */
@@ -219,15 +225,14 @@ html {
   --glass-bg-subtle: #FFFFFF;
   --glass-bg-card: #FFFFFF;
   --glass-bg-hover: #FFFFFF;
-  --glass-bg-dark: #C81E51;
-  --glass-bg-darker: #A0163E;
-  --glass-bg-dark-card: #7A0F2E;
+  --glass-bg-dark: #0A2540;
+  --glass-bg-darker: #061727;
+  --glass-bg-dark-card: #1E40AF;
 
   --glass-border-light: #E2E8F0;
   --glass-border-cement: #E2E8F0;
   --glass-border-dark: rgba(255, 255, 255, 0.2);
-  --glass-border-gold: #C81E51;
-}
+  --glass-border-gold: #FF6B00;
 
   /* Glass Shadows & Elevation */
   --glass-shadow-sm: 0 4px 16px -2px rgba(37, 36, 40, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85);
@@ -374,19 +379,22 @@ button:active {
 
 .bg-valer-dark      { background-color: #1c1c1e; }
 .bg-valer-deep      { background-color: #1c1c1e; }
-.bg-valer-card      { background-color: #3a3a3c; }
-.bg-valer-green     { background-color: #4e4c49; }
-.text-valer-green   { color: #4e4c49; }
-.text-valer-dark    { color: #1c1c1e; }
-.border-valer-green { border-color: #b0aea9; }
-.border-valer-dark  { border-color: #1c1c1e; }
+.bg-valer-dark      { background-color: #0A2540; }
+.bg-valer-deep      { background-color: #061727; }
+.bg-valer-card      { background-color: #1E40AF; }
+.bg-valer-green     { background-color: #FF6B00; }
+.text-valer-green   { color: #FF6B00; }
+.text-valer-dark    { color: #0A2540; }
+.border-valer-green { border-color: #FF6B00; }
+.border-valer-dark  { border-color: #0A2540; }
 
-/* ── PRIMARY CTA PILL BUTTONS ── */
+/* ── PRIMARY CTA & HIGHLIGHT PILL BUTTONS (Vibrant Amber Orange #FF6B00) ── */
 .btn-valer-green,
-.btn-hero-crimson {
-  background: linear-gradient(135deg, #C81E51 0%, #A0163E 100%);
+.btn-hero-crimson,
+.btn-cta-orange {
+  background: linear-gradient(135deg, #FF6B00 0%, #EA580C 100%);
   color: #ffffff;
-  font-family: 'Inter', 'Poppins', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 700;
   letter-spacing: 0.04em;
   padding: 0.75rem 1.75rem;
@@ -396,43 +404,86 @@ button:active {
   align-items: center;
   gap: 0.5rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 14px rgba(200, 30, 81, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 14px rgba(255, 107, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
 }
 
 /* Primary hover state */
 .btn-valer-green:hover,
-.btn-hero-crimson:hover {
-  background: linear-gradient(135deg, #E02860 0%, #C81E51 50%, #A0163E 100%);
+.btn-hero-crimson:hover,
+.btn-cta-orange:hover {
+  background: linear-gradient(135deg, #FF8533 0%, #FF6B00 50%, #EA580C 100%);
   color: #ffffff;
   border-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 24px rgba(200, 30, 81, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 24px rgba(255, 107, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transform: translateY(-2px) scale(1.01);
 }
 
 .btn-valer-green:active,
-.btn-hero-crimson:active {
-  background: linear-gradient(135deg, #7A0F2E 0%, #A0163E 100%);
+.btn-hero-crimson:active,
+.btn-cta-orange:active {
+  background: linear-gradient(135deg, #C2410C 0%, #EA580C 100%);
   color: #FFFFFF;
   transform: translateY(0) scale(0.98);
-  box-shadow: 0 3px 10px rgba(200, 30, 81, 0.3);
+  box-shadow: 0 3px 10px rgba(255, 107, 0, 0.3);
 }
 
 .btn-valer-green:focus-visible,
-.btn-hero-crimson:focus-visible {
-  outline: 2px solid #C81E51;
+.btn-hero-crimson:focus-visible,
+.btn-cta-orange:focus-visible {
+  outline: 2px solid #FF6B00;
   outline-offset: 3px;
+}
+
+/* ── SECONDARY BUTTON (Royal Indigo #1E40AF) ── */
+.btn-indigo-primary {
+  background: linear-gradient(135deg, #1E40AF 0%, #1D4ED8 100%);
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+}
+
+.btn-indigo-primary:hover {
+  background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(30, 64, 175, 0.4);
+}
+
+/* ── NAVY PRIMARY BUTTON (#0A2540) ── */
+.btn-navy-primary {
+  background: #0A2540;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(10, 37, 64, 0.3);
+}
+
+.btn-navy-primary:hover {
+  background: #1E40AF;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(10, 37, 64, 0.4);
 }
 
 /* ── HERO OUTLINE BUTTON ── */
 .btn-hero-outline {
-  border: 1.5px solid rgba(210, 208, 204, 0.6);
-  background-color: rgba(54, 53, 56, 0.55);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: #f7f6f4;
-  font-family: 'Inter', 'Poppins', sans-serif;
+  border: 2px solid #FFFFFF;
+  background-color: transparent;
+  color: #FFFFFF;
+  font-family: 'Poppins', sans-serif;
   font-weight: 700;
   letter-spacing: 0.04em;
   padding: 0.75rem 1.75rem;
@@ -444,59 +495,60 @@ button:active {
 }
 
 .btn-hero-outline:hover {
-  border-color: rgba(212, 168, 67, 0.85);
-  color: #1C1A16;
-  background: linear-gradient(135deg, #D4A843 0%, #EEC84A 50%, #C8A040 100%);
-  box-shadow: 0 8px 24px rgba(170, 130, 24, 0.3);
+  border-color: #FF6B00;
+  color: #FFFFFF;
+  background: #FF6B00;
+  box-shadow: 0 8px 24px rgba(255, 107, 0, 0.35);
   transform: translateY(-2px);
 }
 
 .btn-hero-outline:active {
   transform: translateY(0) scale(0.98);
-  background: linear-gradient(135deg, #B8882A 0%, #D4A843 100%);
-  color: #1C1A16;
+  background: #EA580C;
+  color: #FFFFFF;
 }
 
 .btn-hero-outline:focus-visible {
-  outline: 2px solid #D4A843;
+  outline: 2px solid #FF6B00;
   outline-offset: 3px;
 }
 
 /* ═══════════════════════════════════════════════════════════
-   PRIMARY INTERACTION SYSTEM — Strict 4-Color Theme
+   PRIMARY INTERACTION SYSTEM — Navy & Orange Theme
    ═══════════════════════════════════════════════════════════ */
 
-/* Standard secondary button — white with Dark Pink text */
+/* Standard secondary button — white with Deep Navy text & Orange hover */
 .btn-gold {
   background: #FFFFFF;
-  color: #C81E51;
+  color: #0A2540;
   font-weight: 700;
   letter-spacing: 0.04em;
-  border: 1.5px solid #C81E51;
+  border: 1.5px solid #0A2540;
   border-radius: 9999px;
   padding: 0.65rem 1.5rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 16px rgba(200, 30, 81, 0.15);
+  box-shadow: 0 4px 16px rgba(10, 37, 64, 0.15);
 }
 
 .btn-gold:hover {
-  background: #C81E51;
+  background: #FF6B00;
   color: #FFFFFF;
-  box-shadow: 0 8px 24px rgba(200, 30, 81, 0.35);
+  border-color: #FF6B00;
+  box-shadow: 0 8px 24px rgba(255, 107, 0, 0.35);
   transform: translateY(-2px) scale(1.01);
 }
 
 .btn-gold:active {
-  background: #A0163E;
+  background: #E05E00;
   color: #FFFFFF;
   transform: translateY(0) scale(0.97);
 }
 
 .btn-gold:focus-visible {
-  outline: 2px solid #C81E51;
+  outline: 2px solid #FF6B00;
   outline-offset: 3px;
 }
 
@@ -1308,4 +1360,102 @@ html, body, #root {
   }
 }
 
+/* ==========================================================================
+   NAVY BLUE (#0A2540) + ROYAL INDIGO (#1E40AF) + AMBER ORANGE (#FF6B00) + WHITE THEME UTILITIES
+   ========================================================================== */
 
+/* Sparkle & Floating Particle Glow Keyframes */
+@keyframes sparkleGlow {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.95) translateY(0);
+    filter: drop-shadow(0 0 6px rgba(255, 107, 0, 0.4));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1) translateY(-4px);
+    filter: drop-shadow(0 0 14px rgba(255, 107, 0, 0.8));
+  }
+}
+
+@keyframes floatParticle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(8deg);
+  }
+}
+
+.animate-sparkle {
+  animation: sparkleGlow 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: floatParticle 4s ease-in-out infinite;
+}
+
+/* Card Systems */
+.card-navy {
+  background-color: #0A2540 !important;
+  color: #FFFFFF !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 10px 30px rgba(10, 37, 64, 0.35) !important;
+}
+
+.card-white {
+  background-color: #FFFFFF !important;
+  color: #0A2540 !important;
+  border: 1.5px solid rgba(10, 37, 64, 0.15) !important;
+  box-shadow: 0 8px 24px rgba(10, 37, 64, 0.08) !important;
+}
+
+.card-white:hover {
+  border-color: #FF6B00 !important;
+  box-shadow: 0 14px 34px rgba(255, 107, 0, 0.2) !important;
+  transform: translateY(-2px);
+}
+
+/* Theme Buttons */
+.btn-orange-solid {
+  background-color: #FF6B00 !important;
+  color: #FFFFFF !important;
+  border: 1.5px solid #FFFFFF !important;
+  font-weight: 700 !important;
+  padding: 0.7rem 1.5rem !important;
+  border-radius: 9999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  transition: all 0.25s ease !important;
+  box-shadow: 0 4px 14px rgba(255, 107, 0, 0.35) !important;
+}
+
+.btn-orange-solid:hover {
+  background-color: #E05E00 !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(255, 107, 0, 0.45) !important;
+}
+
+.btn-white-solid {
+  background-color: #FFFFFF !important;
+  color: #0A2540 !important;
+  border: 1.5px solid #0A2540 !important;
+  font-weight: 700 !important;
+  padding: 0.7rem 1.5rem !important;
+  border-radius: 9999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  transition: all 0.25s ease !important;
+  box-shadow: 0 4px 14px rgba(10, 37, 64, 0.1) !important;
+}
+
+.btn-white-solid:hover {
+  background-color: #FF6B00 !important;
+  color: #FFFFFF !important;
+  border-color: #FF6B00 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 107, 0, 0.35) !important;
+}

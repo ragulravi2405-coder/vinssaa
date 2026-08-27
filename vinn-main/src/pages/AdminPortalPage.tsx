@@ -478,13 +478,13 @@ export const AdminPortalPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-transparent text-[#252528] pb-24 font-sans">
+    <div className="min-h-screen bg-[#FFFFFF] text-[#0A2540] pb-24 font-sans">
       
       {/* Toast Notification */}
       {successToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#363539] text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 border border-[#dedcd7]/30 animate-fade-in">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-          <span className="text-sm font-semibold">{successToast}</span>
+        <div className="fixed bottom-6 right-6 z-50 bg-[#0A2540] text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border-2 border-white animate-fade-in">
+          <CheckCircle2 className="w-5 h-5 text-white shrink-0" />
+          <span className="text-sm font-bold">{successToast}</span>
         </div>
       )}
 
@@ -499,58 +499,47 @@ export const AdminPortalPage: React.FC = () => {
 
       {/* Media Picker Modal */}
       {mediaPickerTarget && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-fade-in">
-            <div className="px-6 py-4 bg-[#363538] text-white flex items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-[#0A2540]/75 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl border-2 border-[#0A2540] overflow-hidden animate-fade-in">
+            <div className="px-6 py-4 bg-[#0A2540] text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <FolderOpen className="w-5 h-5 text-slate-300" />
-                <h3 className="font-bold text-base">Select College Media Asset</h3>
+                <FolderOpen className="w-5 h-5 text-white" />
+                <h3 className="font-bold text-base text-white font-playfair">Select College Media Asset</h3>
               </div>
               <button 
                 onClick={() => setMediaPickerTarget(null)}
-                className="p-1 text-slate-300 hover:text-white rounded-lg hover:bg-slate-800"
+                className="p-1 text-white hover:bg-white/20 rounded-full"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-semibold text-slate-600">
+            <div className="p-4 bg-white border-b-2 border-[#0A2540]/15 flex items-center justify-between text-xs font-bold text-[#0A2540]">
               <span>Choose from existing high-res photos already in the portal:</span>
-              <span className="bg-slate-200 px-2 py-0.5 rounded text-slate-800">{mediaAssets.length} Assets Available</span>
+              <span className="bg-[#0A2540] text-white px-3 py-1 rounded-full text-[11px]">{mediaAssets.length} Assets Available</span>
             </div>
-
-            <div className="p-6 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <div className="p-4 overflow-y-auto max-h-[55vh] grid grid-cols-2 sm:grid-cols-3 gap-3">
               {mediaAssets.map((asset) => (
-                <button
+                <div
                   key={asset.id}
                   onClick={() => {
                     mediaPickerTarget(asset.path);
                     setMediaPickerTarget(null);
-                    showToast(`Selected: ${asset.name}`);
+                    showToast(`Selected asset: ${asset.name}`);
                   }}
-                  className="group relative rounded-xl border border-slate-200 bg-white p-2 text-left hover:border-[#363538] hover:shadow-md transition-all flex flex-col cursor-pointer"
+                  className="bg-white border-2 border-[#0A2540]/20 hover:border-[#0A2540] rounded-2xl p-2 cursor-pointer group space-y-1.5 transition-all shadow-xs"
                 >
-                  <div className="w-full h-24 bg-slate-100 rounded-lg overflow-hidden mb-2">
-                    <img 
-                      src={asset.path} 
-                      alt={asset.name} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      onError={(e) => {
-                        // Fallback placeholder if image not found
-                        (e.target as HTMLElement).style.display = 'none';
-                      }}
-                    />
+                  <div className="aspect-video bg-white rounded-xl overflow-hidden border border-[#0A2540]/20">
+                    <img src={asset.path} alt={asset.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                   </div>
-                  <span className="text-[11px] font-bold text-slate-800 line-clamp-1">{asset.name}</span>
-                  <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider">{asset.category}</span>
-                </button>
+                  <p className="text-xs font-bold text-[#0A2540] truncate">{asset.name}</p>
+                </div>
               ))}
             </div>
-
-            <div className="p-4 bg-slate-100 border-t border-slate-200 text-right">
+            <div className="p-4 bg-white border-t-2 border-[#0A2540]/15 text-right">
               <button
                 onClick={() => setMediaPickerTarget(null)}
-                className="px-4 py-2 bg-slate-300 hover:bg-slate-400 text-slate-800 rounded-lg font-bold text-xs cursor-pointer"
+                className="px-5 py-2 bg-[#0A2540] text-white rounded-full font-bold text-xs cursor-pointer shadow-md hover:bg-[#0A2540]/90"
               >
                 Close Picker
               </button>
@@ -579,24 +568,24 @@ export const AdminPortalPage: React.FC = () => {
       )}
 
       {/* Top Banner Header */}
-      <div className="bg-[#363539]/90 backdrop-blur-md text-white py-8 border-b border-[#dedcd7]/20 shadow-sm">
+      <div className="bg-[#0A2540] text-white py-8 border-b border-white/20 shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-[#28272b] border border-[#dedcd7]/20 flex items-center justify-center shadow-inner">
-                <ShieldCheck className="w-6 h-6 text-emerald-400" />
+              <div className="w-12 h-12 rounded-2xl bg-white text-[#0A2540] border border-white flex items-center justify-center shadow-md">
+                <ShieldCheck className="w-6 h-6 text-[#0A2540]" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-playfair">
                     VINS Administration Content Portal
                   </h1>
-                  <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full">
-                    Active Authority
+                  <span className="px-3 py-0.5 text-[10px] font-black uppercase bg-white text-[#0A2540] rounded-full">
+                    Authority
                   </span>
                 </div>
-                <p className="text-xs text-slate-300 mt-0.5">
+                <p className="text-xs text-white/90 mt-0.5 font-medium">
                   Direct management of Gallery, Documents/PDFs, Events, Department Labs, and Circulars.
                 </p>
               </div>
@@ -605,8 +594,8 @@ export const AdminPortalPage: React.FC = () => {
             <div className="flex items-center gap-2.5">
               {isAdminLoggedIn ? (
                 <>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-950/60 border border-emerald-600/40 text-emerald-300 text-xs font-bold">
-                    <Unlock className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-[#0A2540] text-xs font-bold shadow-md">
+                    <Unlock className="w-3.5 h-3.5 text-[#0A2540]" />
                     <span>Logged In (Super Admin)</span>
                   </div>
                   <button
@@ -616,7 +605,7 @@ export const AdminPortalPage: React.FC = () => {
                         showToast('Reset to default official college records.');
                       }
                     }}
-                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
+                    className="px-4 py-2 rounded-full bg-white/20 hover:bg-white text-white hover:text-[#0A2540] border border-white/40 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
                     title="Reset modified data to factory defaults"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
@@ -627,14 +616,14 @@ export const AdminPortalPage: React.FC = () => {
                       setIsAdminLoggedIn(false);
                       showToast('Logged out of Admin Portal.');
                     }}
-                    className="px-3.5 py-1.5 rounded-lg bg-red-950/70 hover:bg-red-900 border border-red-700 text-red-200 text-xs font-bold transition-colors cursor-pointer"
+                    className="px-4 py-2 rounded-full bg-white text-[#0A2540] hover:bg-white/90 text-xs font-bold transition-all cursor-pointer shadow-md"
                   >
                     Lock Console
                   </button>
                 </>
               ) : (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-300">Quick Access PIN: <strong className="text-white">vins2026</strong></span>
+                  <span className="text-xs text-white/90 font-medium">Quick Access PIN: <strong className="text-white bg-white/20 px-2 py-0.5 rounded-full">vins2026</strong></span>
                 </div>
               )}
             </div>
@@ -648,21 +637,21 @@ export const AdminPortalPage: React.FC = () => {
         
         {/* If Not Logged In, Show Friendly Unlock Screen with Default Option */}
         {!isAdminLoggedIn ? (
-          <div className="max-w-md mx-auto my-12 bg-white/85 backdrop-blur-md p-8 rounded-2xl border border-[#dedcd7] shadow-xl text-center space-y-6">
-            <div className="w-16 h-16 bg-[#ebe9e4] text-[#252528] rounded-2xl border border-[#dedcd7] mx-auto flex items-center justify-center">
-              <Lock className="w-8 h-8" />
+          <div className="max-w-md mx-auto my-12 bg-white p-8 rounded-3xl border-2 border-[#0A2540] shadow-2xl text-center space-y-6">
+            <div className="w-16 h-16 bg-[#0A2540] text-white rounded-3xl mx-auto flex items-center justify-center shadow-lg">
+              <Lock className="w-8 h-8 text-white" />
             </div>
 
             <div className="space-y-1">
-              <h2 className="text-xl font-bold text-[#252528]">Admin Console Authorization</h2>
-              <p className="text-xs text-[#54524e]">
+              <h2 className="text-2xl font-bold text-[#0A2540] font-playfair">Admin Console Authorization</h2>
+              <p className="text-xs text-[#0A2540]/80 font-medium">
                 Authorized staff and web administrators can manage all gallery photos, PDF documents, news circulars, and departmental lab images.
               </p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="text-left">
-                <label className="block text-xs font-bold text-[#54524e] mb-1">
+                <label className="block text-xs font-bold text-[#0A2540] mb-1.5">
                   Admin Passcode / PIN
                 </label>
                 <input
@@ -670,27 +659,27 @@ export const AdminPortalPage: React.FC = () => {
                   value={passcode}
                   onChange={(e) => setPasscode(e.target.value)}
                   placeholder="Enter passcode (e.g. vins2026)"
-                  className="w-full bg-[#f6f5f2] border border-[#dedcd7] rounded-xl px-4 py-2.5 text-sm text-[#252528] focus:outline-none focus:border-[#54524e]"
+                  className="w-full bg-white border-2 border-[#0A2540]/30 rounded-2xl px-4 py-3 text-sm font-bold text-[#0A2540] placeholder-[#0A2540]/50 focus:outline-none focus:border-[#0A2540]"
                 />
               </div>
 
               {authError && (
-                <p className="text-xs font-bold text-red-600 text-left flex items-center gap-1">
-                  <AlertCircle className="w-3.5 h-3.5" />
+                <p className="text-xs font-bold text-[#0A2540] text-left flex items-center gap-1">
+                  <AlertCircle className="w-3.5 h-3.5 text-[#0A2540]" />
                   {authError}
                 </p>
               )}
 
               <button
                 type="submit"
-                className="w-full py-3 bg-[#363538] hover:bg-[#48474b] text-white font-extrabold rounded-xl text-sm transition-all shadow-md active:scale-98 flex items-center justify-center gap-2 cursor-pointer border border-[#dedcd7]/20"
+                className="w-full py-3.5 bg-[#0A2540] hover:bg-[#0A2540]/90 text-white font-extrabold rounded-full text-sm uppercase tracking-wider transition-all shadow-lg active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Unlock className="w-4 h-4" />
+                <Unlock className="w-4 h-4 text-white" />
                 <span>Unlock Full Admin Editor</span>
               </button>
             </form>
 
-            <div className="pt-2 border-t border-slate-100 text-xs text-slate-500">
+            <div className="pt-2 border-t-2 border-[#0A2540]/15 text-xs text-[#0A2540]/70 font-medium">
               <span>Admin PIN default is preset for administrators. Click unlock to proceed.</span>
             </div>
           </div>
@@ -699,101 +688,101 @@ export const AdminPortalPage: React.FC = () => {
           <div className="space-y-8">
             
             {/* Quick Navigation Tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#dedcd7]">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b-2 border-[#0A2540]/20 scrollbar-none">
               <button
                 onClick={() => setActiveTab('buttons')}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'buttons'
-                    ? 'bg-[#363538] text-[#f7f6f4] shadow-md border border-[#dedcd7]/30'
-                    : 'bg-white/80 text-[#54524e] hover:bg-[#ebe9e4] border border-[#dedcd7]'
+                    ? 'bg-[#0A2540] text-white shadow-md border-2 border-[#0A2540]'
+                    : 'bg-white text-[#0A2540] hover:bg-[#0A2540]/10 border-2 border-[#0A2540]/20'
                 }`}
               >
-                <Sparkles className="w-4 h-4 text-[#d3d1cc]" />
-                <span>Nav &amp; Action Buttons ({customNavButtons.length})</span>
+                <Sparkles className="w-4 h-4 text-current" />
+                <span>Nav Buttons ({customNavButtons.length})</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('banner')}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'banner'
-                    ? 'bg-[#363538] text-[#f7f6f4] shadow-md border border-[#dedcd7]/30'
-                    : 'bg-white/80 text-[#54524e] hover:bg-[#ebe9e4] border border-[#dedcd7]'
+                    ? 'bg-[#0A2540] text-white shadow-md border-2 border-[#0A2540]'
+                    : 'bg-white text-[#0A2540] hover:bg-[#0A2540]/10 border-2 border-[#0A2540]/20'
                 }`}
               >
-                <Megaphone className="w-4 h-4 text-[#d3d1cc]" />
-                <span>Top Banner &amp; TNEA Code</span>
+                <Megaphone className="w-4 h-4 text-current" />
+                <span>Top Banner &amp; Code</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('gallery')}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'gallery'
-                    ? 'bg-[#363538] text-[#f7f6f4] shadow-md border border-[#dedcd7]/30'
-                    : 'bg-white/80 text-[#54524e] hover:bg-[#ebe9e4] border border-[#dedcd7]'
+                    ? 'bg-[#0A2540] text-white shadow-md border-2 border-[#0A2540]'
+                    : 'bg-white text-[#0A2540] hover:bg-[#0A2540]/10 border-2 border-[#0A2540]/20'
                 }`}
               >
-                <ImageIcon className="w-4 h-4" />
+                <ImageIcon className="w-4 h-4 text-current" />
                 <span>Gallery Images ({galleryImages.length})</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('documents')}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'documents'
-                    ? 'bg-[#363538] text-[#f7f6f4] shadow-md border border-[#dedcd7]/30'
-                    : 'bg-white/80 text-[#54524e] hover:bg-[#ebe9e4] border border-[#dedcd7]'
+                    ? 'bg-[#0A2540] text-white shadow-md border-2 border-[#0A2540]'
+                    : 'bg-white text-[#0A2540] hover:bg-[#0A2540]/10 border-2 border-[#0A2540]/20'
                 }`}
               >
-                <FileText className="w-4 h-4" />
+                <FileText className="w-4 h-4 text-current" />
                 <span>PDF Documents ({documents.length})</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('events')}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'events'
-                    ? 'bg-[#363538] text-[#f7f6f4] shadow-md border border-[#dedcd7]/30'
-                    : 'bg-white/80 text-[#54524e] hover:bg-[#ebe9e4] border border-[#dedcd7]'
+                    ? 'bg-[#0A2540] text-white shadow-md border-2 border-[#0A2540]'
+                    : 'bg-white text-[#0A2540] hover:bg-[#0A2540]/10 border-2 border-[#0A2540]/20'
                 }`}
               >
-                <Calendar className="w-4 h-4" />
-                <span>Events &amp; College Day ({events.length})</span>
+                <Calendar className="w-4 h-4 text-current" />
+                <span>Events ({events.length})</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('slides')}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'slides'
-                    ? 'bg-[#363538] text-[#f7f6f4] shadow-md border border-[#dedcd7]/30'
-                    : 'bg-white/80 text-[#54524e] hover:bg-[#ebe9e4] border border-[#dedcd7]'
+                    ? 'bg-[#0A2540] text-white shadow-md border-2 border-[#0A2540]'
+                    : 'bg-white text-[#0A2540] hover:bg-[#0A2540]/10 border-2 border-[#0A2540]/20'
                 }`}
               >
-                <Layout className="w-4 h-4" />
-                <span>Hero Carousel Slides ({heroSlides.length})</span>
+                <Layout className="w-4 h-4 text-current" />
+                <span>Carousel Slides ({heroSlides.length})</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('departments')}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'departments'
-                    ? 'bg-[#363538] text-[#f7f6f4] shadow-md border border-[#dedcd7]/30'
-                    : 'bg-white/80 text-[#54524e] hover:bg-[#ebe9e4] border border-[#dedcd7]'
+                    ? 'bg-[#0A2540] text-white shadow-md border-2 border-[#0A2540]'
+                    : 'bg-white text-[#0A2540] hover:bg-[#0A2540]/10 border-2 border-[#0A2540]/20'
                 }`}
               >
-                <Layers className="w-4 h-4" />
-                <span>Department &amp; Lab Photos ({departments.length})</span>
+                <Layers className="w-4 h-4 text-current" />
+                <span>Dept Photos ({departments.length})</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('notifications')}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'notifications'
-                    ? 'bg-[#363538] text-[#f7f6f4] shadow-md border border-[#dedcd7]/30'
-                    : 'bg-white/80 text-[#54524e] hover:bg-[#ebe9e4] border border-[#dedcd7]'
+                    ? 'bg-[#0A2540] text-white shadow-md border-2 border-[#0A2540]'
+                    : 'bg-white text-[#0A2540] hover:bg-[#0A2540]/10 border-2 border-[#0A2540]/20'
                 }`}
               >
-                <Megaphone className="w-4 h-4" />
-                <span>Flash News &amp; Circulars ({notifications.length})</span>
+                <Megaphone className="w-4 h-4 text-current" />
+                <span>Circulars ({notifications.length})</span>
               </button>
 
               <button

@@ -1,12 +1,11 @@
 import React from 'react';
 import { 
-  Briefcase, Award, CheckCircle2, Building2, TrendingUp, Users, Sparkles, Phone, Mail, User, BookOpen, Calendar, Image as ImageIcon
+  Briefcase, Award, CheckCircle2, Building2, TrendingUp, Users, Sparkles, Phone, Mail, User, BookOpen, Calendar, Image as ImageIcon, ArrowRight
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line 
 } from 'recharts';
 import { PLACEMENT_STATS, PLACEMENT_OFFICER_INFO } from '../data/collegeData';
-import { AssetBadge } from '../components/common/AssetBadge';
 
 export const PlacementPage: React.FC = () => {
   const topRecruitersList = [
@@ -46,328 +45,351 @@ export const PlacementPage: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
-      
-      {/* Header Banner */}
-      <div className="bg-[#363539]/90 backdrop-blur-xl text-white p-8 sm:p-12 rounded-3xl border border-[#dedcd7]/25 shadow-2xl space-y-3 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-amber-300 text-xs font-semibold border border-white/20">
-          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-          <span>Training & Placement Cell</span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white">Placement Activity & Career Guidance</h1>
-        <p className="text-xs sm:text-sm text-white/80 max-w-2xl leading-relaxed">
-          Guided by our strict "One Person One Job" policy, dedicated corporate placement panel, 6-8 week summer internships, and continuous MNC interview preparation.
-        </p>
-      </div>
-
-      {/* Grid: About Placement Cell & Placement Officer Contact */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <div className="bg-[#FFFFFF] text-[#0A2540] min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
         
-        {/* Left 8 Cols: About Department */}
-        <div className="lg:col-span-8 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
-          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
-              <Briefcase className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-slate-900">About the Placement Department</h2>
-              <p className="text-xs text-slate-500">Guiding Students Towards Successful Careers</p>
-            </div>
-          </div>
-
-          <div className="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
-            <p>
-              The Placement cell is one of the important departments in VINS. Knowing that you will be guided after your graduation so that you land a job helps you feel secure. This is the reason why we have a dedicated placement cell that helps, guides, and advises students about the future.
-            </p>
-            <p>
-              In VINS, students come from all walks of lives. They come from different parts of the District including rural areas. Some individuals may not be aware of how things work. Some others may not be confident enough to walk into an interview even though they are skilled. These problems are more common and our skilled placement panel is helping students to get placed in top companies.
-            </p>
-          </div>
-
-          {/* Functioning Model */}
-          <div className="pt-4 border-t border-slate-100 space-y-3">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <Award className="w-4 h-4 text-amber-600" />
-              Functioning Model & 'One Person One Job' Policy
-            </h3>
-            <p className="text-xs text-slate-700 leading-relaxed">
-              For placement a large number of prospective employers are contacted during the year and efforts are made to invite those companies to visit our college and to conduct campus recruitments. The objective of the T&P Cell is to look for a <strong>100% employment of all the students</strong>, therefore it follows the policy of <strong>'One Person One job'</strong>. A candidate selected for one job is further restricted to other recruitment.
-            </p>
-            <p className="text-xs text-slate-700 leading-relaxed">
-              The Cell is assisted by student placement coordinators who lead a team of placement representatives from various courses of study. The Training & Placement Cell ensures and takes care to provide the best arrangements and hospitality for the visiting companies' officials.
-            </p>
-          </div>
-        </div>
-
-        {/* Right 4 Cols: Placement Officer Contact Card */}
-        <div className="lg:col-span-4 bg-[#363539]/90 backdrop-blur-md text-white rounded-3xl p-6 border border-amber-400/40/30 shadow-xl space-y-5">
-          <div className="flex items-center gap-3 border-b border-[#dedcd7]/20 pb-3">
-            <User className="w-5 h-5 text-[#d3d1cc]" />
-            <div>
-              <h3 className="font-bold text-sm text-white">Placement Officer Contact</h3>
-              <p className="text-[11px] text-[#d3d1cc]">Head of T&P Cell</p>
-            </div>
-          </div>
-
-          <div className="space-y-3 text-xs">
-            <div className="bg-[#28272b]/80 p-4 rounded-2xl border border-amber-400/40/20 space-y-2">
-              <p className="font-black text-[#f7f6f4] text-base">{PLACEMENT_OFFICER_INFO.name}</p>
-              <p className="text-[#eceae6] font-semibold">{PLACEMENT_OFFICER_INFO.title}</p>
-              <p className="text-[#b5b3ad] text-[11px]">{PLACEMENT_OFFICER_INFO.designation}</p>
-              <p className="text-[#b5b3ad] text-[11px]">{PLACEMENT_OFFICER_INFO.department}</p>
-            </div>
-
-            <div className="space-y-2 pt-2">
-              <a 
-                href={`tel:${PLACEMENT_OFFICER_INFO.phone.split('/')[0].trim()}`}
-                className="flex items-center gap-2.5 p-3 rounded-xl bg-[#28272b]/80 hover:bg-[#434247] border border-amber-400/40/20 text-[#eceae6] font-bold transition-colors"
-              >
-                <Phone className="w-4 h-4 shrink-0 text-[#d3d1cc]" />
-                <span>{PLACEMENT_OFFICER_INFO.phone}</span>
-              </a>
-
-              <a 
-                href={`mailto:${PLACEMENT_OFFICER_INFO.email}`}
-                className="flex items-center gap-2.5 p-3 rounded-xl bg-[#28272b]/80 hover:bg-[#434247] border border-amber-400/40/20 text-[#eceae6] transition-colors"
-              >
-                <Mail className="w-4 h-4 shrink-0 text-[#d3d1cc]" />
-                <span>{PLACEMENT_OFFICER_INFO.email}</span>
-              </a>
-            </div>
-          </div>
-
-          <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[11px] text-amber-300">
-            For campus recruitment invitations & corporate partnerships, feel free to contact our T&P Cell.
-          </div>
-        </div>
-
-      </div>
-
-      {/* Facilities & Summer Training Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        
-        {/* Placement Facilities */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
-          <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
-            <Building2 className="w-5 h-5 text-amber-600" />
-            <h3 className="font-bold text-slate-900 text-base">Placement Facilities & Support</h3>
-          </div>
-
-          <ul className="space-y-2.5 text-xs text-slate-700">
-            {placementFacilitiesList.map((fac, idx) => (
-              <li key={idx} className="flex items-start gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>{fac}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Summer Training & PPT */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
-          <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
-            <BookOpen className="w-5 h-5 text-sky-600" />
-            <h3 className="font-bold text-slate-900 text-base">Summer Training & Pre-Placement Talk</h3>
-          </div>
-
-          <div className="space-y-3 text-xs text-slate-700 leading-relaxed">
-            <div className="bg-sky-50/60 p-4 rounded-xl border border-sky-100 space-y-1">
-              <strong className="text-slate-900 block font-bold">Summer Training (6-8 Weeks):</strong>
-              <p>
-                Each student undertakes summer training in reputable companies for 6-8 weeks as part of the course curriculum, completing a project report to apply theoretical concepts to real industrial situations.
-              </p>
-            </div>
-
-            <div className="bg-amber-50/60 p-4 rounded-xl border border-amber-100 space-y-1">
-              <strong className="text-slate-900 block font-bold">Pre-Placement Talk (PPT):</strong>
-              <p>
-                PPT provides an opportunity for recruiting companies and students to interact regarding history, growth potential, future opportunities, job roles, and compensation packages.
-              </p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Two Column Grid: Objectives & Cell Responsibilities */}
-      <div className="bg-[#363539]/90 backdrop-blur-md text-white rounded-3xl p-6 sm:p-8 border border-amber-400/40/30 shadow-xl space-y-6">
-        <h3 className="font-playfair text-xl sm:text-2xl font-bold text-white border-b border-[#dedcd7]/20 pb-4">
-          Training &amp; Placement Cell Mandate &amp; Student Development
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <h4 className="font-bold text-sm text-[#d3d1cc] uppercase tracking-wider font-cinzel">Core Objectives</h4>
-            <ul className="space-y-2 text-xs text-white/80">
-              {otherActivitiesList.map((item, idx) => (
-                <li key={idx} className="flex items-start gap-2 bg-[#28272b]/80 p-3 rounded-xl border border-amber-400/40/15">
-                  <span className="w-5 h-5 rounded-full bg-[#54524e] text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">{idx + 1}</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="space-y-3">
-            <h4 className="font-bold text-sm text-[#d3d1cc] uppercase tracking-wider font-cinzel">Key Responsibilities &amp; Operations</h4>
-            <ul className="space-y-2 text-xs text-white/80">
-              {responsibilitiesList.map((item, idx) => (
-                <li key={idx} className="flex items-start gap-2 bg-[#28272b]/80 p-3 rounded-xl border border-amber-400/40/15">
-                  <span className="text-[#d3d1cc] font-bold">✓</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Interactive Recharts Placement Record */}
-      <section className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-          <div>
-            <span className="text-xs font-bold text-amber-600 uppercase tracking-widest">PLACEMENT RECORD</span>
-            <h2 className="text-2xl font-bold text-slate-900">Year-wise Placement Statistics & Trends</h2>
-          </div>
-          <div className="flex items-center gap-4 text-xs font-semibold text-slate-600">
-            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-amber-500 rounded" /> Offers Count</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-sky-500 rounded" /> Highest CTC (LPA)</span>
-          </div>
-        </div>
-
-        {/* Recharts Bar & Line Visualization */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        {/* Header Banner - Strict Magenta Pink + White */}
+        <div className="bg-[#0A2540] text-white p-8 sm:p-12 rounded-3xl border border-white/20 shadow-2xl space-y-4 relative overflow-hidden">
+          {/* Subtle Sparkle Particle Effects */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
+          <div className="absolute bottom-2 left-10 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
           
-          <div className="lg:col-span-8 h-80 bg-[#f6f5f2]/80 p-4 rounded-2xl border border-amber-400/40">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={PLACEMENT_STATS}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#dedcd7" />
-                <XAxis dataKey="year" stroke="#54524e" fontSize={11} />
-                <YAxis stroke="#54524e" fontSize={11} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#252528', borderColor: '#54524e', borderRadius: '12px', color: '#fff', fontSize: '12px' }}
-                />
-                <Legend />
-                <Bar dataKey="offersCount" name="Total Offer Letters" fill="#54524e" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="placedPercentage" name="Placed Percentage (%)" fill="#8e8c87" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 text-white text-xs font-bold border border-white/30 tracking-wider">
+            <Sparkles className="w-4 h-4 text-white animate-sparkle" />
+            <span>TRAINING &amp; PLACEMENT CELL</span>
           </div>
 
-          <div className="lg:col-span-4 h-80 bg-[#363539]/90 backdrop-blur-md text-white p-4 rounded-2xl border border-amber-400/40/30 space-y-4 flex flex-col justify-between">
-            <div>
-              <h3 className="font-bold text-sm text-[#eceae6] flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-[#d3d1cc]" />
-                Salary Packages Trend
-              </h3>
-              <p className="text-[11px] text-white/70 mt-1">Highest CTC salary package offered over past academic years.</p>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white tracking-tight">
+            Placement Activity &amp; Career Guidance
+          </h1>
+
+          <p className="text-xs sm:text-sm text-white/95 max-w-3xl leading-relaxed font-medium">
+            Guided by our strict &ldquo;One Person One Job&rdquo; policy, dedicated corporate placement panel, 6-8 week summer internships, and continuous MNC interview preparation.
+          </p>
+
+          <div className="pt-2 flex flex-wrap items-center gap-4 text-xs">
+            <div className="bg-white text-[#0A2540] font-black px-4 py-2 rounded-full border border-white flex items-center gap-2 shadow-md">
+              <Award className="w-4 h-4 text-[#0A2540]" />
+              <span>90%+ Placement Track Record</span>
+            </div>
+            <div className="bg-white/20 text-white font-bold px-4 py-2 rounded-full border border-white/30 flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-white" />
+              <span>50+ Visiting MNCs &amp; Corporates</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Grid: About Placement Cell & Placement Officer Contact */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* Left 8 Cols: About Department */}
+          <div className="lg:col-span-8 bg-white rounded-3xl p-6 sm:p-8 border-2 border-[#0A2540]/20 shadow-md space-y-6">
+            <div className="flex items-center gap-3 border-b-2 border-[#0A2540]/15 pb-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#0A2540] text-white flex items-center justify-center font-bold shadow-md">
+                <Briefcase className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-[#0A2540] font-playfair">About the Placement Department</h2>
+                <p className="text-xs text-[#0A2540]/80 font-semibold">Guiding Students Towards Successful Engineering Careers</p>
+              </div>
             </div>
 
-            <div className="h-44">
+            <div className="space-y-4 text-xs sm:text-sm text-[#0A2540]/90 leading-relaxed font-medium">
+              <p>
+                The Placement cell is one of the pivotal departments in VINS. Knowing that you will be guided after your graduation so that you land a job helps you feel secure. This is the reason why we have a dedicated placement cell that helps, guides, and advises students about the future.
+              </p>
+              <p>
+                In VINS, students come from all walks of life. They come from different parts of the District including rural areas. Some individuals may not be aware of corporate interview procedures, while others need confidence coaching. Our dedicated placement trainers groom every student in communication, aptitude, coding, and soft skills.
+              </p>
+            </div>
+
+            {/* Functioning Model */}
+            <div className="pt-4 border-t-2 border-[#0A2540]/15 space-y-3">
+              <h3 className="font-bold text-[#0A2540] text-base flex items-center gap-2">
+                <Award className="w-5 h-5 text-[#0A2540]" />
+                Functioning Model &amp; &apos;One Person One Job&apos; Policy
+              </h3>
+              <p className="text-xs sm:text-sm text-[#0A2540]/90 leading-relaxed font-medium">
+                For placement, a large number of prospective employers are contacted throughout the academic year to conduct campus recruitments. The objective of the T&amp;P Cell is <strong>100% employment opportunity</strong> for all eligible students through our transparent <strong>&apos;One Person One Job&apos;</strong> policy.
+              </p>
+              <p className="text-xs sm:text-sm text-[#0A2540]/90 leading-relaxed font-medium">
+                The Cell is assisted by student coordinators from various study branches, ensuring top-tier arrangements and hospitality for visiting corporate delegates.
+              </p>
+            </div>
+          </div>
+
+          {/* Right 4 Cols: Placement Officer Contact Card */}
+          <div className="lg:col-span-4 bg-[#0A2540] text-white rounded-3xl p-6 sm:p-8 border border-white/30 shadow-xl space-y-5 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+            
+            <div className="flex items-center gap-3 border-b border-white/20 pb-3">
+              <div className="w-10 h-10 rounded-xl bg-white text-[#0A2540] flex items-center justify-center font-bold">
+                <User className="w-5 h-5 text-[#0A2540]" />
+              </div>
+              <div>
+                <h3 className="font-bold text-base text-white">Placement Officer</h3>
+                <p className="text-xs text-white/80">Head of T&amp;P Cell</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="bg-white text-[#0A2540] p-5 rounded-2xl border border-white space-y-1.5 shadow-md">
+                <p className="font-black text-[#0A2540] text-lg leading-tight">{PLACEMENT_OFFICER_INFO.name}</p>
+                <p className="text-[#0A2540] font-bold text-xs">{PLACEMENT_OFFICER_INFO.title}</p>
+                <p className="text-[#0A2540]/80 text-[11px] font-semibold">{PLACEMENT_OFFICER_INFO.designation}</p>
+                <p className="text-[#0A2540]/80 text-[11px] font-semibold">{PLACEMENT_OFFICER_INFO.department}</p>
+              </div>
+
+              <div className="space-y-2 pt-2">
+                <a 
+                  href={`tel:${PLACEMENT_OFFICER_INFO.phone.split('/')[0].trim()}`}
+                  className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/20 hover:bg-white text-white hover:text-[#0A2540] font-bold transition-all border border-white/30 shadow-xs"
+                >
+                  <Phone className="w-4 h-4 shrink-0" />
+                  <span>{PLACEMENT_OFFICER_INFO.phone}</span>
+                </a>
+
+                <a 
+                  href={`mailto:${PLACEMENT_OFFICER_INFO.email}`}
+                  className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/20 hover:bg-white text-white hover:text-[#0A2540] font-bold transition-all border border-white/30 shadow-xs"
+                >
+                  <Mail className="w-4 h-4 shrink-0" />
+                  <span>{PLACEMENT_OFFICER_INFO.email}</span>
+                </a>
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-white/15 border border-white/30 rounded-2xl text-xs text-white/95 leading-relaxed font-medium">
+              For campus recruitment drives and corporate tie-ups, reach our T&amp;P desk directly.
+            </div>
+          </div>
+
+        </div>
+
+        {/* Facilities & Summer Training Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          {/* Placement Facilities */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-[#0A2540]/20 shadow-md space-y-4">
+            <div className="flex items-center gap-3 border-b-2 border-[#0A2540]/15 pb-3">
+              <div className="w-10 h-10 rounded-xl bg-[#0A2540] text-white flex items-center justify-center font-bold">
+                <Building2 className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="font-bold text-[#0A2540] text-lg font-playfair">Placement Facilities &amp; Support</h3>
+            </div>
+
+            <ul className="space-y-2.5 text-xs sm:text-sm text-[#0A2540]/90 font-medium">
+              {placementFacilitiesList.map((fac, idx) => (
+                <li key={idx} className="flex items-start gap-3 bg-white p-3.5 rounded-2xl border border-[#0A2540]/20 shadow-xs">
+                  <CheckCircle2 className="w-4 h-4 text-[#0A2540] shrink-0 mt-0.5" />
+                  <span>{fac}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Summer Training & PPT */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-[#0A2540]/20 shadow-md space-y-4">
+            <div className="flex items-center gap-3 border-b-2 border-[#0A2540]/15 pb-3">
+              <div className="w-10 h-10 rounded-xl bg-[#0A2540] text-white flex items-center justify-center font-bold">
+                <BookOpen className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="font-bold text-[#0A2540] text-lg font-playfair">Summer Training &amp; Pre-Placement Talk</h3>
+            </div>
+
+            <div className="space-y-4 text-xs sm:text-sm text-[#0A2540]/90 leading-relaxed font-medium">
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border-2 border-[#0A2540]/20 space-y-1.5 shadow-xs">
+                <strong className="text-[#0A2540] block font-bold text-sm">Summer Training (6-8 Weeks):</strong>
+                <p>
+                  Each student undertakes structured summer training in reputable MNCs and industrial plants for 6-8 weeks as part of the curriculum, completing live project deliverables.
+                </p>
+              </div>
+
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border-2 border-[#0A2540]/20 space-y-1.5 shadow-xs">
+                <strong className="text-[#0A2540] block font-bold text-sm">Pre-Placement Talk (PPT):</strong>
+                <p>
+                  Interactive sessions giving recruiters and candidates an open platform to discuss company vision, CTC compensation packages, career trajectories, and project domains.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Objectives & Cell Responsibilities */}
+        <div className="bg-[#0A2540] text-white rounded-3xl p-6 sm:p-10 border border-white/25 shadow-xl space-y-6">
+          <div className="flex items-center justify-between border-b border-white/20 pb-4">
+            <h3 className="font-playfair text-xl sm:text-3xl font-bold text-white">
+              Training &amp; Placement Cell Mandate
+            </h3>
+            <span className="bg-white text-[#0A2540] font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider">
+              Student Career Growth
+            </span>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <h4 className="font-bold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-white" />
+                Core Objectives
+              </h4>
+              <ul className="space-y-2.5 text-xs sm:text-sm text-white/90 font-medium">
+                {otherActivitiesList.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-3 bg-white/15 p-3.5 rounded-2xl border border-white/25">
+                    <span className="w-5 h-5 rounded-full bg-white text-[#0A2540] text-[11px] font-black flex items-center justify-center shrink-0 mt-0.5">{idx + 1}</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="font-bold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-white" />
+                Key Responsibilities &amp; Operations
+              </h4>
+              <ul className="space-y-2.5 text-xs sm:text-sm text-white/90 font-medium">
+                {responsibilitiesList.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-3 bg-white/15 p-3.5 rounded-2xl border border-white/25">
+                    <span className="text-white font-black">✓</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Placement Record Visualization */}
+        <section className="bg-white rounded-3xl p-6 sm:p-10 border-2 border-[#0A2540]/20 shadow-md space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-[#0A2540]/15 pb-4">
+            <div>
+              <span className="text-xs font-bold text-[#0A2540] uppercase tracking-widest">ANNUAL PLACEMENT DATA</span>
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#0A2540] font-playfair">Placement Statistics &amp; Package Trends</h2>
+            </div>
+            <div className="flex items-center gap-4 text-xs font-bold text-[#0A2540]">
+              <span className="flex items-center gap-1.5"><span className="w-3.5 h-3.5 bg-[#0A2540] rounded" /> Offers Count</span>
+              <span className="flex items-center gap-1.5"><span className="w-3.5 h-3.5 bg-[#0A2540]/50 rounded" /> Highest CTC (LPA)</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            <div className="lg:col-span-8 h-80 bg-white p-4 rounded-2xl border-2 border-[#0A2540]/20 shadow-xs">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={PLACEMENT_STATS}>
-                  <XAxis dataKey="year" stroke="#dedcd7" fontSize={10} />
-                  <YAxis stroke="#dedcd7" fontSize={10} />
-                  <Tooltip contentStyle={{ backgroundColor: '#252528', color: '#fff', fontSize: '11px', borderRadius: '8px' }} />
-                  <Line type="monotone" dataKey="highestCTC" name="Highest CTC (LPA)" stroke="#d3d1cc" strokeWidth={3} dot={{ r: 5, fill: '#eceae6' }} />
-                </LineChart>
+                <BarChart data={PLACEMENT_STATS}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#0A2540" strokeOpacity={0.15} />
+                  <XAxis dataKey="year" stroke="#0A2540" fontSize={11} fontWeight={600} />
+                  <YAxis stroke="#0A2540" fontSize={11} fontWeight={600} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0A2540', borderColor: '#FFFFFF', borderRadius: '12px', color: '#FFFFFF', fontSize: '12px', fontWeight: 'bold' }}
+                  />
+                  <Legend />
+                  <Bar dataKey="offersCount" name="Total Offer Letters" fill="#0A2540" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="placedPercentage" name="Placed Percentage (%)" fill="#0A2540" fillOpacity={0.4} radius={[6, 6, 0, 0]} />
+                </BarChart>
               </ResponsiveContainer>
             </div>
 
-            <div className="p-3 bg-[#28272b]/80 rounded-xl border border-amber-400/40/15 text-[11px] text-[#eceae6]">
-              Highest salary package touched <strong className="text-white">12.0 LPA</strong> in campus drives.
-            </div>
-          </div>
+            <div className="lg:col-span-4 h-80 bg-[#0A2540] text-white p-6 rounded-2xl border border-white/30 space-y-4 flex flex-col justify-between shadow-xl">
+              <div>
+                <h3 className="font-bold text-base text-white flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-white" />
+                  Salary Packages Trend
+                </h3>
+                <p className="text-xs text-white/80 mt-1 font-medium">Highest CTC salary package offered over past academic years.</p>
+              </div>
 
-        </div>
-      </section>
+              <div className="h-40">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={PLACEMENT_STATS}>
+                    <XAxis dataKey="year" stroke="#FFFFFF" fontSize={10} />
+                    <YAxis stroke="#FFFFFF" fontSize={10} />
+                    <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', color: '#0A2540', fontSize: '11px', borderRadius: '8px', fontWeight: 'bold' }} />
+                    <Line type="monotone" dataKey="highestCTC" name="Highest CTC (LPA)" stroke="#FFFFFF" strokeWidth={3} dot={{ r: 5, fill: '#FFFFFF' }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
 
-      {/* Placement Activity Gallery */}
-      <section className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-6">
-        <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-          <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
-            <ImageIcon className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-slate-900">Placement Activity Gallery & Campus Drives</h2>
-            <p className="text-xs text-slate-500">Recruitment Sessions, Interviews & On-Campus Drives</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {[
-            'WhatsApp Image 2026-08-13 at 9.07.40 PM (1).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.40 PM (2).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.40 PM.jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.41 PM.jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.42 PM (1).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.42 PM (2).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.42 PM (3).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.42 PM.jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.43 PM (1).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.43 PM (2).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.43 PM.jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.44 PM (1).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.44 PM (2).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.44 PM.jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.45 PM (1).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.45 PM (2).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.45 PM.jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.46 PM (1).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.46 PM (2).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.46 PM.jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.47 PM (1).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.47 PM (2).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.47 PM.jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.48 PM (1).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.48 PM (2).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.48 PM.jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.49 PM (1).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.49 PM (2).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.49 PM.jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.50 PM (1).jpeg',
-            'WhatsApp Image 2026-08-13 at 9.07.50 PM.jpeg',
-          ].map((filename, idx) => (
-            <div key={idx} className="bg-slate-100 rounded-2xl overflow-hidden aspect-video relative group border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer">
-              <img
-                src={`/images/placement imgaes/${filename}`}
-                alt={`Placement Drive Photo ${idx + 1}`}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-3 flex flex-col justify-end">
-                <p className="text-xs font-bold text-amber-400">Campus Placement Drive</p>
-                <p className="text-[10px] text-slate-300">VINS Training & Placement Cell</p>
+              <div className="p-3 bg-white text-[#0A2540] rounded-xl font-bold text-xs text-center shadow-md">
+                Highest salary package touched <strong>12.0 LPA</strong> in campus drives.
               </div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* Top Recruiting Companies Grid */}
-      <section className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-6">
-        <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-          <div className="w-10 h-10 rounded-xl bg-sky-100 text-sky-800 flex items-center justify-center font-bold">
-            <Building2 className="w-5 h-5" />
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-slate-900">Major Visiting Recruiters</h2>
-            <p className="text-xs text-slate-500">Corporate Partners Hiring VINS Engineering Graduates</p>
-          </div>
-        </div>
+        </section>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-          {topRecruitersList.map((company, idx) => (
-            <div
-              key={idx}
-              className="p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-amber-400 text-center font-bold text-slate-800 text-xs shadow-sm hover:shadow transition-all flex items-center justify-center min-h-[60px]"
-            >
-              {company}
+        {/* Placement Activity Gallery */}
+        <section className="bg-white rounded-3xl p-6 sm:p-10 border-2 border-[#0A2540]/20 shadow-md space-y-6">
+          <div className="flex items-center gap-3 border-b-2 border-[#0A2540]/15 pb-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#0A2540] text-white flex items-center justify-center font-bold shadow-md">
+              <ImageIcon className="w-6 h-6 text-white" />
             </div>
-          ))}
-        </div>
-      </section>
+            <div>
+              <h2 className="text-2xl font-bold text-[#0A2540] font-playfair">Placement Activity Gallery &amp; Campus Drives</h2>
+              <p className="text-xs text-[#0A2540]/80 font-semibold">On-Campus Recruitment Sessions, Interviews &amp; Letter Distributions</p>
+            </div>
+          </div>
 
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {[
+              'WhatsApp Image 2026-08-13 at 9.07.40 PM (1).jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.40 PM (2).jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.40 PM.jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.41 PM.jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.42 PM (1).jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.42 PM (2).jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.42 PM (3).jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.42 PM.jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.43 PM (1).jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.43 PM (2).jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.43 PM.jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.44 PM (1).jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.44 PM (2).jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.44 PM.jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.45 PM (1).jpeg',
+              'WhatsApp Image 2026-08-13 at 9.07.45 PM (2).jpeg'
+            ].map((filename, idx) => (
+              <div key={idx} className="bg-white rounded-2xl overflow-hidden aspect-video relative group border-2 border-[#0A2540]/20 shadow-xs hover:shadow-xl hover:border-[#0A2540] transition-all duration-300 cursor-pointer">
+                <img
+                  src={`/images/placement imgaes/${filename}`}
+                  alt={`Placement Drive Photo ${idx + 1}`}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-[#0A2540]/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-3 flex flex-col justify-end text-white">
+                  <p className="text-xs font-black text-white">Campus Placement Drive</p>
+                  <p className="text-[10px] text-white/90 font-medium">VINS Training &amp; Placement Cell</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Top Recruiting Companies Grid */}
+        <section className="bg-white rounded-3xl p-6 sm:p-10 border-2 border-[#0A2540]/20 shadow-md space-y-6">
+          <div className="flex items-center gap-3 border-b-2 border-[#0A2540]/15 pb-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#0A2540] text-white flex items-center justify-center font-bold shadow-md">
+              <Building2 className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-[#0A2540] font-playfair">Major Visiting Recruiters</h2>
+              <p className="text-xs text-[#0A2540]/80 font-semibold">Corporate Partners Hiring VINS Engineering Graduates</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3.5">
+            {topRecruitersList.map((company, idx) => (
+              <div
+                key={idx}
+                className="p-4 rounded-2xl bg-white border-2 border-[#0A2540]/20 hover:border-[#0A2540] hover:bg-[#0A2540] hover:text-white text-center font-bold text-[#0A2540] text-xs shadow-xs hover:shadow-md transition-all flex items-center justify-center min-h-[64px] cursor-pointer"
+              >
+                {company}
+              </div>
+            ))}
+          </div>
+        </section>
+
+      </div>
     </div>
   );
 };

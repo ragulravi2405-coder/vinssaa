@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Upload, FolderOpen, Check, Image as ImageIcon, Trash2 } from 'lucide-react';
+import { X, Upload, FolderOpen, Check, Image as ImageIcon } from 'lucide-react';
 
 export interface ImageEditPayload {
   id: string;
@@ -89,25 +89,25 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white/95 backdrop-blur-md rounded-2xl max-w-xl w-full border border-[#dedcd7] shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 bg-[#0A2540]/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white rounded-3xl max-w-xl w-full border-2 border-[#0A2540]/20 shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95 duration-150">
         
         {/* Header */}
-        <div className="px-6 py-4 bg-[#363539] text-white flex items-center justify-between border-b border-[#dedcd7]/20">
+        <div className="px-6 py-4 bg-[#0A2540] text-white flex items-center justify-between border-b border-white/15">
           <div className="flex items-center gap-2.5">
-            <ImageIcon className="w-5 h-5 text-[#eceae6]" />
+            <ImageIcon className="w-5 h-5 text-[#FF6B00]" />
             <div>
-              <h3 className="font-bold text-sm sm:text-base">
+              <h3 className="font-bold text-sm sm:text-base text-white">
                 Edit Image Details &amp; Description
               </h3>
-              <p className="text-[11px] text-[#d3d1cc]">
+              <p className="text-[11px] text-white/80">
                 Update name, description text, category, or replace photo.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-[#d3d1cc] hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-white hover:bg-white/20 rounded-full transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -117,13 +117,13 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
         <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
           
           {/* Image Preview & Replacement Section */}
-          <div className="space-y-2 bg-[#f6f5f2] p-3.5 rounded-xl border border-[#dedcd7]">
-            <label className="block text-xs font-bold text-[#252528]">
+          <div className="space-y-2 bg-white p-3.5 rounded-2xl border-2 border-[#0A2540]/15">
+            <label className="block text-xs font-bold text-[#0A2540]">
               Image Photo &amp; Replacement
             </label>
 
             <div className="flex flex-col sm:flex-row items-center gap-4">
-              <div className="w-32 h-24 rounded-lg overflow-hidden bg-[#ebe9e4] border border-[#dedcd7] shrink-0">
+              <div className="w-32 h-24 rounded-xl overflow-hidden bg-gray-100 border-2 border-[#0A2540]/20 shrink-0">
                 <img
                   src={formData.imagePath || '/images/logo/vins-logo.jpg'}
                   alt="Preview"
@@ -133,8 +133,8 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
 
               <div className="flex-1 w-full space-y-2">
                 <div className="grid grid-cols-2 gap-2">
-                  <label className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white hover:bg-[#ebe9e4] border border-[#dedcd7] rounded-xl text-xs font-bold text-[#252528] cursor-pointer shadow-xs transition-colors">
-                    <Upload className="w-3.5 h-3.5 text-[#54524e]" />
+                  <label className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white hover:bg-[#0A2540] hover:text-white border-2 border-[#0A2540]/20 rounded-xl text-xs font-bold text-[#0A2540] cursor-pointer shadow-xs transition-colors">
+                    <Upload className="w-3.5 h-3.5" />
                     <span>Upload New</span>
                     <input
                       type="file"
@@ -148,9 +148,9 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
                     <button
                       type="button"
                       onClick={() => onPickExisting((path) => setFormData((prev) => ({ ...prev, imagePath: path })))}
-                      className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white hover:bg-[#ebe9e4] border border-[#dedcd7] rounded-xl text-xs font-bold text-[#252528] cursor-pointer shadow-xs transition-colors"
+                      className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white hover:bg-[#0A2540] hover:text-white border-2 border-[#0A2540]/20 rounded-xl text-xs font-bold text-[#0A2540] cursor-pointer shadow-xs transition-colors"
                     >
-                      <FolderOpen className="w-3.5 h-3.5 text-[#54524e]" />
+                      <FolderOpen className="w-3.5 h-3.5" />
                       <span>Pick Asset</span>
                     </button>
                   )}
@@ -161,7 +161,7 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
                   value={formData.imagePath}
                   onChange={(e) => setFormData({ ...formData, imagePath: e.target.value })}
                   placeholder="Or enter image URL / path..."
-                  className="w-full bg-white border border-[#dedcd7] rounded-lg px-2.5 py-1.5 text-xs text-[#252528] focus:outline-none focus:border-[#54524e]"
+                  className="w-full bg-white border-2 border-[#0A2540]/20 rounded-xl px-3 py-2 text-xs text-[#0A2540] focus:outline-none focus:border-[#FF6B00]"
                 />
               </div>
             </div>
@@ -169,8 +169,8 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
 
           {/* Name / Title */}
           <div>
-            <label className="block text-xs font-bold text-[#54524e] mb-1">
-              Image Name / Title <span className="text-red-500">*</span>
+            <label className="block text-xs font-bold text-[#0A2540] mb-1">
+              Image Name / Title <span className="text-[#FF6B00]">*</span>
             </label>
             <input
               type="text"
@@ -178,20 +178,20 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="e.g. Annual Day Dance Fest or Robotics Lab Demo"
-              className="w-full bg-[#f6f5f2] border border-[#dedcd7] rounded-xl px-3.5 py-2.5 text-xs text-[#252528] focus:outline-none focus:border-[#54524e]"
+              className="w-full bg-white border-2 border-[#0A2540]/20 rounded-2xl px-3.5 py-2.5 text-xs text-[#0A2540] placeholder-slate-400 font-bold focus:outline-none focus:border-[#FF6B00]"
             />
           </div>
 
-          {/* Category & Date (if applicable) */}
+          {/* Category & Date */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-[#54524e] mb-1">
+              <label className="block text-xs font-bold text-[#0A2540] mb-1">
                 Category
               </label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full bg-[#f6f5f2] border border-[#dedcd7] rounded-xl px-3 py-2 text-xs font-semibold text-[#252528] focus:outline-none focus:border-[#54524e]"
+                className="w-full bg-white border-2 border-[#0A2540]/20 rounded-2xl px-3.5 py-2 text-xs font-bold text-[#0A2540] focus:outline-none focus:border-[#FF6B00]"
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>
@@ -203,7 +203,7 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
 
             {type === 'event' ? (
               <div>
-                <label className="block text-xs font-bold text-[#54524e] mb-1">
+                <label className="block text-xs font-bold text-[#0A2540] mb-1">
                   Event Date
                 </label>
                 <input
@@ -211,12 +211,12 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
                   value={formData.date || ''}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                   placeholder="e.g. April 12, 2026"
-                  className="w-full bg-[#f6f5f2] border border-[#dedcd7] rounded-xl px-3 py-2 text-xs text-[#252528] focus:outline-none focus:border-[#54524e]"
+                  className="w-full bg-white border-2 border-[#0A2540]/20 rounded-2xl px-3.5 py-2 text-xs font-bold text-[#0A2540] focus:outline-none focus:border-[#FF6B00]"
                 />
               </div>
             ) : type === 'slide' ? (
               <div>
-                <label className="block text-xs font-bold text-[#54524e] mb-1">
+                <label className="block text-xs font-bold text-[#0A2540] mb-1">
                   Slide Subtitle
                 </label>
                 <input
@@ -224,12 +224,12 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
                   value={formData.subtitle || ''}
                   onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                   placeholder="e.g. Green Hill Campus"
-                  className="w-full bg-[#f6f5f2] border border-[#dedcd7] rounded-xl px-3 py-2 text-xs text-[#252528] focus:outline-none focus:border-[#54524e]"
+                  className="w-full bg-white border-2 border-[#0A2540]/20 rounded-2xl px-3.5 py-2 text-xs font-bold text-[#0A2540] focus:outline-none focus:border-[#FF6B00]"
                 />
               </div>
             ) : (
               <div>
-                <label className="block text-xs font-bold text-[#54524e] mb-1">
+                <label className="block text-xs font-bold text-[#0A2540] mb-1">
                   Subtitle / Tag (Optional)
                 </label>
                 <input
@@ -237,7 +237,7 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
                   value={formData.subtitle || ''}
                   onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                   placeholder="e.g. Annual Fest 2026"
-                  className="w-full bg-[#f6f5f2] border border-[#dedcd7] rounded-xl px-3 py-2 text-xs text-[#252528] focus:outline-none focus:border-[#54524e]"
+                  className="w-full bg-white border-2 border-[#0A2540]/20 rounded-2xl px-3.5 py-2 text-xs font-bold text-[#0A2540] focus:outline-none focus:border-[#FF6B00]"
                 />
               </div>
             )}
@@ -245,7 +245,7 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
 
           {type === 'event' && (
             <div>
-              <label className="block text-xs font-bold text-[#54524e] mb-1">
+              <label className="block text-xs font-bold text-[#0A2540] mb-1">
                 Chief Guest / Dignitary (Optional)
               </label>
               <input
@@ -253,14 +253,14 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
                 value={formData.chiefGuest || ''}
                 onChange={(e) => setFormData({ ...formData, chiefGuest: e.target.value })}
                 placeholder="e.g. Dr. R. Velraj, Anna University"
-                className="w-full bg-[#f6f5f2] border border-[#dedcd7] rounded-xl px-3.5 py-2 text-xs text-[#252528] focus:outline-none focus:border-[#54524e]"
+                className="w-full bg-white border-2 border-[#0A2540]/20 rounded-2xl px-3.5 py-2 text-xs font-bold text-[#0A2540] focus:outline-none focus:border-[#FF6B00]"
               />
             </div>
           )}
 
           {/* Description / Caption */}
           <div>
-            <label className="block text-xs font-bold text-[#54524e] mb-1">
+            <label className="block text-xs font-bold text-[#0A2540] mb-1">
               Description / Caption
             </label>
             <textarea
@@ -268,24 +268,24 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
               value={formData.description || ''}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Enter detailed description, student achievements, or caption for this photo..."
-              className="w-full bg-[#f6f5f2] border border-[#dedcd7] rounded-xl p-3 text-xs text-[#252528] focus:outline-none focus:border-[#54524e]"
+              className="w-full bg-white border-2 border-[#0A2540]/20 rounded-2xl p-3.5 text-xs text-[#0A2540] placeholder-slate-400 font-medium focus:outline-none focus:border-[#FF6B00]"
             />
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#dedcd7]">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t-2 border-[#0A2540]/15">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-[#dedcd7] text-xs font-bold text-[#54524e] hover:bg-[#ebe9e4] transition-colors cursor-pointer"
+              className="px-5 py-2.5 rounded-full border-2 border-[#0A2540]/30 text-xs font-bold text-[#0A2540] hover:bg-[#0A2540]/10 transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 bg-[#363538] hover:bg-[#48474b] text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer border border-[#dedcd7]/20"
+              className="px-6 py-2.5 bg-[#FF6B00] hover:bg-[#E05E00] text-white text-xs font-bold rounded-full transition-all shadow-md flex items-center gap-1.5 cursor-pointer border border-white/20"
             >
-              <Check className="w-4 h-4 text-[#eceae6]" />
+              <Check className="w-4 h-4 text-white" />
               <span>Save Changes</span>
             </button>
           </div>

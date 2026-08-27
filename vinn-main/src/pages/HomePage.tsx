@@ -683,19 +683,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
 
         </section>
 
-        {/* DEDICATED FEATURED YOUTUBE VIDEOS SECTION - WITH SOLID DARK PINK / MAGENTA (#C81E51) CANVAS */}
+        {/* DEDICATED FEATURED YOUTUBE VIDEOS SECTION - WITH SOLID DEEP NAVY BLUE (#0A2540) CANVAS */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-[#C81E51] rounded-3xl p-6 sm:p-10 shadow-2xl border border-white/20 space-y-8">
+          <div className="bg-[#0A2540] rounded-3xl p-6 sm:p-10 shadow-2xl border-2 border-white/20 space-y-8">
             
             <div className="text-center max-w-3xl mx-auto space-y-3">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 text-white text-xs font-bold tracking-widest uppercase border border-white/30">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FF6B00] text-white text-xs font-bold tracking-widest uppercase border border-white/30 shadow-md">
                 <Video className="w-3.5 h-3.5 text-white" />
                 <span>OFFICIAL VIDEO BROADCASTS</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white leading-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-poppins text-white leading-tight">
                 Experience VINS in Motion
               </h2>
-              <p className="text-xs sm:text-sm text-white/90 leading-relaxed max-w-2xl mx-auto font-medium">
+              <p className="text-xs sm:text-sm text-white/80 leading-relaxed max-w-2xl mx-auto font-normal">
                 Watch our official institutional documentaries, state-of-the-art laboratory infrastructure, student innovations, and campus celebrations directly below.
               </p>
             </div>
@@ -871,25 +871,32 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
 
         </section>
 
-        {/* SECTION G: ADMISSIONS CTA BANNER */}
+        {/* SECTION G: ADMISSIONS CTA BANNER - Deep Navy Blue (#0A2540) + Vibrant Amber Orange (#FF6B00) */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-[#363539]/90 backdrop-blur-md text-white rounded-2xl sm:rounded-3xl p-6 sm:p-14 shadow-2xl border border-amber-400/40/30 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center relative overflow-hidden">
+          <div className="bg-[#0A2540] text-white rounded-3xl p-6 sm:p-12 lg:p-14 shadow-2xl border-2 border-white/20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center relative overflow-hidden">
             
+            {/* Subtle Royal Indigo / Orange lighting accents */}
+            <div className="absolute top-0 right-0 w-80 h-80 bg-[#1E40AF]/30 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-[#FF6B00]/20 rounded-full blur-2xl pointer-events-none" />
+
             <div className="lg:col-span-7 space-y-4 relative z-10">
-              <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#d3d1cc] font-cinzel block">
-                ADMISSIONS OPEN 2026-2027
-              </span>
-              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white leading-tight">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FF6B00] text-white text-xs font-bold tracking-wider uppercase shadow-md">
+                <Sparkles className="w-3.5 h-3.5 text-white" />
+                <span>ADMISSIONS OPEN 2026-2027</span>
+              </div>
+
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold font-poppins text-white leading-tight">
                 Begin Your Engineering Journey at VINS
               </h2>
-              <p className="text-xs sm:text-sm text-white/80 leading-relaxed max-w-xl">
+
+              <p className="text-xs sm:text-sm lg:text-base text-white/90 leading-relaxed max-w-xl font-normal">
                 Join a distinguished community where curious minds are empowered with cutting-edge skills, global recruitment access, and leadership values.
               </p>
 
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
                 <button
                   onClick={() => onTabChange('admissions', 'online-form')}
-                  className="btn-valer-green text-xs uppercase tracking-widest px-6 sm:px-8 py-3.5 cursor-pointer active:scale-95 shadow-xl font-bold w-full sm:w-auto justify-center"
+                  className="bg-[#FF6B00] hover:bg-[#E05E00] text-white hover:scale-105 active:scale-95 text-xs font-bold uppercase tracking-widest px-6 sm:px-8 py-3.5 rounded-full cursor-pointer shadow-xl transition-all flex items-center justify-center gap-2 w-full sm:w-auto border border-white/20"
                 >
                   <span>APPLY ONLINE NOW</span>
                   <ArrowRight className="w-4 h-4 text-white" />
@@ -897,7 +904,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
 
                 <button
                   onClick={() => onTabChange('admissions', 'scholarships')}
-                  className="btn-hero-outline text-xs uppercase tracking-widest px-5 sm:px-6 py-3.5 cursor-pointer font-bold w-full sm:w-auto justify-center"
+                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#0A2540] hover:scale-105 active:scale-95 text-xs font-bold uppercase tracking-widest px-5 sm:px-6 py-3.5 rounded-full cursor-pointer shadow-lg transition-all flex items-center justify-center gap-2 w-full sm:w-auto"
                 >
                   <span>SCHOLARSHIPS &amp; AID</span>
                 </button>
@@ -905,12 +912,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
             </div>
 
             <div className="lg:col-span-5 relative z-10">
-              <div className="royal-image-frame w-full">
-                <div className="royal-image-inner w-full aspect-[4/3]">
+              <div className="rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-white/30 shadow-2xl p-1.5 bg-white/10 backdrop-blur-xs">
+                <div className="w-full aspect-[4/3] rounded-xl sm:rounded-2xl overflow-hidden bg-[#061727]">
                   <img 
                     src="/images/college events and news galeery/5 (1).jpg" 
                     alt="VINS College Students" 
-                    className="w-full h-full object-cover img-hover-zoom"
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                   />
                 </div>
               </div>

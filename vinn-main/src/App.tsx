@@ -106,7 +106,7 @@ export default function App() {
 
   return (
     <AdminDataProvider>
-      <div className="min-h-screen bg-[#f6f5f2] text-[#222224] font-sans selection:bg-[#363538] selection:text-white flex flex-col justify-between">
+      <div className="min-h-screen bg-[#FFFFFF] text-[#0A2540] font-sans selection:bg-[#FF6B00] selection:text-white flex flex-col justify-between">
         <div>
           {/* Global Sticky Layout Header (TopBar + Navbar) */}
           <div className="sticky top-0 z-50 shadow-md">
