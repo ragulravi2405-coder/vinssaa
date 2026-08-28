@@ -1,9 +1,29 @@
 import { Request, Response } from 'express';
-import ContactInquiry from '../models/ContactInquiry.js';
+import { executeQuery } from '../config/database.js';
+import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
+
+interface ContactInquiryRow extends RowDataPacket {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  source: string;
+  status: string;
+  created_at: string;
+}
 
 export async function submitContactInquiry(req: Request, res: Response) {
   try {
-    const { name, email, phone, subject = 'General Inquiry', message = 'Admissions / Course Inquiry', source = 'quick_inquiry' } = req.body;
+    const {
+      name,
+      email = '',
+      phone = '',
+      subject = 'General Inquiry',
+      message = 'Admissions / Course Inquiry',
+      source = 'quick_inquiry',
+    } = req.body;
 
     if (!name || (!email && !phone)) {
       return res.status(400).json({
@@ -12,32 +32,38 @@ export async function submitContactInquiry(req: Request, res: Response) {
       });
     }
 
-    const doc = await ContactInquiry.create({
-      name: name.trim(),
-      email: (email || '').trim(),
-      phone: (phone || '').trim(),
-      subject: (subject || 'General Inquiry').trim(),
-      message: (message || 'Admissions / Course Inquiry').trim(),
-      source,
-      status: 'new',
-    });
+    const result = await executeQuery<ResultSetHeader>(
+      `INSERT INTO contact_inquiries (name, email, phone, subject, message, source, status)
+       VALUES (?, ?, ?, ?, ?, ?, 'new')`,
+      [name.trim(), email.trim(), phone.trim(), subject.trim(), message.trim(), source]
+    );
 
     return res.status(201).json({
       success: true,
-      message: 'Thank you! Your inquiry has been submitted and stored successfully.',
-      inquiryId: doc._id,
+      message: 'Thank you! Your inquiry has been submitted and stored in MySQL successfully.',
+      inquiryId: result.insertId,
     });
   } catch (error: any) {
-    return res.status(500).json({ success: false, message: 'Failed to save inquiry to database', error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to save inquiry to MySQL database',
+      error: error.message,
+    });
   }
 }
 
 export async function getAllInquiries(_req: Request, res: Response) {
   try {
-    const rows = await ContactInquiry.find().sort({ createdAt: -1 });
+    const rows = await executeQuery<ContactInquiryRow[]>(
+      'SELECT * FROM contact_inquiries ORDER BY created_at DESC'
+    );
     return res.json({ success: true, count: rows.length, data: rows });
   } catch (error: any) {
-    return res.status(500).json({ success: false, message: 'Failed to fetch inquiries', error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch inquiries from MySQL',
+      error: error.message,
+    });
   }
 }
 
@@ -50,20 +76,33 @@ export async function updateInquiryStatus(req: Request, res: Response) {
       return res.status(400).json({ success: false, message: 'Invalid status value' });
     }
 
-    const doc = await ContactInquiry.findByIdAndUpdate(id, { status }, { new: true });
-    if (!doc) return res.status(404).json({ success: false, message: 'Inquiry not found' });
+    await executeQuery<ResultSetHeader>(
+      'UPDATE contact_inquiries SET status = ? WHERE id = ?',
+      [status, id]
+    );
 
     return res.json({ success: true, message: `Inquiry status updated to ${status}` });
   } catch (error: any) {
-    return res.status(500).json({ success: false, message: 'Failed to update inquiry status', error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update inquiry status',
+      error: error.message,
+    });
   }
 }
 
 export async function deleteInquiry(req: Request, res: Response) {
   try {
-    await ContactInquiry.findByIdAndDelete(req.params.id);
-    return res.json({ success: true, message: 'Inquiry deleted successfully' });
+    await executeQuery<ResultSetHeader>(
+      'DELETE FROM contact_inquiries WHERE id = ?',
+      [req.params.id]
+    );
+    return res.json({ success: true, message: 'Inquiry deleted successfully from MySQL' });
   } catch (error: any) {
-    return res.status(500).json({ success: false, message: 'Failed to delete inquiry', error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to delete inquiry',
+      error: error.message,
+    });
   }
 }

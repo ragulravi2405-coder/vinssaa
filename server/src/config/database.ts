@@ -1,37 +1,46 @@
-import mongoose from 'mongoose';
+import mysql, { Pool, RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-export async function connectDatabase(): Promise<void> {
-  const mongoUri = process.env.MONGODB_URI;
+// Create connection pool with production-grade defaults
+export const pool: Pool = mysql.createPool({
+  host: process.env.DB_HOST || 'localhost',
+  port: Number(process.env.DB_PORT) || 3306,
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'vins_college',
+  waitForConnections: true,
+  connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 10,
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
+  charset: 'utf8mb4',
+});
 
-  if (!mongoUri) {
-    console.warn('⚠️  MONGODB_URI is not set. Backend running in standalone mode.');
-    return;
-  }
-
-  try {
-    await mongoose.connect(mongoUri, {
-      dbName: process.env.DB_NAME || 'vins_college',
-      serverSelectionTimeoutMS: 8000,
-    });
-    console.log(`🟢 MongoDB Connected Successfully (Database: ${mongoose.connection.name})`);
-  } catch (error: any) {
-    console.error(`🔴 MongoDB Connection Error: ${error.message}`);
-  }
-
-  mongoose.connection.on('error', (err: any) => {
-    console.error(`🔴 MongoDB Connection Error: ${err.message}`);
-  });
-
-  mongoose.connection.on('disconnected', () => {
-    console.warn('⚠️  MongoDB Disconnected. Attempting reconnection...');
-  });
-
-  mongoose.connection.on('reconnected', () => {
-    console.log('🟢 MongoDB Reconnected Successfully');
-  });
+/**
+ * Execute a parameterized SQL query safely using connection pooling
+ */
+export async function executeQuery<T = any>(sql: string, params: any[] = []): Promise<T> {
+  const [results] = await pool.execute(sql, params);
+  return results as T;
 }
 
-export default mongoose;
+/**
+ * Verify MySQL database connectivity with a safe SELECT 1 probe
+ */
+export async function testDbConnection(): Promise<boolean> {
+  try {
+    const connection = await pool.getConnection();
+    await connection.query('SELECT 1');
+    connection.release();
+    console.log(`🟢 MySQL Connected Successfully (Database: ${process.env.DB_NAME || 'vins_college'})`);
+    return true;
+  } catch (error: any) {
+    console.error(`🔴 MySQL Connection Error: ${error.message}`);
+    console.warn(`⚠️ Please ensure MySQL is running on ${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 3306} and database "${process.env.DB_NAME || 'vins_college'}" exists.`);
+    return false;
+  }
+}
+
+export default pool;

@@ -1,11 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';
-import { connectDatabase } from './config/database.js';
-
-// Models for test route
-import ContactInquiry from './models/ContactInquiry.js';
+import { testDbConnection, pool } from './config/database.js';
 
 // Routes
 import authRoutes from './routes/authRoutes.js';
@@ -38,10 +34,9 @@ const defaultAllowed = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, server-to-server)
+      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
       if (!origin) return callback(null, true);
 
-      // Check explicit allowed lists or onrender/vercel subdomains
       const isAllowed =
         defaultAllowed.includes(origin) ||
         envOrigins.includes(origin) ||
@@ -52,7 +47,7 @@ app.use(
       if (isAllowed) {
         callback(null, true);
       } else {
-        callback(null, true); // Permissive in fallback to avoid blocking valid Render deploys
+        callback(null, true); // Permissive fallback for seamless deployment
       }
     },
     credentials: true,
@@ -70,66 +65,27 @@ app.get('/', (_req, res) => {
   });
 });
 
-// ── Health Check Endpoints ─────────────────────────────────────
-app.get(['/api/health', '/health'], (_req, res) => {
-  const dbState = mongoose.connection.readyState;
-  const isConnected = dbState === 1;
-  const dbStatusMap: Record<number, string> = {
-    0: 'disconnected',
-    1: 'connected',
-    2: 'connecting',
-    3: 'disconnecting',
-  };
+// ── Health Check Endpoint (Validates MySQL with SELECT 1) ───────
+app.get(['/api/health', '/health'], async (_req, res) => {
+  let isConnected = false;
+  try {
+    const connection = await pool.getConnection();
+    await connection.query('SELECT 1');
+    connection.release();
+    isConnected = true;
+  } catch {
+    isConnected = false;
+  }
 
   res.status(200).json({
     success: true,
     message: 'Backend is running',
     database: {
-      type: 'MongoDB',
+      type: 'MySQL',
       connected: isConnected,
-      status: dbStatusMap[dbState] || 'disconnected',
-      dbName: isConnected ? mongoose.connection.name : undefined,
+      name: process.env.DB_NAME || 'vins_college',
     },
   });
-});
-
-// ── Database Verification / Test Endpoint ───────────────────────
-app.all('/api/test-db', async (_req, res) => {
-  try {
-    const isConnected = mongoose.connection.readyState === 1;
-    if (!isConnected) {
-      return res.status(503).json({
-        success: false,
-        message: 'MongoDB is not currently connected. Check MONGODB_URI.',
-      });
-    }
-
-    // Insert a sample test inquiry to verify collection creation in Atlas
-    const testDoc = await ContactInquiry.create({
-      name: 'Render Connectivity Test',
-      email: 'test@vinsengineeringcollege.org',
-      phone: '+91 9999999999',
-      subject: 'MongoDB Atlas Connection Verification',
-      message: `Automatic database connectivity test executed at ${new Date().toISOString()}`,
-      source: 'quick_inquiry',
-      status: 'new',
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: 'MongoDB Atlas write test succeeded!',
-      database: mongoose.connection.name,
-      collection: 'contactinquiries',
-      insertedId: testDoc._id,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error: any) {
-    return res.status(500).json({
-      success: false,
-      message: 'MongoDB Atlas write test failed',
-      error: error.message,
-    });
-  }
 });
 
 // ── API Routes ─────────────────────────────────────────────────
@@ -149,12 +105,11 @@ app.use((_req, res) => {
 
 // ── Start Server ───────────────────────────────────────────────
 async function startServer() {
-  await connectDatabase();
+  await testDbConnection();
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`\n🚀 Server running on port ${PORT}`);
     console.log(`🌐 Root Endpoint  → http://localhost:${PORT}/`);
-    console.log(`📋 Health check    → http://localhost:${PORT}/api/health`);
-    console.log(`🧪 Test DB         → http://localhost:${PORT}/api/test-db\n`);
+    console.log(`📋 Health check    → http://localhost:${PORT}/api/health\n`);
   });
 }
 

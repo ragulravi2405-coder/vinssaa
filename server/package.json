@@ -1,7 +1,7 @@
 {
   "name": "vins-college-backend",
   "version": "1.0.0",
-  "description": "Node.js Express + TypeScript + MongoDB Backend for VINS Christian College of Engineering",
+  "description": "Node.js Express + TypeScript + MySQL Backend for VINS Christian College of Engineering",
   "main": "dist/server.js",
   "type": "module",
   "scripts": {
@@ -15,7 +15,7 @@
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.16.3"
+    "mysql2": "^3.12.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

@@ -1,13 +1,13 @@
 -- ============================================================
 -- VINS Christian College of Engineering Database Schema
--- Database: MySQL 5.7+ / 8.0+
+-- Database: MySQL 5.7+ / 8.0+ / MariaDB
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS college_website
+CREATE DATABASE IF NOT EXISTS vins_college
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE college_website;
+USE vins_college;
 
 -- ------------------------------------------------------------
 -- 1. Admin Users Table (for Admin Portal Authentication)
@@ -58,8 +58,8 @@ CREATE TABLE IF NOT EXISTS notifications (
 CREATE TABLE IF NOT EXISTS contact_inquiries (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(150) NOT NULL,
-  email VARCHAR(191) NOT NULL,
-  phone VARCHAR(50) NOT NULL,
+  email VARCHAR(191) NOT NULL DEFAULT '',
+  phone VARCHAR(50) NOT NULL DEFAULT '',
   subject VARCHAR(200) DEFAULT 'General Inquiry',
   message TEXT NOT NULL,
   source ENUM('footer', 'contact_page', 'quick_inquiry') DEFAULT 'quick_inquiry',
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS gallery_images (
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------
--- 6. College Events & College Day Showcase Table
+-- 6. College Events & Showcase Table
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS college_events (
   id VARCHAR(64) PRIMARY KEY,
@@ -155,7 +155,6 @@ CREATE TABLE IF NOT EXISTS site_settings (
 -- ============================================================
 
 -- Default Admin User (Password: admin123 -> bcrypt hashed)
--- Hash generated for 'admin123': $2a$10$w822vIomWwM.o2.l.vI9kOqv2gqL734j2q023q6L6h8Z4B53pQY/W
 INSERT INTO admin_users (username, email, password_hash, role)
 VALUES (
   'admin',
