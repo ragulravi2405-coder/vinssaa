@@ -15,6 +15,8 @@ interface ContactInquiryRow extends RowDataPacket {
 }
 
 export async function submitContactInquiry(req: Request, res: Response) {
+  console.log('[Backend] Request received: POST /api/contact');
+  console.log('[Backend] Contact form body:', JSON.stringify(req.body));
   try {
     const {
       name,
@@ -38,12 +40,15 @@ export async function submitContactInquiry(req: Request, res: Response) {
       [name.trim(), email.trim(), phone.trim(), subject.trim(), message.trim(), source]
     );
 
+    console.log('[Backend] ✅ Data successfully inserted into MySQL (contact_inquiries). insertId:', result.insertId);
+
     return res.status(201).json({
       success: true,
       message: 'Thank you! Your inquiry has been submitted and stored in MySQL successfully.',
       inquiryId: result.insertId,
     });
   } catch (error: any) {
+    console.error('[Backend] ❌ MySQL INSERT failed for contact_inquiries:', error.message);
     return res.status(500).json({
       success: false,
       message: 'Failed to save inquiry to MySQL database',

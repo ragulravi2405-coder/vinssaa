@@ -1,6 +1,7 @@
 /**
  * Centralized API Client for VINS College Web Application
  * Points to the backend URL configured in VITE_API_URL
+ * Architecture: React → fetch → Express (Node.js) → mysql2 → MySQL
  */
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/+$/, '');
@@ -11,6 +12,8 @@ export interface ApiResponse<T = any> {
   data?: T;
   count?: number;
   error?: string;
+  inquiryId?: number;
+  applicationId?: number;
 }
 
 export async function submitContactForm(data: {
@@ -21,16 +24,23 @@ export async function submitContactForm(data: {
   message: string;
   source?: string;
 }): Promise<ApiResponse> {
+  console.log('[API] Submitting contact form data to backend:', API_BASE_URL + '/api/contact');
   try {
     const res = await fetch(`${API_BASE_URL}/api/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    return await res.json();
+    const json = await res.json();
+    if (json.success) {
+      console.log('[API] ✅ Contact form submitted successfully. MySQL insertId:', json.inquiryId);
+    } else {
+      console.error('[API] ❌ Contact form submission failed:', json.message, json.error);
+    }
+    return json;
   } catch (error: any) {
-    console.warn('API submission notice:', error.message);
-    return { success: true, message: 'Submitted locally' };
+    console.error('[API] ❌ Network error submitting contact form:', error.message);
+    return { success: false, message: error.message };
   }
 }
 
@@ -46,16 +56,23 @@ export async function submitAdmissionForm(data: {
   percentage?: string;
   city?: string;
 }): Promise<ApiResponse> {
+  console.log('[API] Submitting admission form data to backend:', API_BASE_URL + '/api/admissions');
   try {
     const res = await fetch(`${API_BASE_URL}/api/admissions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    return await res.json();
+    const json = await res.json();
+    if (json.success) {
+      console.log('[API] ✅ Admission form submitted successfully. MySQL insertId:', json.applicationId);
+    } else {
+      console.error('[API] ❌ Admission form submission failed:', json.message, json.error);
+    }
+    return json;
   } catch (error: any) {
-    console.warn('API submission notice:', error.message);
-    return { success: true, message: 'Submitted locally' };
+    console.error('[API] ❌ Network error submitting admission form:', error.message);
+    return { success: false, message: error.message };
   }
 }
 

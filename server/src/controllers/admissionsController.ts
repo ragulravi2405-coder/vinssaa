@@ -20,6 +20,8 @@ interface AdmissionApplicationRow extends RowDataPacket {
 }
 
 export async function submitApplication(req: Request, res: Response) {
+  console.log('[Backend] Request received: POST /api/admissions');
+  console.log('[Backend] Admission form body:', JSON.stringify(req.body));
   try {
     const {
       fullName,
@@ -59,12 +61,15 @@ export async function submitApplication(req: Request, res: Response) {
       ]
     );
 
+    console.log('[Backend] ✅ Data successfully inserted into MySQL (admission_applications). insertId:', result.insertId);
+
     return res.status(201).json({
       success: true,
       message: 'Admission application submitted successfully to VINS College Admissions Desk.',
       applicationId: result.insertId,
     });
   } catch (error: any) {
+    console.error('[Backend] ❌ MySQL INSERT failed for admission_applications:', error.message);
     return res.status(500).json({
       success: false,
       message: 'Failed to submit application to MySQL database',
