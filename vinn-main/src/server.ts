@@ -12,17 +12,17 @@ app.use(express.json());
 
 // ------------------- MongoDB connection -------------------
 const mongoUri = process.env.MONGODB_URI;
-if (!mongoUri) {
-  console.error("❌ MONGODB_URI is not set – aborting");
-  process.exit(1);
+if (mongoUri) {
+  mongoose
+    .connect(mongoUri)
+    .then(() => console.log("✅ Connected to MongoDB"))
+    .catch((err) => {
+      console.error("⚠️ MongoDB connection error:", err);
+    });
+} else {
+  console.log("ℹ️ MONGODB_URI not provided; server running in standalone mode");
 }
-mongoose
-  .connect(mongoUri)
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch((err) => {
-    console.error("❌ MongoDB connection error:", err);
-    process.exit(1);
-  });
+
 
 // ------------------- Generic data model -------------------
 const genericSchema = new mongoose.Schema(

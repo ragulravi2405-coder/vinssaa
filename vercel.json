@@ -1,0 +1,10 @@
+{
+  "buildCommand": "cd vinn-main && npm run build",
+  "outputDirectory": "vinn-main/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

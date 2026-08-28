@@ -23,11 +23,11 @@ export const RunningTickerBar: React.FC<RunningTickerBarProps> = ({ onNavigateNo
   return (
     <>
       {/* Dynamic Top Announcement Banner from Admin Portal */}
-      {siteBanner?.enabled && !isBannerDismissed && (
+      {(siteBanner?.enabled ?? siteBanner?.isActive ?? false) && !isBannerDismissed && (
         <div className={`px-4 py-2 text-xs sm:text-sm font-semibold transition-all border-b shadow-xs flex items-center justify-between ${
-          siteBanner.type === 'alert'
+          siteBanner.type === 'alert' || siteBanner.type === 'urgent'
             ? 'bg-[#363539] text-white border-[#dedcd7]/30'
-            : siteBanner.type === 'announcement'
+            : siteBanner.type === 'announcement' || siteBanner.type === 'admissions'
             ? 'bg-[#48474b] text-white border-[#dedcd7]/30'
             : 'bg-[#28272b] text-white border-[#dedcd7]/30'
         }`}>
@@ -37,19 +37,19 @@ export const RunningTickerBar: React.FC<RunningTickerBarProps> = ({ onNavigateNo
                 <Megaphone className="w-3.5 h-3.5" />
               </span>
               <span className="font-bold shrink-0 uppercase tracking-wide text-[11px] px-2 py-0.5 rounded bg-white/20">
-                {siteBanner.type.toUpperCase()}
+                {siteBanner.badge || siteBanner.type.toUpperCase()}
               </span>
               <p className="truncate text-white font-medium text-xs sm:text-[13px]">
-                {siteBanner.message}
+                {siteBanner.headline ? `${siteBanner.headline} - ` : ''}{siteBanner.message}
               </p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
-              {siteBanner.linkText && siteBanner.linkUrl && (
+              {(siteBanner.linkUrl || siteBanner.buttonUrl) && (
                 <a
-                  href={siteBanner.linkUrl}
+                  href={siteBanner.linkUrl || siteBanner.buttonUrl}
                   className="bg-white text-[#252528] px-2.5 py-1 rounded text-xs font-black hover:bg-[#ebe9e4] transition-colors uppercase tracking-wider flex items-center gap-1"
                 >
-                  <span>{siteBanner.linkText}</span>
+                  <span>{siteBanner.linkText || siteBanner.buttonText || 'Learn More'}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               )}

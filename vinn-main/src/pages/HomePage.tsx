@@ -6,11 +6,10 @@ import {
   Building, Star, Quote, Eye, Image as ImageIcon, MapPin, Clock, Share2, Pause,
   Bell, FileText, Download, Megaphone, Video, ExternalLink
 } from 'lucide-react';
-import { COLLEGE_INFO, STATS_COUNTERS, FEATURE_CARDS, HERO_SLIDES, NEWS_EVENTS, GALLERY_IMAGES } from '../data/collegeData';
+import { COLLEGE_INFO, STATS_COUNTERS, HERO_SLIDES, NEWS_EVENTS, GALLERY_IMAGES } from '../data/collegeData';
 import { DEPARTMENTS_DATA } from '../data/departmentsData';
 import { NOTIFICATIONS_DATA } from '../data/notificationsData';
 import { NavigationTab, DocumentItem } from '../types';
-import { AssetBadge } from '../components/common/AssetBadge';
 import { RunningTickerBar } from '../components/common/RunningTickerBar';
 import { DocumentViewerModal } from '../components/common/DocumentViewerModal';
 import { useAdminData } from '../context/AdminDataContext';

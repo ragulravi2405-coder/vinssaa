@@ -3,12 +3,16 @@ import { NOTIFICATIONS_DATA, CollegeNotification } from '../data/notificationsDa
 import { Bell, Search, Filter, Calendar, FileText, Download, ShieldCheck, ChevronRight, CheckCircle2, Megaphone, Sparkles, X } from 'lucide-react';
 import { DocumentViewerModal } from '../components/common/DocumentViewerModal';
 import { DocumentItem } from '../types';
+import { useAdminData } from '../context/AdminDataContext';
 
 interface NotificationsPageProps {
   onNavigateAdmission?: (tab: 'admissions') => void;
 }
 
 export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigateAdmission }) => {
+  const { notifications } = useAdminData();
+  const allNotices = notifications && notifications.length > 0 ? notifications : NOTIFICATIONS_DATA;
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [pdfOnly, setPdfOnly] = useState(false);
@@ -17,7 +21,7 @@ export const NotificationsPage: React.FC<NotificationsPageProps> = ({ onNavigate
 
   const categories = ['All', 'Admissions', 'Exams', 'Placements', 'Events', 'Circulars', 'Scholarships'];
 
-  const filteredNotices = NOTIFICATIONS_DATA.filter((item) => {
+  const filteredNotices = allNotices.filter((item) => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           item.summary.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           item.issuedBy.toLowerCase().includes(searchTerm.toLowerCase());

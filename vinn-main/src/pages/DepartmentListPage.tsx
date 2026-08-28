@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { Search, Filter, ArrowRight, CheckCircle2, Sparkles, BookOpen } from 'lucide-react';
 import { DEPARTMENTS_DATA } from '../data/departmentsData';
+import { useAdminData } from '../context/AdminDataContext';
 
 interface DepartmentListPageProps {
   onSelectDepartment: (id: string) => void;
 }
 
 export const DepartmentListPage: React.FC<DepartmentListPageProps> = ({ onSelectDepartment }) => {
+  const { departments } = useAdminData();
+  const allDepts = departments && departments.length > 0 ? departments : DEPARTMENTS_DATA;
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<'All' | 'UG' | 'PG' | 'Management'>('All');
 
-  const filteredDepts = DEPARTMENTS_DATA.filter((dept) => {
+  const filteredDepts = allDepts.filter((dept) => {
     const matchesCategory = selectedCategory === 'All' || dept.category === selectedCategory;
     const matchesSearch = dept.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           dept.degree.toLowerCase().includes(searchTerm.toLowerCase());

@@ -7,7 +7,6 @@ import {
   FOUNDER_CHAIRMAN_DATA, 
   PRINCIPAL_DESK_DATA 
 } from '../data/collegeData';
-import { AssetBadge } from '../components/common/AssetBadge';
 
 interface AboutPageProps {
   initialAnchor?: string;

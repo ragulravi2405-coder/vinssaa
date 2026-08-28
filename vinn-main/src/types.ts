@@ -172,12 +172,16 @@ export interface CustomNavButton {
 }
 
 export interface SiteBannerAnnouncement {
-  isActive: boolean;
-  headline: string;
+  isActive?: boolean;
+  enabled?: boolean;
+  headline?: string;
   message: string;
-  badge: string;
+  badge?: string;
   buttonText?: string;
   buttonTab?: NavigationTab;
   buttonUrl?: string;
-  type: 'info' | 'urgent' | 'admissions' | 'event';
+  linkText?: string;
+  linkUrl?: string;
+  type: 'info' | 'urgent' | 'admissions' | 'event' | 'announcement' | 'alert';
 }
+
