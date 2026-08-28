@@ -1,9 +1,9 @@
-import mysql, { Pool, RowDataPacket, ResultSetHeader } from 'mysql2/promise';
+import mysql, { Pool } from 'mysql2/promise';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Create connection pool with production-grade defaults
+// Create MySQL connection pool with production-ready settings
 export const pool: Pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   port: Number(process.env.DB_PORT) || 3306,
@@ -34,11 +34,10 @@ export async function testDbConnection(): Promise<boolean> {
     const connection = await pool.getConnection();
     await connection.query('SELECT 1');
     connection.release();
-    console.log(`🟢 MySQL Connected Successfully (Database: ${process.env.DB_NAME || 'vins_college'})`);
+    console.log('🟢 MySQL Connected Successfully');
     return true;
   } catch (error: any) {
     console.error(`🔴 MySQL Connection Error: ${error.message}`);
-    console.warn(`⚠️ Please ensure MySQL is running on ${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 3306} and database "${process.env.DB_NAME || 'vins_college'}" exists.`);
     return false;
   }
 }

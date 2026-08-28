@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { testDbConnection, pool } from './config/database.js';
+import { RowDataPacket } from 'mysql2/promise';
 
 // Routes
 import authRoutes from './routes/authRoutes.js';
@@ -34,7 +35,7 @@ const defaultAllowed = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
+      // Allow requests with no origin (e.g. curl, mobile apps, local tools)
       if (!origin) return callback(null, true);
 
       const isAllowed =
@@ -47,7 +48,7 @@ app.use(
       if (isAllowed) {
         callback(null, true);
       } else {
-        callback(null, true); // Permissive fallback for seamless deployment
+        callback(null, true); // Fallback to avoid breaking valid requests
       }
     },
     credentials: true,
@@ -67,25 +68,55 @@ app.get('/', (_req, res) => {
 
 // ── Health Check Endpoint (Validates MySQL with SELECT 1) ───────
 app.get(['/api/health', '/health'], async (_req, res) => {
-  let isConnected = false;
   try {
     const connection = await pool.getConnection();
     await connection.query('SELECT 1');
     connection.release();
-    isConnected = true;
-  } catch {
-    isConnected = false;
-  }
 
-  res.status(200).json({
-    success: true,
-    message: 'Backend is running',
-    database: {
-      type: 'MySQL',
-      connected: isConnected,
-      name: process.env.DB_NAME || 'vins_college',
-    },
-  });
+    return res.status(200).json({
+      success: true,
+      message: 'Backend is running',
+      database: {
+        type: 'MySQL',
+        connected: true,
+      },
+    });
+  } catch (error: any) {
+    return res.status(503).json({
+      success: false,
+      message: 'Backend is running but MySQL is disconnected',
+      database: {
+        type: 'MySQL',
+        connected: false,
+      },
+      error: error.message,
+    });
+  }
+});
+
+// ── Database Verification / Test Endpoint ───────────────────────
+app.get('/api/test-db', async (_req, res) => {
+  try {
+    const connection = await pool.getConnection();
+    const [rows] = await connection.query<RowDataPacket[]>('SHOW TABLES');
+    connection.release();
+
+    const tables = rows.map((r) => Object.values(r)[0]);
+
+    return res.status(200).json({
+      success: true,
+      message: 'MySQL connection and query test successful',
+      database: process.env.DB_NAME || 'vins_college',
+      tablesCount: tables.length,
+      tables,
+    });
+  } catch (error: any) {
+    return res.status(503).json({
+      success: false,
+      message: 'MySQL test query failed',
+      error: error.message,
+    });
+  }
 });
 
 // ── API Routes ─────────────────────────────────────────────────
@@ -107,9 +138,9 @@ app.use((_req, res) => {
 async function startServer() {
   await testDbConnection();
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`\n🚀 Server running on port ${PORT}`);
-    console.log(`🌐 Root Endpoint  → http://localhost:${PORT}/`);
-    console.log(`📋 Health check    → http://localhost:${PORT}/api/health\n`);
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🌐 Root Endpoint → http://localhost:${PORT}/`);
+    console.log(`📋 Health Check → http://localhost:${PORT}/api/health\n`);
   });
 }
 
