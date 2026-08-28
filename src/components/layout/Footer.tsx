@@ -7,14 +7,24 @@ interface FooterProps {
   onTabChange: (tab: NavigationTab, anchorId?: string) => void;
 }
 
+import { submitContactForm } from '../../services/api';
+
 export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
   const [formState, setFormState] = useState({ name: '', email: '', phone: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formState.name && (formState.email || formState.phone)) {
       setSubmitted(true);
+      await submitContactForm({
+        name: formState.name,
+        email: formState.email,
+        phone: formState.phone,
+        subject: 'Quick Inquiry from Website Footer',
+        message: formState.message || 'Admissions / Course Inquiry',
+        source: 'footer',
+      });
       setTimeout(() => {
         setFormState({ name: '', email: '', phone: '', message: '' });
       }, 5000);

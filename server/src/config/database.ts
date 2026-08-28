@@ -3,30 +3,30 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI as string;
-
 export async function connectDatabase(): Promise<void> {
-  if (!MONGODB_URI) {
-    console.warn('⚠️  MONGODB_URI is not set. Running in standalone mode (no database).');
+  const mongoUri = process.env.MONGODB_URI;
+
+  if (!mongoUri) {
+    console.warn('⚠️  MONGODB_URI is not set. Backend running in standalone mode.');
     return;
   }
 
   try {
-    await mongoose.connect(MONGODB_URI, {
+    await mongoose.connect(mongoUri, {
       dbName: process.env.DB_NAME || 'vins_college',
+      serverSelectionTimeoutMS: 8000,
     });
-    console.log(`🟢 MongoDB Connected Successfully → db: ${mongoose.connection.name}`);
+    console.log(`🟢 MongoDB Connected Successfully (Database: ${mongoose.connection.name})`);
   } catch (error: any) {
-    console.error('❌ MongoDB Connection Error:', error.message);
-    // Don't crash the server — let endpoints handle the lack of DB gracefully
+    console.error(`🔴 MongoDB Connection Error: ${error.message}`);
   }
 
-  mongoose.connection.on('error', (err) => {
-    console.error('❌ MongoDB Unexpected Error:', err.message);
+  mongoose.connection.on('error', (err: any) => {
+    console.error(`🔴 MongoDB Connection Error: ${err.message}`);
   });
 
   mongoose.connection.on('disconnected', () => {
-    console.warn('⚠️  MongoDB Disconnected. Attempting to reconnect...');
+    console.warn('⚠️  MongoDB Disconnected. Attempting reconnection...');
   });
 
   mongoose.connection.on('reconnected', () => {

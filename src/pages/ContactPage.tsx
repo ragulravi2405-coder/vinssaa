@@ -4,6 +4,8 @@ import {
 } from 'lucide-react';
 import { COLLEGE_INFO } from '../data/collegeData';
 
+import { submitContactForm } from '../services/api';
+
 export const ContactPage: React.FC = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [contactForm, setContactForm] = useState({
@@ -14,10 +16,18 @@ export const ContactPage: React.FC = () => {
     message: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (contactForm.name && contactForm.email && contactForm.message) {
       setFormSubmitted(true);
+      await submitContactForm({
+        name: contactForm.name,
+        email: contactForm.email,
+        phone: contactForm.phone,
+        subject: contactForm.subject,
+        message: contactForm.message,
+        source: 'contact_page',
+      });
     }
   };
 

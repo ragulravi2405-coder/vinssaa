@@ -8,6 +8,7 @@ import { COLLEGE_INFO, DOCUMENTS_LIST, UG_COURSES_LIST, PG_COURSES_LIST, ELIGIBI
 import { DEPARTMENTS_DATA } from '../data/departmentsData';
 import { DocumentViewerModal } from '../components/common/DocumentViewerModal';
 import { DocumentItem } from '../types';
+import { submitAdmissionForm } from '../services/api';
 
 interface AdmissionsPageProps {
   initialAnchor?: string;
@@ -50,9 +51,21 @@ export const AdmissionsPage: React.FC<AdmissionsPageProps> = ({ initialAnchor = 
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormSubmitted(true);
+    await submitAdmissionForm({
+      fullName: formData.fullName,
+      dob: formData.dob,
+      phone: formData.phone,
+      email: formData.email,
+      academicYear: formData.academicYear,
+      category: formCategory,
+      preferredCourse: formData.preferredCourse,
+      qualification: formData.qualification,
+      percentage: formData.percentage,
+      city: formData.city,
+    });
   };
 
   const prospectusDoc = DOCUMENTS_LIST.find(d => d.id === 'doc-prospectus') || DOCUMENTS_LIST[0];
