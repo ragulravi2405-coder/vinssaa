@@ -1,14 +1,50 @@
 import mysql, { Pool } from 'mysql2/promise';
 import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 
-dotenv.config();
+// ── Robust Environment Variable Loading ────────────────────────
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Create MySQL connection pool with production-ready settings
+// Candidates for .env location depending on launch directory
+const envPaths = [
+  path.resolve(__dirname, '../../.env'), // server/.env from dist or src/config
+  path.resolve(__dirname, '../.env'),
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(process.cwd(), 'server/.env'),
+];
+
+for (const envPath of envPaths) {
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+  }
+}
+dotenv.config(); // fallback to default
+
+// ── Diagnostic Config Summary (Safe — Never prints password) ───
+export function logDatabaseConfig(): void {
+  const isPasswordConfigured = Boolean(
+    process.env.DB_PASSWORD !== undefined &&
+    process.env.DB_PASSWORD !== null &&
+    process.env.DB_PASSWORD.trim().length > 0
+  );
+
+  console.log('\nMySQL Config:');
+  console.log(`Host: ${process.env.DB_HOST || 'localhost'}`);
+  console.log(`Port: ${Number(process.env.DB_PORT) || 3306}`);
+  console.log(`User: ${process.env.DB_USER || 'root'}`);
+  console.log(`Database: ${process.env.DB_NAME || 'vins_college'}`);
+  console.log(`Password configured: ${isPasswordConfigured ? 'YES' : 'NO'}\n`);
+}
+
+// ── Create Connection Pool ─────────────────────────────────────
 export const pool: Pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   port: Number(process.env.DB_PORT) || 3306,
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
+  password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : '',
   database: process.env.DB_NAME || 'vins_college',
   waitForConnections: true,
   connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 10,

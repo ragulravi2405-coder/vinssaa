@@ -1,7 +1,29 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { testDbConnection, pool } from './config/database.js';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+// ── Robust Environment Variable Loading ────────────────────────
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const envPaths = [
+  path.resolve(__dirname, '../../.env'),
+  path.resolve(__dirname, '../.env'),
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(process.cwd(), 'server/.env'),
+];
+
+for (const envPath of envPaths) {
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+  }
+}
+dotenv.config();
+
+import { testDbConnection, logDatabaseConfig, pool } from './config/database.js';
 import { RowDataPacket } from 'mysql2/promise';
 
 // Routes
@@ -13,8 +35,6 @@ import galleryRoutes from './routes/galleryRoutes.js';
 import eventsRoutes from './routes/eventsRoutes.js';
 import documentsRoutes from './routes/documentsRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
-
-dotenv.config();
 
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
@@ -35,7 +55,6 @@ const defaultAllowed = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. curl, mobile apps, local tools)
       if (!origin) return callback(null, true);
 
       const isAllowed =
@@ -48,7 +67,7 @@ app.use(
       if (isAllowed) {
         callback(null, true);
       } else {
-        callback(null, true); // Fallback to avoid breaking valid requests
+        callback(null, true);
       }
     },
     credentials: true,
@@ -136,6 +155,7 @@ app.use((_req, res) => {
 
 // ── Start Server ───────────────────────────────────────────────
 async function startServer() {
+  logDatabaseConfig();
   await testDbConnection();
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server running on port ${PORT}`);
