@@ -43,6 +43,21 @@ export async function getAllEvents(_req: Request, res: Response) {
   }
 }
 
+export async function getEventById(req: Request, res: Response) {
+  try {
+    const rows = await executeQuery<EventRow[]>(
+      'SELECT * FROM college_events WHERE id = ? LIMIT 1',
+      [req.params.id]
+    );
+    if (!rows || rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Event not found' });
+    }
+    return res.json({ success: true, data: formatEvent(rows[0]) });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch event', error: error.message });
+  }
+}
+
 export async function createEvent(req: Request, res: Response) {
   try {
     const { title, subtitle, category = 'Ceremony', date, imagePath, description, chiefGuest } = req.body;
@@ -75,31 +90,44 @@ export async function createEvent(req: Request, res: Response) {
 export async function updateEvent(req: Request, res: Response) {
   try {
     const { id } = req.params;
+
+    // First, fetch existing record so we can preserve fields not sent
+    const existing = await executeQuery<EventRow[]>(
+      'SELECT * FROM college_events WHERE id = ? LIMIT 1',
+      [id]
+    );
+    if (!existing || existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Event not found' });
+    }
+    const current = existing[0];
+
     const { title, subtitle, category, date, imagePath, description, chiefGuest } = req.body;
+
+    // Use incoming value if defined and non-empty; fall back to existing DB value
+    const newTitle       = (title       !== undefined && title       !== null && title       !== '') ? title       : current.title;
+    const newSubtitle    = (subtitle    !== undefined && subtitle    !== null)                        ? subtitle    : current.subtitle;
+    const newCategory    = (category    !== undefined && category    !== null && category    !== '') ? category    : current.category;
+    const newDateStr     = (date        !== undefined && date        !== null && date        !== '') ? date        : current.date_str;
+    // For imagePath: preserve existing if incoming is empty/null/undefined
+    const newImagePath   = (imagePath   !== undefined && imagePath   !== null && imagePath   !== '') ? imagePath   : current.image_path;
+    const newDescription = (description !== undefined && description !== null)                        ? description : current.description;
+    const newChiefGuest  = (chiefGuest  !== undefined && chiefGuest  !== null)                        ? chiefGuest  : current.chief_guest;
 
     await executeQuery<ResultSetHeader>(
       `UPDATE college_events SET
-         title = COALESCE(?, title),
-         subtitle = COALESCE(?, subtitle),
-         category = COALESCE(?, category),
-         date_str = COALESCE(?, date_str),
-         image_path = COALESCE(?, image_path),
-         description = COALESCE(?, description),
-         chief_guest = COALESCE(?, chief_guest)
+         title       = ?,
+         subtitle    = ?,
+         category    = ?,
+         date_str    = ?,
+         image_path  = ?,
+         description = ?,
+         chief_guest = ?,
+         updated_at  = NOW()
        WHERE id = ?`,
-      [
-        title ?? null,
-        subtitle ?? null,
-        category ?? null,
-        date ?? null,
-        imagePath ?? null,
-        description ?? null,
-        chiefGuest ?? null,
-        id,
-      ]
+      [newTitle, newSubtitle, newCategory, newDateStr, newImagePath, newDescription, newChiefGuest, id]
     );
 
-    return res.json({ success: true, message: 'Event updated in MySQL' });
+    return res.json({ success: true, message: 'Event updated in MySQL', id });
   } catch (error: any) {
     return res.status(500).json({
       success: false,

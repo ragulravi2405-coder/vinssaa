@@ -12,10 +12,12 @@ interface TopBarProps {
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ onNavigate, currentTab }) => {
-  const { customNavButtons, siteTheme } = useAdminData();
+  const { customNavButtons, siteTheme, documents } = useAdminData();
   const [selectedDoc, setSelectedDoc] = useState<DocumentItem | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const allDocs = documents && documents.length > 0 ? documents : DOCUMENTS_LIST;
 
   // Dynamic custom buttons for topbar
   const topbarButtons = customNavButtons.filter(b => b.location === 'topbar' && b.isActive);
@@ -61,7 +63,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onNavigate, currentTab }) => {
         setIsSearchOpen(false);
       }
     })),
-    ...DOCUMENTS_LIST.filter(doc => 
+    ...allDocs.filter(doc => 
       doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (doc.category && doc.category.toLowerCase().includes(searchQuery.toLowerCase())) ||
       doc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||

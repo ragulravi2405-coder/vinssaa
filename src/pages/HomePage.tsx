@@ -51,50 +51,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
     ? activeGallery 
     : activeGallery.filter(img => img.category.toLowerCase().includes(galleryFilter.toLowerCase()) || (galleryFilter === 'Campus' && img.category.toLowerCase().includes('campus')));
 
-  // Structured events with custom Valer-style dates
-  const valerEventsList = [
-    {
-      id: 'evt-1',
-      dateBadge: 'Mar 24 – Mar 25',
-      time: '10:00 am',
-      title: 'National Conference on AI, Robotics & Sustainable Technologies',
-      category: 'Conference',
-      location: 'Main Auditorium',
-      desc: 'Two-day technical research symposium bringing together leading academic researchers, industry keynote speakers, and student innovators across India.',
-      imagePath: '/images/college events and news galeery/h12.jpg'
-    },
-    {
-      id: 'evt-2',
-      dateBadge: 'May 19',
-      time: '09:30 am',
-      title: 'Grand Annual College Day & Cultural Extravaganza',
-      category: 'Cultural',
-      location: 'Open Air Amphitheatre',
-      desc: 'Celebration of artistic talent, musical performances, classical dance competitions, and meritorious academic award distribution with distinguished guests.',
-      imagePath: '/images/college events and news galeery/h3.jpg'
-    },
-    {
-      id: 'evt-3',
-      dateBadge: 'Jun 12',
-      time: '11:00 am',
-      title: 'Mega Campus Placement & Corporate Recruitment Drive',
-      category: 'Placement',
-      location: 'Placement Arena',
-      desc: 'Over 40+ premier IT companies and core engineering recruiters conducting interviews, technical assessments, and issuing on-the-spot offer letters.',
-      imagePath: '/images/college events and news galeery/h13.jpg'
-    },
-    {
-      id: 'evt-4',
-      dateBadge: 'Aug 28',
-      time: '02:00 pm',
-      title: 'Inter-College Hackathon & Robotics Championship',
-      category: 'Hackathon',
-      location: 'Computing Center Lab 3',
-      desc: '24-hour non-stop coding hackathon challenging engineering students to solve real-world industrial and societal challenges with prize pool of ₹1,00,000.',
-      imagePath: '/images/college events and news galeery/h11.jpg'
-    }
-  ];
-
   return (
     <div className="space-y-0 pb-0 bg-transparent text-[#252528] font-sans">
       
@@ -442,16 +398,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
 
           {/* Valer-Style Event Rows */}
           <div className="space-y-4">
-            {valerEventsList.map((evt) => (
+            {activeEvents.map((evt) => (
               <div 
                 key={evt.id}
                 onClick={() => setSelectedEvent({
                   id: evt.id,
                   title: evt.title,
-                  date: evt.dateBadge,
+                  date: evt.date,
                   category: evt.category,
                   imagePath: evt.imagePath,
-                  description: evt.desc
+                  description: evt.description
                 })}
                 className="valer-event-row flex-col sm:flex-row group cursor-pointer shadow-xs rounded-2xl overflow-hidden border border-amber-400/40"
               >
@@ -459,7 +415,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
                 {/* Left Dark Cement Date Badge */}
                 <div className="valer-date-badge flex flex-col justify-center items-center py-4 px-6 sm:w-56 shrink-0 bg-[#363539] text-white">
                   <span className="text-sm sm:text-base font-bold font-playfair tracking-wide text-center">
-                    {evt.dateBadge}
+                    {evt.date}
                   </span>
                   <span className="text-[10px] text-[#eceae6] font-bold uppercase tracking-wider mt-1">
                     {evt.category}
@@ -474,13 +430,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
                       {evt.title}
                     </h3>
                     <p className="text-xs text-[#54524e] font-sans line-clamp-1">
-                      {evt.desc}
+                      {evt.description}
                     </p>
                   </div>
 
-                    <div className="flex items-center gap-6 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#dedcd7]">
+                  <div className="flex items-center gap-6 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#dedcd7]">
                     <span className="text-xs font-semibold text-[#6B4C14] font-sans whitespace-nowrap">
-                      {evt.time}
+                      {evt.subtitle || '10:00 am'}
                     </span>
 
                     <button className="text-xs font-bold uppercase tracking-wider text-[#252528] group-hover:text-[#54524e] transition-colors flex items-center gap-1.5 cursor-pointer">

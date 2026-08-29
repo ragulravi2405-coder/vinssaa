@@ -75,31 +75,42 @@ export async function createDocument(req: Request, res: Response) {
 export async function updateDocument(req: Request, res: Response) {
   try {
     const { id } = req.params;
+
+    // Fetch existing record to preserve path/file if not changed
+    const existing = await executeQuery<DocumentRow[]>(
+      'SELECT * FROM documents WHERE id = ? LIMIT 1',
+      [id]
+    );
+    if (!existing || existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Document not found' });
+    }
+    const current = existing[0];
+
     const { title, filename, path, fileSize, fileType, category, description } = req.body;
+
+    const newTitle       = (title    !== undefined && title    !== null && title    !== '') ? title    : current.title;
+    const newFilename    = (filename !== undefined && filename !== null && filename !== '') ? filename : current.filename;
+    // Preserve existing path if incoming is empty/null/undefined (file path = document URL)
+    const newPath        = (path     !== undefined && path     !== null && path     !== '') ? path     : current.path;
+    const newFileSize    = (fileSize !== undefined && fileSize !== null && fileSize !== '') ? fileSize : current.file_size;
+    const newFileType    = (fileType !== undefined && fileType !== null && fileType !== '') ? fileType : current.file_type;
+    const newCategory    = (category !== undefined && category !== null && category !== '') ? category : current.category;
+    const newDescription = (description !== undefined && description !== null)              ? description : current.description;
 
     await executeQuery<ResultSetHeader>(
       `UPDATE documents SET
-         title = COALESCE(?, title),
-         filename = COALESCE(?, filename),
-         path = COALESCE(?, path),
-         file_size = COALESCE(?, file_size),
-         file_type = COALESCE(?, file_type),
-         category = COALESCE(?, category),
-         description = COALESCE(?, description)
+         title       = ?,
+         filename    = ?,
+         path        = ?,
+         file_size   = ?,
+         file_type   = ?,
+         category    = ?,
+         description = ?
        WHERE id = ?`,
-      [
-        title ?? null,
-        filename ?? null,
-        path ?? null,
-        fileSize ?? null,
-        fileType ?? null,
-        category ?? null,
-        description ?? null,
-        id,
-      ]
+      [newTitle, newFilename, newPath, newFileSize, newFileType, newCategory, newDescription, id]
     );
 
-    return res.json({ success: true, message: 'Document updated in MySQL' });
+    return res.json({ success: true, message: 'Document updated in MySQL', id });
   } catch (error: any) {
     return res.status(500).json({
       success: false,

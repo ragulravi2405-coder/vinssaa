@@ -3,11 +3,17 @@ import {
   Users, HeartHandshake, Lightbulb, Cpu, Trees, Music, CheckCircle2, Sparkles, Calendar, Award, Eye, X, Camera 
 } from 'lucide-react';
 import { CAMPUS_CLUBS, COLLEGE_DAY_GALLERY, CollegeDayGalleryItem } from '../data/collegeData';
+import { useAdminData } from '../context/AdminDataContext';
 
 export const CampusPage: React.FC = () => {
+  const { galleryImages, events } = useAdminData();
+  const allCollegeDayPhotos: any[] = (galleryImages && galleryImages.length > 0)
+    ? galleryImages
+    : (events && events.length > 0 ? events : COLLEGE_DAY_GALLERY);
+
   const [activeClubId, setActiveClubId] = useState(CAMPUS_CLUBS[0].id);
   const [selectedDayCategory, setSelectedDayCategory] = useState<string>('All');
-  const [selectedDayPhoto, setSelectedDayPhoto] = useState<CollegeDayGalleryItem | null>(null);
+  const [selectedDayPhoto, setSelectedDayPhoto] = useState<any | null>(null);
 
   const clubIconMap: Record<string, React.ReactNode> = {
     nss: <Users className="w-5 h-5 text-[#0A2540]" />,
@@ -18,11 +24,11 @@ export const CampusPage: React.FC = () => {
     'cultural-events': <Music className="w-5 h-5 text-[#0A2540]" />
   };
 
-  const dayCategories = ['All', 'Ceremony', 'Cultural Dance', 'Awards', 'Workshop', 'Campus', 'Seminar', 'Finale'];
+  const dayCategories = ['All', 'Ceremony', 'Cultural Dance', 'Awards', 'Workshop', 'Campus', 'Seminar', 'Sports', 'Finale'];
 
   const filteredCollegeDayPhotos = selectedDayCategory === 'All'
-    ? COLLEGE_DAY_GALLERY
-    : COLLEGE_DAY_GALLERY.filter((item) => item.category === selectedDayCategory);
+    ? allCollegeDayPhotos
+    : allCollegeDayPhotos.filter((item) => item.category === selectedDayCategory);
 
   return (
     <div className="bg-[#FFFFFF] text-[#0A2540] min-h-screen">
@@ -108,7 +114,7 @@ export const CampusPage: React.FC = () => {
                     </div>
                     <div className="absolute bottom-3 right-3 bg-white text-[#0A2540] text-[10px] font-black px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm border border-[#0A2540]/20">
                       <Calendar className="w-3 h-3 text-[#0A2540]" />
-                      {photo.date}
+                      {photo.date || 'Annual Day'}
                     </div>
                   </div>
 
@@ -117,7 +123,7 @@ export const CampusPage: React.FC = () => {
                       {photo.title}
                     </h3>
                     <p className="text-[11px] text-[#0A2540]/80 font-bold">
-                      {photo.subtitle}
+                      {photo.subtitle || `${photo.category} Showcase`}
                     </p>
                     <p className="text-xs text-[#0A2540]/80 line-clamp-2 leading-relaxed font-medium">
                       {photo.description}

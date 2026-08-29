@@ -35,6 +35,7 @@ import galleryRoutes from './routes/galleryRoutes.js';
 import eventsRoutes from './routes/eventsRoutes.js';
 import documentsRoutes from './routes/documentsRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
+import uploadRoutes from './routes/uploadRoutes.js';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
@@ -147,6 +148,7 @@ app.use('/api/gallery', galleryRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/documents', documentsRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // ── 404 Fallback Middleware ────────────────────────────────────
 app.use((_req, res) => {

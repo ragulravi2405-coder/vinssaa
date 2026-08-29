@@ -144,35 +144,66 @@ export async function createNotification(req: Request, res: Response) {
 export async function updateNotification(req: Request, res: Response) {
   try {
     const { id } = req.params;
+
+    // Fetch existing record to preserve fields not changed
+    const existing = await executeQuery<NotificationRow[]>(
+      'SELECT * FROM notifications WHERE id = ? LIMIT 1',
+      [id]
+    );
+    if (!existing || existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Notification not found' });
+    }
+    const current = existing[0];
+
     const { title, date, category, isUrgent, summary, fullDetails, issuedBy, pdfAttachment, externalLink } = req.body;
+
+    const newTitle       = (title       !== undefined && title       !== null && title       !== '') ? title       : current.title;
+    const newDate        = (date        !== undefined && date        !== null && date        !== '') ? date        : current.date_str;
+    const newCategory    = (category    !== undefined && category    !== null && category    !== '') ? category    : current.category;
+    const newIsUrgent    =  isUrgent    !== undefined                                                ? (isUrgent ? 1 : 0) : current.is_urgent;
+    const newSummary     = (summary     !== undefined && summary     !== null && summary     !== '') ? summary     : current.summary;
+    const newFullDetails = (fullDetails !== undefined && fullDetails !== null && fullDetails !== '') ? fullDetails : current.full_details;
+    const newIssuedBy    = (issuedBy    !== undefined && issuedBy    !== null && issuedBy    !== '') ? issuedBy    : current.issued_by;
+    const newExternalLink = (externalLink !== undefined && externalLink !== null)                    ? externalLink : current.external_link;
+
+    // PDF attachment: preserve existing if no new attachment provided
+    const newPdfId       = pdfAttachment ? (pdfAttachment.id       || current.pdf_attachment_id) : current.pdf_attachment_id;
+    const newPdfTitle    = pdfAttachment ? (pdfAttachment.title    || current.pdf_title)          : current.pdf_title;
+    const newPdfFilename = pdfAttachment ? (pdfAttachment.filename || current.pdf_filename)        : current.pdf_filename;
+    // Preserve existing pdf path if not changed
+    const newPdfPath     = pdfAttachment
+      ? ((pdfAttachment.path !== undefined && pdfAttachment.path !== null && pdfAttachment.path !== '') ? pdfAttachment.path : current.pdf_path)
+      : current.pdf_path;
+    const newPdfSize     = pdfAttachment ? (pdfAttachment.fileSize || current.pdf_size)           : current.pdf_size;
+    const newPdfType     = pdfAttachment ? (pdfAttachment.fileType || current.pdf_type)           : current.pdf_type;
 
     await executeQuery<ResultSetHeader>(
       `UPDATE notifications SET
-         title = COALESCE(?, title),
-         date_str = COALESCE(?, date_str),
-         category = COALESCE(?, category),
-         is_urgent = COALESCE(?, is_urgent),
-         summary = COALESCE(?, summary),
-         full_details = COALESCE(?, full_details),
-         issued_by = COALESCE(?, issued_by),
-         pdf_path = COALESCE(?, pdf_path),
-         external_link = COALESCE(?, external_link)
+         title             = ?,
+         date_str          = ?,
+         category          = ?,
+         is_urgent         = ?,
+         summary           = ?,
+         full_details      = ?,
+         issued_by         = ?,
+         pdf_attachment_id = ?,
+         pdf_title         = ?,
+         pdf_filename      = ?,
+         pdf_path          = ?,
+         pdf_size          = ?,
+         pdf_type          = ?,
+         external_link     = ?
        WHERE id = ?`,
       [
-        title ?? null,
-        date ?? null,
-        category ?? null,
-        isUrgent !== undefined ? (isUrgent ? 1 : 0) : null,
-        summary ?? null,
-        fullDetails ?? null,
-        issuedBy ?? null,
-        pdfAttachment?.path ?? null,
-        externalLink ?? null,
+        newTitle, newDate, newCategory, newIsUrgent,
+        newSummary, newFullDetails, newIssuedBy,
+        newPdfId, newPdfTitle, newPdfFilename, newPdfPath, newPdfSize, newPdfType,
+        newExternalLink,
         id,
       ]
     );
 
-    return res.json({ success: true, message: 'Notification updated successfully in MySQL' });
+    return res.json({ success: true, message: 'Notification updated successfully in MySQL', id });
   } catch (error: any) {
     return res.status(500).json({
       success: false,

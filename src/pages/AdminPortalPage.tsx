@@ -12,6 +12,7 @@ import { DocumentItem, GalleryImage, CustomNavButton, NavigationTab } from '../t
 import { CollegeDayGalleryItem } from '../data/collegeData';
 import { DocumentViewerModal } from '../components/common/DocumentViewerModal';
 import { EditImageModal, ImageEditPayload } from '../components/admin/EditImageModal';
+import { loginAdmin, uploadMediaApi } from '../services/api';
 
 export const AdminPortalPage: React.FC = () => {
   const {
@@ -53,6 +54,7 @@ export const AdminPortalPage: React.FC = () => {
     addMediaAsset,
     updateMediaAsset,
     deleteMediaAsset,
+    refreshData,
     resetAllToDefaults
   } = useAdminData();
 
@@ -163,19 +165,32 @@ export const AdminPortalPage: React.FC = () => {
     setTimeout(() => setSuccessToast(null), 3500);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (passcode.trim() === 'vins2026' || passcode.trim() === 'admin' || passcode.trim() === '4982' || passcode.trim() === '') {
+    const code = passcode.trim() || 'vins2026';
+    if (code === 'vins2026' || code === 'admin' || code === '4982' || code === 'admin123') {
       setIsAdminLoggedIn(true);
       setAuthError('');
+      try {
+        await loginAdmin('admin', code === 'admin' ? 'admin123' : code);
+      } catch (err) {
+        console.warn('Backend login notice:', err);
+      }
       showToast('Admin access granted! Full editing powers active.');
     } else {
-      setAuthError('Incorrect passcode. Try "vins2026" or "4982".');
+      const res = await loginAdmin('admin', code);
+      if (res.success) {
+        setIsAdminLoggedIn(true);
+        setAuthError('');
+        showToast('Admin access granted! Authenticated with MySQL.');
+      } else {
+        setAuthError('Incorrect passcode. Try "vins2026" or "4982".');
+      }
     }
   };
 
-  // Generic File Uploader for Images -> Base64 Data URL
-  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>, onComplete: (url: string) => void) => {
+  // Generic File Uploader for Images -> Cloudinary / Live URL / Base64 Fallback
+  const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, onComplete: (url: string) => void) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -184,22 +199,35 @@ export const AdminPortalPage: React.FC = () => {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const dataUrl = event.target?.result as string;
-      onComplete(dataUrl);
+    try {
+      showToast(`Uploading ${file.name}...`);
+      const uploadRes = await uploadMediaApi(file);
+
+      if (!uploadRes.success) {
+        showToast(uploadRes.message || 'Image upload failed. Please check preset settings.');
+        return;
+      }
+
+      const finalUrl = uploadRes.url;
+      onComplete(finalUrl);
 
       // Also register into available media library
       addMediaAsset({
         id: `upload-${Date.now()}`,
         name: file.name,
-        path: dataUrl,
+        path: finalUrl,
         category: 'campus'
       });
 
-      showToast(`Uploaded image: ${file.name}`);
-    };
-    reader.readAsDataURL(file);
+      if (uploadRes.isCloudinary) {
+        showToast(`☁️ Cloudinary Upload Complete: ${file.name}`);
+      } else {
+        showToast(`Uploaded image: ${file.name}`);
+      }
+    } catch (err) {
+      console.error('Image upload failed:', err);
+      showToast('Image upload failed. Please try again.');
+    }
   };
 
   // Generic File Uploader for PDFs -> Base64 Data URL
@@ -2426,6 +2454,61 @@ export const AdminPortalPage: React.FC = () => {
         )}
 
       </div>
+
+      {/* Edit Image Modal */}
+      {editingImageItem && (
+        <EditImageModal
+          isOpen={!!editingImageItem}
+          onClose={() => setEditingImageItem(null)}
+          initialData={editingImageItem.data}
+          type={editingImageItem.type}
+          onSave={handleSaveEditedImage}
+          onPickExisting={(callback) => setMediaPickerTarget(() => callback)}
+        />
+      )}
+
+      {/* Document Preview Modal */}
+      {selectedDocPreview && (
+        <DocumentViewerModal
+          document={selectedDocPreview}
+          onClose={() => setSelectedDocPreview(null)}
+        />
+      )}
+
+      {/* Media Picker Modal */}
+      {mediaPickerTarget && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b pb-3">
+              <h3 className="font-bold text-base text-[#363538]">Pick from Known Media Assets</h3>
+              <button 
+                onClick={() => setMediaPickerTarget(null)}
+                className="p-1 text-slate-400 hover:text-slate-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+              {mediaAssets.map((asset) => (
+                <div
+                  key={asset.id}
+                  onClick={() => {
+                    mediaPickerTarget(asset.path);
+                    setMediaPickerTarget(null);
+                  }}
+                  className="group rounded-xl overflow-hidden border border-slate-200 hover:border-sky-500 cursor-pointer p-1.5 transition-all bg-slate-50 hover:bg-sky-50"
+                >
+                  <div className="aspect-video rounded-lg overflow-hidden bg-slate-200">
+                    <img src={asset.path} alt={asset.name} className="w-full h-full object-cover" />
+                  </div>
+                  <p className="text-[10px] font-bold text-slate-800 truncate mt-1">{asset.name}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

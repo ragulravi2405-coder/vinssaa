@@ -9,12 +9,16 @@ import { DEPARTMENTS_DATA } from '../data/departmentsData';
 import { DocumentViewerModal } from '../components/common/DocumentViewerModal';
 import { DocumentItem } from '../types';
 import { submitAdmissionForm } from '../services/api';
+import { useAdminData } from '../context/AdminDataContext';
 
 interface AdmissionsPageProps {
   initialAnchor?: string;
 }
 
 export const AdmissionsPage: React.FC<AdmissionsPageProps> = ({ initialAnchor = 'eligibility-ug' }) => {
+  const { documents } = useAdminData();
+  const allDocs = documents && documents.length > 0 ? documents : DOCUMENTS_LIST;
+
   const [activeSection, setActiveSection] = useState(initialAnchor);
   const [selectedDoc, setSelectedDoc] = useState<DocumentItem | null>(null);
   const [formCategory, setFormCategory] = useState<'UG' | 'PG'>('UG');
@@ -68,9 +72,9 @@ export const AdmissionsPage: React.FC<AdmissionsPageProps> = ({ initialAnchor = 
     });
   };
 
-  const prospectusDoc = DOCUMENTS_LIST.find(d => d.id === 'doc-prospectus') || DOCUMENTS_LIST[0];
-  const applicationDoc = DOCUMENTS_LIST.find(d => d.id === 'doc-application') || DOCUMENTS_LIST[1];
-  const scholarshipDoc = DOCUMENTS_LIST.find(d => d.id === 'doc-scholarship') || DOCUMENTS_LIST[2];
+  const prospectusDoc = allDocs.find(d => d.id === 'doc-prospectus') || allDocs[0];
+  const applicationDoc = allDocs.find(d => d.id === 'doc-application') || allDocs[1] || allDocs[0];
+  const scholarshipDoc = allDocs.find(d => d.id === 'doc-scholarship') || allDocs[2] || allDocs[0];
 
   return (
     <div className="bg-[#FFFFFF] text-[#0A2540] min-h-screen">

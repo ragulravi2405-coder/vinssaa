@@ -12,13 +12,14 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentTab, onTabChange }) => {
-  const { customNavButtons, siteTheme } = useAdminData();
+  const { customNavButtons, siteTheme, documents } = useAdminData();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [expandedMobileSection, setExpandedMobileSection] = useState<string | null>(null);
   const [selectedDoc, setSelectedDoc] = useState<DocumentItem | null>(null);
 
-  const mandatoryDoc = DOCUMENTS_LIST.find((d) => d.id === 'doc-mandatory') || DOCUMENTS_LIST[5];
+  const allDocs = documents && documents.length > 0 ? documents : DOCUMENTS_LIST;
+  const mandatoryDoc = allDocs.find((d) => d.id === 'doc-mandatory') || allDocs[0];
 
   // Dynamic custom navbar buttons
   const navbarButtons = customNavButtons.filter(b => b.location === 'navbar' && b.isActive);

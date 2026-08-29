@@ -66,18 +66,36 @@ export async function createGalleryImage(req: Request, res: Response) {
 export async function updateGalleryImage(req: Request, res: Response) {
   try {
     const { id } = req.params;
+
+    // Fetch existing record to preserve image if not changed
+    const existing = await executeQuery<GalleryRow[]>(
+      'SELECT * FROM gallery_images WHERE id = ? LIMIT 1',
+      [id]
+    );
+    if (!existing || existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Gallery image not found' });
+    }
+    const current = existing[0];
+
     const { title, category, imagePath, description } = req.body;
+
+    const newTitle       = (title       !== undefined && title       !== null && title       !== '') ? title       : current.title;
+    const newCategory    = (category    !== undefined && category    !== null && category    !== '') ? category    : current.category;
+    // Preserve existing image if incoming is empty/null/undefined
+    const newImagePath   = (imagePath   !== undefined && imagePath   !== null && imagePath   !== '') ? imagePath   : current.image_path;
+    const newDescription = (description !== undefined && description !== null)                        ? description : current.description;
 
     await executeQuery<ResultSetHeader>(
       `UPDATE gallery_images SET
-         title = COALESCE(?, title),
-         category = COALESCE(?, category),
-         image_path = COALESCE(?, image_path),
-         description = COALESCE(?, description)
+         title       = ?,
+         category    = ?,
+         image_path  = ?,
+         description = ?
        WHERE id = ?`,
-      [title ?? null, category ?? null, imagePath ?? null, description ?? null, id]
+      [newTitle, newCategory, newImagePath, newDescription, id]
     );
-    return res.json({ success: true, message: 'Gallery image updated in MySQL' });
+
+    return res.json({ success: true, message: 'Gallery image updated in MySQL', id });
   } catch (error: any) {
     return res.status(500).json({
       success: false,

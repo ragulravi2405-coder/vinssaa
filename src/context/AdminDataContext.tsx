@@ -1,15 +1,35 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { 
   GALLERY_IMAGES as INITIAL_GALLERY_IMAGES, 
   COLLEGE_DAY_GALLERY as INITIAL_COLLEGE_DAY_GALLERY,
   DOCUMENTS_LIST as INITIAL_DOCUMENTS_LIST,
   HERO_SLIDES as INITIAL_HERO_SLIDES,
-  NEWS_EVENTS as INITIAL_NEWS_EVENTS,
   CollegeDayGalleryItem
 } from '../data/collegeData';
 import { DEPARTMENTS_DATA as INITIAL_DEPARTMENTS_DATA } from '../data/departmentsData';
 import { NOTIFICATIONS_DATA as INITIAL_NOTIFICATIONS_DATA, CollegeNotification } from '../data/notificationsData';
 import { GalleryImage, DocumentItem, DepartmentItem, CustomNavButton, SiteThemeConfig, SiteBannerAnnouncement, ThemePreset } from '../types';
+import {
+  fetchEvents,
+  createEventApi,
+  updateEventApi,
+  deleteEventApi,
+  fetchNotifications,
+  createNotificationApi,
+  updateNotificationApi,
+  deleteNotificationApi,
+  fetchDocuments,
+  createDocumentApi,
+  updateDocumentApi,
+  deleteDocumentApi,
+  fetchGalleryImages,
+  createGalleryImageApi,
+  updateGalleryImageApi,
+  deleteGalleryImageApi,
+  fetchSettings,
+  updateSettingApi,
+  clearAdminToken
+} from '../services/api';
 
 export interface HeroSlideItem {
   id: number;
@@ -62,7 +82,7 @@ export const INITIAL_SITE_BANNER: SiteBannerAnnouncement = {
 };
 
 export const KNOWN_MEDIA_ASSETS: AvailableMediaAsset[] = [
-  // Slides (only files that actually exist in public/images/slide images/)
+  // Slides
   { id: 'slide-3', name: 'Hero Slide 3 - Engineering Complex', path: '/images/slide images/3.jpg', category: 'slides' },
   { id: 'slide-4', name: 'Hero Slide 4 - Central Library', path: '/images/slide images/4.jpg', category: 'slides' },
   { id: 'slide-5', name: 'Hero Slide 5 - Placement Arena', path: '/images/slide images/5.jpg', category: 'slides' },
@@ -126,7 +146,7 @@ interface AdminDataContextType {
   isAdminLoggedIn: boolean;
   setIsAdminLoggedIn: (status: boolean) => void;
   
-  // Custom Navigation & Action Buttons (Live real-time additions)
+  // Custom Navigation & Action Buttons
   customNavButtons: CustomNavButton[];
   addCustomNavButton: (btn: Omit<CustomNavButton, 'id'> & { id?: string }) => void;
   deleteCustomNavButton: (id: string) => void;
@@ -190,6 +210,9 @@ interface AdminDataContextType {
   updateMediaAsset: (asset: AvailableMediaAsset) => void;
   deleteMediaAsset: (id: string) => void;
 
+  // Global Refresh from MySQL
+  refreshData: () => Promise<void>;
+
   // Reset to Factory Defaults
   resetAllToDefaults: () => void;
 }
@@ -219,6 +242,9 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const setIsAdminLoggedIn = (status: boolean) => {
     setIsAdminLoggedInState(status);
     localStorage.setItem(STORAGE_KEYS.IS_AUTH, status ? 'true' : 'false');
+    if (!status) {
+      clearAdminToken();
+    }
   };
 
   // Custom Navigation Buttons
@@ -267,19 +293,12 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return 'LIVE ANNOUNCEMENTS & CIRCULARS';
   });
 
-  const setRunningTickerTitle = (title: string) => {
-    setRunningTickerTitleState(title);
-    localStorage.setItem(STORAGE_KEYS.TICKER_TITLE, title);
-  };
-
   // Gallery
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.GALLERY);
       if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
+    } catch {}
     return INITIAL_GALLERY_IMAGES;
   });
 
@@ -288,9 +307,7 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.DOCUMENTS);
       if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
+    } catch {}
     return INITIAL_DOCUMENTS_LIST;
   });
 
@@ -299,9 +316,7 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.EVENTS);
       if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
+    } catch {}
     return INITIAL_COLLEGE_DAY_GALLERY;
   });
 
@@ -310,9 +325,7 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.SLIDES);
       if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
+    } catch {}
     return INITIAL_HERO_SLIDES;
   });
 
@@ -321,9 +334,7 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
       if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
+    } catch {}
     return INITIAL_NOTIFICATIONS_DATA;
   });
 
@@ -332,9 +343,7 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.DEPARTMENTS);
       if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
+    } catch {}
     return INITIAL_DEPARTMENTS_DATA;
   });
 
@@ -343,13 +352,109 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.MEDIA);
       if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
+    } catch {}
     return KNOWN_MEDIA_ASSETS;
   });
 
-  // Persistence helpers
+  // ── Sync from MySQL Backend on Mount & on Demand ─────────────
+  const refreshData = useCallback(async () => {
+    try {
+      // 1. Fetch Events from MySQL (always apply — even if empty array)
+      const eventsRes = await fetchEvents();
+      if (eventsRes.success && eventsRes.data) {
+        setEvents(eventsRes.data);
+        localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(eventsRes.data));
+      }
+
+      // 2. Fetch Notifications from MySQL
+      const notifRes = await fetchNotifications();
+      if (notifRes.success && notifRes.data) {
+        setNotifications(notifRes.data);
+        localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifRes.data));
+      }
+
+      // 3. Fetch Documents from MySQL
+      const docRes = await fetchDocuments();
+      if (docRes.success && docRes.data) {
+        setDocuments(docRes.data);
+        localStorage.setItem(STORAGE_KEYS.DOCUMENTS, JSON.stringify(docRes.data));
+      }
+
+      // 4. Fetch Gallery from MySQL
+      const galRes = await fetchGalleryImages();
+      if (galRes.success && galRes.data) {
+        setGalleryImages(galRes.data);
+        localStorage.setItem(STORAGE_KEYS.GALLERY, JSON.stringify(galRes.data));
+      }
+
+      // 5. Fetch Site Settings from MySQL
+      const settingsRes = await fetchSettings();
+      if (settingsRes.success && settingsRes.data) {
+        if (settingsRes.data.site_theme) {
+          const loadedTheme = typeof settingsRes.data.site_theme === 'string' 
+            ? JSON.parse(settingsRes.data.site_theme) 
+            : settingsRes.data.site_theme;
+          setSiteTheme(loadedTheme);
+          localStorage.setItem(STORAGE_KEYS.SITE_THEME, JSON.stringify(loadedTheme));
+        }
+        if (settingsRes.data.site_banner) {
+          const loadedBanner = typeof settingsRes.data.site_banner === 'string' 
+            ? JSON.parse(settingsRes.data.site_banner) 
+            : settingsRes.data.site_banner;
+          setSiteBanner(loadedBanner);
+          localStorage.setItem(STORAGE_KEYS.SITE_BANNER, JSON.stringify(loadedBanner));
+        }
+        if (settingsRes.data.ticker_title) {
+          const loadedTicker = typeof settingsRes.data.ticker_title === 'string' 
+            ? settingsRes.data.ticker_title.replace(/^"|"$/g, '') 
+            : settingsRes.data.ticker_title;
+          setRunningTickerTitleState(loadedTicker);
+          localStorage.setItem(STORAGE_KEYS.TICKER_TITLE, loadedTicker);
+        }
+      }
+    } catch (err) {
+      console.warn('[AdminDataContext] Failed to fetch data from MySQL backend, using local/cached state:', err);
+    }
+  }, []);
+
+  // ── Helper: re-fetch a single entity collection from MySQL ─────
+  const _refreshEvents = useCallback(async () => {
+    const res = await fetchEvents();
+    if (res.success && res.data) {
+      setEvents(res.data);
+      localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(res.data));
+    }
+  }, []);
+
+  const _refreshNotifications = useCallback(async () => {
+    const res = await fetchNotifications();
+    if (res.success && res.data) {
+      setNotifications(res.data);
+      localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(res.data));
+    }
+  }, []);
+
+  const _refreshDocuments = useCallback(async () => {
+    const res = await fetchDocuments();
+    if (res.success && res.data) {
+      setDocuments(res.data);
+      localStorage.setItem(STORAGE_KEYS.DOCUMENTS, JSON.stringify(res.data));
+    }
+  }, []);
+
+  const _refreshGallery = useCallback(async () => {
+    const res = await fetchGalleryImages();
+    if (res.success && res.data) {
+      setGalleryImages(res.data);
+      localStorage.setItem(STORAGE_KEYS.GALLERY, JSON.stringify(res.data));
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
+
+  // Local storage persistence helpers
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.NAV_BUTTONS, JSON.stringify(customNavButtons));
   }, [customNavButtons]);
@@ -390,7 +495,7 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     localStorage.setItem(STORAGE_KEYS.MEDIA, JSON.stringify(mediaAssets));
   }, [mediaAssets]);
 
-  // Actions for Custom Nav Buttons
+  // ── Actions for Custom Nav Buttons ───────────────────────────
   const addCustomNavButton = (btn: Omit<CustomNavButton, 'id'> & { id?: string }) => {
     const newBtn: CustomNavButton = {
       id: btn.id || `btn-${Date.now()}`,
@@ -421,12 +526,18 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setCustomNavButtons(prev => prev.map(b => b.id === id ? { ...b, isActive: !b.isActive } : b));
   };
 
-  // Actions for Site Theme
-  const updateSiteTheme = (updates: Partial<SiteThemeConfig>) => {
-    setSiteTheme(prev => ({ ...prev, ...updates }));
+  // ── Actions for Site Theme & Branding ─────────────────────────
+  const updateSiteTheme = async (updates: Partial<SiteThemeConfig>) => {
+    const merged = { ...siteTheme, ...updates };
+    setSiteTheme(merged);
+    try {
+      await updateSettingApi('site_theme', merged);
+    } catch (e) {
+      console.error('Failed to sync site_theme to MySQL:', e);
+    }
   };
 
-  const setThemePreset = (preset: ThemePreset) => {
+  const setThemePreset = async (preset: ThemePreset) => {
     let primary = '#0a192f';
     let accent = '#d97706';
 
@@ -444,21 +555,44 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       accent = '#f59e0b';
     }
 
-    setSiteTheme(prev => ({
-      ...prev,
+    const newTheme: SiteThemeConfig = {
+      ...siteTheme,
       themeId: preset,
       primaryColor: primary,
       accentColor: accent
-    }));
+    };
+
+    setSiteTheme(newTheme);
+    try {
+      await updateSettingApi('site_theme', newTheme);
+    } catch (e) {
+      console.error('Failed to sync site_theme preset to MySQL:', e);
+    }
   };
 
-  // Actions for Site Banner
-  const updateSiteBanner = (updates: Partial<SiteBannerAnnouncement>) => {
-    setSiteBanner(prev => ({ ...prev, ...updates }));
+  // ── Actions for Site Banner ───────────────────────────────────
+  const updateSiteBanner = async (updates: Partial<SiteBannerAnnouncement>) => {
+    const merged = { ...siteBanner, ...updates };
+    setSiteBanner(merged);
+    try {
+      await updateSettingApi('site_banner', merged);
+    } catch (e) {
+      console.error('Failed to sync site_banner to MySQL:', e);
+    }
   };
 
-  // Actions
-  const addGalleryImage = (image: Omit<GalleryImage, 'id'> & { id?: string }) => {
+  const setRunningTickerTitle = async (title: string) => {
+    setRunningTickerTitleState(title);
+    localStorage.setItem(STORAGE_KEYS.TICKER_TITLE, title);
+    try {
+      await updateSettingApi('ticker_title', title);
+    } catch (e) {
+      console.error('Failed to sync ticker_title to MySQL:', e);
+    }
+  };
+
+  // ── Actions for Gallery ───────────────────────────────────────
+  const addGalleryImage = async (image: Omit<GalleryImage, 'id'> & { id?: string }) => {
     const newImage: GalleryImage = {
       id: image.id || `gal-${Date.now()}`,
       title: image.title,
@@ -466,17 +600,43 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       imagePath: image.imagePath
     };
     setGalleryImages(prev => [newImage, ...prev]);
+    try {
+      const res = await createGalleryImageApi(newImage);
+      if (res.success && res.id) {
+        newImage.id = res.id;
+      }
+    } catch (e) {
+      console.error('Failed to sync gallery image to MySQL:', e);
+    }
   };
 
-  const deleteGalleryImage = (id: string) => {
+  const deleteGalleryImage = async (id: string) => {
     setGalleryImages(prev => prev.filter(img => img.id !== id));
+    try {
+      await deleteGalleryImageApi(id);
+    } catch (e) {
+      console.error('Failed to delete gallery image from MySQL:', e);
+    }
   };
 
-  const updateGalleryImage = (image: GalleryImage) => {
+  const updateGalleryImage = async (image: GalleryImage) => {
+    // Optimistic local update
     setGalleryImages(prev => prev.map(img => img.id === image.id ? image : img));
+    try {
+      const res = await updateGalleryImageApi(image.id, image);
+      if (res.success) {
+        // Re-fetch from MySQL so public website reflects the actual DB state
+        await _refreshGallery();
+      } else {
+        console.error('Gallery update API error:', res.message);
+      }
+    } catch (e) {
+      console.error('Failed to update gallery image in MySQL:', e);
+    }
   };
 
-  const addDocument = (doc: Omit<DocumentItem, 'id'> & { id?: string }) => {
+  // ── Actions for Documents ─────────────────────────────────────
+  const addDocument = async (doc: Omit<DocumentItem, 'id'> & { id?: string }) => {
     const newDoc: DocumentItem = {
       id: doc.id || `doc-${Date.now()}`,
       title: doc.title,
@@ -488,17 +648,43 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       description: doc.description || 'Official college document uploaded by administration.'
     };
     setDocuments(prev => [newDoc, ...prev]);
+    try {
+      const res = await createDocumentApi(newDoc);
+      if (res.success && res.id) {
+        newDoc.id = res.id;
+      }
+    } catch (e) {
+      console.error('Failed to sync document to MySQL:', e);
+    }
   };
 
-  const deleteDocument = (id: string) => {
+  const deleteDocument = async (id: string) => {
     setDocuments(prev => prev.filter(d => d.id !== id));
+    try {
+      await deleteDocumentApi(id);
+    } catch (e) {
+      console.error('Failed to delete document from MySQL:', e);
+    }
   };
 
-  const updateDocument = (doc: DocumentItem) => {
+  const updateDocument = async (doc: DocumentItem) => {
+    // Optimistic local update
     setDocuments(prev => prev.map(d => d.id === doc.id ? doc : d));
+    try {
+      const res = await updateDocumentApi(doc.id, doc);
+      if (res.success) {
+        // Re-fetch from MySQL so public website reflects the actual DB state
+        await _refreshDocuments();
+      } else {
+        console.error('Document update API error:', res.message);
+      }
+    } catch (e) {
+      console.error('Failed to update document in MySQL:', e);
+    }
   };
 
-  const addEvent = (event: Omit<CollegeDayGalleryItem, 'id'> & { id?: string }) => {
+  // ── Actions for Campus Events ─────────────────────────────────
+  const addEvent = async (event: Omit<CollegeDayGalleryItem, 'id'> & { id?: string }) => {
     const newEvent: CollegeDayGalleryItem = {
       id: event.id || `evt-${Date.now()}`,
       title: event.title,
@@ -510,16 +696,42 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       chiefGuest: event.chiefGuest
     };
     setEvents(prev => [newEvent, ...prev]);
+    try {
+      const res = await createEventApi(newEvent);
+      if (res.success && res.id) {
+        newEvent.id = res.id;
+      }
+    } catch (e) {
+      console.error('Failed to sync event to MySQL:', e);
+    }
   };
 
-  const deleteEvent = (id: string) => {
+  const deleteEvent = async (id: string) => {
     setEvents(prev => prev.filter(e => e.id !== id));
+    try {
+      await deleteEventApi(id);
+    } catch (e) {
+      console.error('Failed to delete event from MySQL:', e);
+    }
   };
 
-  const updateEvent = (event: CollegeDayGalleryItem) => {
+  const updateEvent = async (event: CollegeDayGalleryItem) => {
+    // Optimistic local update
     setEvents(prev => prev.map(e => e.id === event.id ? event : e));
+    try {
+      const res = await updateEventApi(event.id, event);
+      if (res.success) {
+        // Re-fetch from MySQL so public website reflects the actual DB state
+        await _refreshEvents();
+      } else {
+        console.error('Event update API error:', res.message);
+      }
+    } catch (e) {
+      console.error('Failed to update event in MySQL:', e);
+    }
   };
 
+  // ── Actions for Hero Slides ───────────────────────────────────
   const addHeroSlide = (slide: Omit<HeroSlideItem, 'id'> & { id?: number }) => {
     const newSlide: HeroSlideItem = {
       id: slide.id || Date.now(),
@@ -539,7 +751,8 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setHeroSlides(prev => prev.map(s => s.id === slide.id ? slide : s));
   };
 
-  const addNotification = (notice: Omit<CollegeNotification, 'id'> & { id?: string }) => {
+  // ── Actions for Notifications ─────────────────────────────────
+  const addNotification = async (notice: Omit<CollegeNotification, 'id'> & { id?: string }) => {
     const newNotice: CollegeNotification = {
       id: notice.id || `notif-${Date.now()}`,
       title: notice.title,
@@ -554,16 +767,42 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       externalLink: notice.externalLink
     };
     setNotifications(prev => [newNotice, ...prev]);
+    try {
+      const res = await createNotificationApi(newNotice);
+      if (res.success && res.id) {
+        newNotice.id = res.id;
+      }
+    } catch (e) {
+      console.error('Failed to sync notification to MySQL:', e);
+    }
   };
 
-  const deleteNotification = (id: string) => {
+  const deleteNotification = async (id: string) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
+    try {
+      await deleteNotificationApi(id);
+    } catch (e) {
+      console.error('Failed to delete notification from MySQL:', e);
+    }
   };
 
-  const updateNotification = (notice: CollegeNotification) => {
+  const updateNotification = async (notice: CollegeNotification) => {
+    // Optimistic local update
     setNotifications(prev => prev.map(n => n.id === notice.id ? notice : n));
+    try {
+      const res = await updateNotificationApi(notice.id, notice);
+      if (res.success) {
+        // Re-fetch from MySQL so public website reflects the actual DB state
+        await _refreshNotifications();
+      } else {
+        console.error('Notification update API error:', res.message);
+      }
+    } catch (e) {
+      console.error('Failed to update notification in MySQL:', e);
+    }
   };
 
+  // ── Actions for Department Images ─────────────────────────────
   const updateDepartmentImage = (deptId: string, updates: Partial<{
     bannerPath: string;
     courseImage: string;
@@ -582,6 +821,7 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }));
   };
 
+  // ── Media Library Actions ─────────────────────────────────────
   const addMediaAsset = (asset: AvailableMediaAsset) => {
     setMediaAssets(prev => [asset, ...prev.filter(a => a.path !== asset.path)]);
   };
@@ -594,6 +834,7 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setMediaAssets(prev => prev.filter(a => a.id !== id));
   };
 
+  // ── Reset to Defaults ─────────────────────────────────────────
   const resetAllToDefaults = () => {
     setGalleryImages(INITIAL_GALLERY_IMAGES);
     setDocuments(INITIAL_DOCUMENTS_LIST);
@@ -663,6 +904,7 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         addMediaAsset,
         updateMediaAsset,
         deleteMediaAsset,
+        refreshData,
         resetAllToDefaults
       }}
     >

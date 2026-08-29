@@ -22,6 +22,8 @@ interface EditImageModalProps {
   onPickExisting?: (callback: (path: string) => void) => void;
 }
 
+import { uploadMediaApi } from '../../services/api';
+
 export const EditImageModal: React.FC<EditImageModalProps> = ({
   isOpen,
   onClose,
@@ -41,6 +43,7 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
     date: '',
     chiefGuest: ''
   });
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -59,19 +62,27 @@ export const EditImageModal: React.FC<EditImageModalProps> = ({
 
   if (!isOpen || !initialData) return null;
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       alert('Please select a valid image file.');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const url = event.target?.result as string;
-      setFormData((prev) => ({ ...prev, imagePath: url }));
-    };
-    reader.readAsDataURL(file);
+    try {
+      setIsUploading(true);
+      const res = await uploadMediaApi(file);
+      if (res.success && res.url) {
+        setFormData((prev) => ({ ...prev, imagePath: res.url }));
+      } else if (!res.success && res.message) {
+        alert(res.message);
+      }
+    } catch (err: any) {
+      console.error('Failed to upload image:', err);
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
