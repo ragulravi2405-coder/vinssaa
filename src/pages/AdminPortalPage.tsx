@@ -12,7 +12,7 @@ import { DocumentItem, GalleryImage, CustomNavButton, NavigationTab } from '../t
 import { CollegeDayGalleryItem } from '../data/collegeData';
 import { DocumentViewerModal } from '../components/common/DocumentViewerModal';
 import { EditImageModal, ImageEditPayload } from '../components/admin/EditImageModal';
-import { loginAdmin, uploadMediaApi, fetchAdmissions } from '../services/api';
+import { loginAdmin, uploadMediaApi, fetchAdmissions, fetchContactInquiries } from '../services/api';
 
 export const AdminPortalPage: React.FC = () => {
   const {
@@ -59,13 +59,18 @@ export const AdminPortalPage: React.FC = () => {
   } = useAdminData();
 
   const [activeTab, setActiveTab] = useState<
-    'buttons' | 'banner' | 'gallery' | 'events' | 'slides' | 'departments' | 'documents' | 'notifications' | 'media' | 'admissions'
+    'buttons' | 'banner' | 'gallery' | 'events' | 'slides' | 'departments' | 'documents' | 'notifications' | 'media' | 'admissions' | 'contact'
   >('buttons');
 
   const [passcode, setPasscode] = useState('');
   const [admissions, setAdmissions] = useState<any[]>([]);
   const [admissionsLoading, setAdmissionsLoading] = useState(false);
   const [admissionsError, setAdmissionsError] = useState<string | null>(null);
+  const [contactInquiries, setContactInquiries] = useState<any[]>([]);
+  const [contactLoading, setContactLoading] = useState(false);
+  const [contactError, setContactError] = useState<string | null>(null);
+  const [admissionSearch, setAdmissionSearch] = useState('');
+  const [admissionStatusFilter, setAdmissionStatusFilter] = useState('all');
   const [authError, setAuthError] = useState('');
   const [successToast, setSuccessToast] = useState<string | null>(null);
   const [selectedDocPreview, setSelectedDocPreview] = useState<DocumentItem | null>(null);
@@ -207,6 +212,24 @@ export const AdminPortalPage: React.FC = () => {
         })
         .catch((err) => setAdmissionsError(err.message))
         .finally(() => setAdmissionsLoading(false));
+    }
+  }, [activeTab]);
+
+  // Fetch contact inquiries when Contact tab is active
+  React.useEffect(() => {
+    if (activeTab === 'contact') {
+      setContactLoading(true);
+      setContactError(null);
+      fetchContactInquiries()
+        .then((res) => {
+          if (res.success && res.data) {
+            setContactInquiries(res.data);
+          } else {
+            setContactError(res.message || 'Failed to load contact inquiries');
+          }
+        })
+        .catch((err) => setContactError(err.message))
+        .finally(() => setContactLoading(false));
     }
   }, [activeTab]);
 
@@ -854,39 +877,290 @@ export const AdminPortalPage: React.FC = () => {
                     : 'bg-white text-[#0A2540] hover:bg-[#0A2540]/10 border-2 border-[#0A2540]/20'
                 }`}
               >
-                <ShieldCheck className="w-4 h-4 text-current" />
+                <GraduationCap className="w-4 h-4 text-current" />
                 <span>Admissions ({admissions?.length ?? 0})</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('contact')}
+                className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                  activeTab === 'contact'
+                    ? 'bg-[#0A2540] text-white shadow-md border-2 border-[#0A2540]'
+                    : 'bg-white text-[#0A2540] hover:bg-[#0A2540]/10 border-2 border-[#0A2540]/20'
+                }`}
+              >
+                <Bell className="w-4 h-4 text-current" />
+                <span>Contact Inquiries ({contactInquiries?.length ?? 0})</span>
               </button>
             </div>
 
-            {/* TAB: CUSTOM NAVIGATION & ACTION BUTTONS MANAGER */}
+            {/* TAB: ADMISSION APPLICATIONS */}
             {activeTab === 'admissions' && (
-              <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
-                <h3 className="font-bold text-base text-[#363538] mb-4">Manage Admission Applications</h3>
-                {admissionsLoading && <p className="text-sm">Loading applications...</p>}
-                {admissionsError && <p className="text-sm text-red-500">{admissionsError}</p>}
-                {!admissionsLoading && !admissionsError && (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-xs text-left">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="py-3 px-2 font-bold">Name</th>
-                          <th className="py-3 px-2 font-bold">Course</th>
-                          <th className="py-3 px-2 font-bold">Phone</th>
-                          <th className="py-3 px-2 font-bold">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {admissions.map((item, idx) => (
-                          <tr key={idx} className="border-b last:border-0">
-                            <td className="py-3 px-2">{item.name}</td>
-                            <td className="py-3 px-2">{item.course}</td>
-                            <td className="py-3 px-2">{item.phone}</td>
-                            <td className="py-3 px-2 font-bold">{item.status || 'Pending'}</td>
+              <div className="space-y-5">
+                {/* Header row */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h3 className="font-bold text-lg text-[#0A2540] flex items-center gap-2">
+                      <GraduationCap className="w-5 h-5 text-[#0A2540]" />
+                      Admission Applications
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">Read from <code className="bg-slate-100 px-1 rounded">vins_college.admission_applications</code></p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setAdmissionsLoading(true);
+                      setAdmissionsError(null);
+                      fetchAdmissions()
+                        .then(res => { if (res.success && res.data) setAdmissions(res.data); else setAdmissionsError(res.message || 'Error'); })
+                        .catch(err => setAdmissionsError(err.message))
+                        .finally(() => setAdmissionsLoading(false));
+                    }}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-[#0A2540] text-white rounded-full text-xs font-bold hover:bg-[#0A2540]/90 transition-all cursor-pointer shadow-sm"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    Refresh
+                  </button>
+                </div>
+
+                {/* Search & Filter */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Search by name, email, phone or course..."
+                      value={admissionSearch}
+                      onChange={e => setAdmissionSearch(e.target.value)}
+                      className="w-full pl-8 pr-3 py-2.5 text-xs bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-[#0A2540]"
+                    />
+                  </div>
+                  <select
+                    value={admissionStatusFilter}
+                    onChange={e => setAdmissionStatusFilter(e.target.value)}
+                    className="px-3 py-2.5 text-xs bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-[#0A2540] cursor-pointer"
+                  >
+                    <option value="all">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="reviewed">Reviewed</option>
+                    <option value="admitted">Admitted</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </div>
+
+                {/* Loading / Error */}
+                {admissionsLoading && (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="flex items-center gap-3 text-[#0A2540]">
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                      <span className="text-sm font-medium">Loading admission records from MySQL...</span>
+                    </div>
+                  </div>
+                )}
+                {admissionsError && (
+                  <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                    <p className="text-xs text-red-700 font-medium">{admissionsError}</p>
+                  </div>
+                )}
+
+                {!admissionsLoading && !admissionsError && (() => {
+                  const filtered = admissions.filter(item => {
+                    const matchSearch = !admissionSearch ||
+                      (item.full_name || '').toLowerCase().includes(admissionSearch.toLowerCase()) ||
+                      (item.email || '').toLowerCase().includes(admissionSearch.toLowerCase()) ||
+                      (item.phone || '').includes(admissionSearch) ||
+                      (item.preferred_course || '').toLowerCase().includes(admissionSearch.toLowerCase());
+                    const matchStatus = admissionStatusFilter === 'all' || item.status === admissionStatusFilter;
+                    return matchSearch && matchStatus;
+                  });
+                  return (
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                      <div className="px-5 py-3 bg-[#0A2540]/5 border-b border-slate-200 flex items-center justify-between">
+                        <span className="text-xs font-bold text-[#0A2540]">
+                          {filtered.length} of {admissions.length} Application{admissions.length !== 1 ? 's' : ''}
+                        </span>
+                        {admissions.length === 0 && (
+                          <span className="text-xs text-slate-400">No records yet in admission_applications</span>
+                        )}
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                          <thead>
+                            <tr className="bg-slate-50 border-b border-slate-200">
+                              <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">#</th>
+                              <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Full Name</th>
+                              <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Email</th>
+                              <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Phone</th>
+                              <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Course</th>
+                              <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Category</th>
+                              <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Qual.</th>
+                              <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">%</th>
+                              <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">City</th>
+                              <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Acad. Year</th>
+                              <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Status</th>
+                              <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Submitted</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filtered.length === 0 ? (
+                              <tr>
+                                <td colSpan={12} className="text-center py-10 text-slate-400 text-xs">
+                                  {admissions.length === 0 ? 'No admission applications found in the database.' : 'No records match your search/filter.'}
+                                </td>
+                              </tr>
+                            ) : (
+                              filtered.map((item, idx) => {
+                                const statusColors: Record<string, string> = {
+                                  pending: 'bg-amber-100 text-amber-800',
+                                  reviewed: 'bg-blue-100 text-blue-800',
+                                  admitted: 'bg-green-100 text-green-800',
+                                  rejected: 'bg-red-100 text-red-800'
+                                };
+                                const statusColor = statusColors[item.status] || 'bg-slate-100 text-slate-700';
+                                const submittedDate = item.created_at
+                                  ? new Date(item.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+                                  : '—';
+                                return (
+                                  <tr key={item.id ?? idx} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                    <td className="py-3 px-4 font-bold text-slate-400">{item.id}</td>
+                                    <td className="py-3 px-4 font-semibold text-[#0A2540] whitespace-nowrap">{item.full_name || '—'}</td>
+                                    <td className="py-3 px-4 text-slate-600">{item.email || '—'}</td>
+                                    <td className="py-3 px-4 text-slate-600 whitespace-nowrap">{item.phone || '—'}</td>
+                                    <td className="py-3 px-4 text-slate-700 font-medium whitespace-nowrap">{item.preferred_course || '—'}</td>
+                                    <td className="py-3 px-4">
+                                      <span className="px-2 py-0.5 bg-[#0A2540]/10 text-[#0A2540] rounded-full font-bold text-[10px]">{item.category || '—'}</span>
+                                    </td>
+                                    <td className="py-3 px-4 text-slate-600">{item.qualification || '—'}</td>
+                                    <td className="py-3 px-4 font-bold text-slate-700">{item.percentage ? `${item.percentage}%` : '—'}</td>
+                                    <td className="py-3 px-4 text-slate-600">{item.city || '—'}</td>
+                                    <td className="py-3 px-4 text-slate-600 whitespace-nowrap">{item.academic_year || '—'}</td>
+                                    <td className="py-3 px-4">
+                                      <span className={`px-2.5 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider ${statusColor}`}>
+                                        {item.status || 'pending'}
+                                      </span>
+                                    </td>
+                                    <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{submittedDate}</td>
+                                  </tr>
+                                );
+                              })
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
+            {/* TAB: CONTACT INQUIRIES */}
+            {activeTab === 'contact' && (
+              <div className="space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h3 className="font-bold text-lg text-[#0A2540] flex items-center gap-2">
+                      <Bell className="w-5 h-5 text-[#0A2540]" />
+                      Contact Inquiries
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">Read from <code className="bg-slate-100 px-1 rounded">vins_college.contact_inquiries</code></p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setContactLoading(true);
+                      setContactError(null);
+                      fetchContactInquiries()
+                        .then(res => { if (res.success && res.data) setContactInquiries(res.data); else setContactError(res.message || 'Error'); })
+                        .catch(err => setContactError(err.message))
+                        .finally(() => setContactLoading(false));
+                    }}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-[#0A2540] text-white rounded-full text-xs font-bold hover:bg-[#0A2540]/90 transition-all cursor-pointer shadow-sm"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    Refresh
+                  </button>
+                </div>
+
+                {contactLoading && (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="flex items-center gap-3 text-[#0A2540]">
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                      <span className="text-sm font-medium">Loading contact inquiries from MySQL...</span>
+                    </div>
+                  </div>
+                )}
+                {contactError && (
+                  <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                    <p className="text-xs text-red-700 font-medium">{contactError}</p>
+                  </div>
+                )}
+                {!contactLoading && !contactError && (
+                  <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div className="px-5 py-3 bg-[#0A2540]/5 border-b border-slate-200">
+                      <span className="text-xs font-bold text-[#0A2540]">
+                        {contactInquiries.length} Inquir{contactInquiries.length !== 1 ? 'ies' : 'y'} in Database
+                      </span>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="bg-slate-50 border-b border-slate-200">
+                            <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">#</th>
+                            <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Name</th>
+                            <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Email</th>
+                            <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Phone</th>
+                            <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Subject</th>
+                            <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Message</th>
+                            <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Source</th>
+                            <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Status</th>
+                            <th className="text-left py-3 px-4 font-bold text-[#0A2540] uppercase tracking-wide text-[10px]">Received</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {contactInquiries.length === 0 ? (
+                            <tr>
+                              <td colSpan={9} className="text-center py-10 text-slate-400 text-xs">
+                                No contact inquiries found in the database yet.
+                              </td>
+                            </tr>
+                          ) : (
+                            contactInquiries.map((item, idx) => {
+                              const statusColors: Record<string, string> = {
+                                new: 'bg-blue-100 text-blue-800',
+                                in_progress: 'bg-amber-100 text-amber-800',
+                                contacted: 'bg-purple-100 text-purple-800',
+                                closed: 'bg-green-100 text-green-800'
+                              };
+                              const statusColor = statusColors[item.status] || 'bg-slate-100 text-slate-700';
+                              const receivedDate = item.created_at
+                                ? new Date(item.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+                                : '—';
+                              return (
+                                <tr key={item.id ?? idx} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                  <td className="py-3 px-4 font-bold text-slate-400">{item.id}</td>
+                                  <td className="py-3 px-4 font-semibold text-[#0A2540] whitespace-nowrap">{item.name || '—'}</td>
+                                  <td className="py-3 px-4 text-slate-600">{item.email || '—'}</td>
+                                  <td className="py-3 px-4 text-slate-600 whitespace-nowrap">{item.phone || '—'}</td>
+                                  <td className="py-3 px-4 text-slate-700 font-medium">{item.subject || '—'}</td>
+                                  <td className="py-3 px-4 text-slate-600 max-w-[200px]">
+                                    <span className="line-clamp-2">{item.message || '—'}</span>
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full font-bold text-[10px]">{item.source || '—'}</span>
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <span className={`px-2.5 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider ${statusColor}`}>
+                                      {item.status || 'new'}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{receivedDate}</td>
+                                </tr>
+                              );
+                            })
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 )}
               </div>
