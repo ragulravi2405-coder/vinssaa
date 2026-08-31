@@ -391,11 +391,33 @@ export async function checkBackendHealth(): Promise<ApiResponse> {
   }
 }
 
-// ── Media Upload API (Cloudinary Direct & Backend Upload) ────
+// ── Media Upload API (Cloudinary Direct Upload) ────
 export async function uploadMediaApi(
   imageFileOrDataUri: string | File
 ): Promise<{ success: boolean; url: string; isCloudinary?: boolean; message?: string }> {
   try {
+    if (!imageFileOrDataUri) {
+      return { success: false, url: '', message: 'No image file selected for upload.' };
+    }
+
+    // If it is already a remote URL, return directly
+    if (typeof imageFileOrDataUri === 'string' && (imageFileOrDataUri.startsWith('http://') || imageFileOrDataUri.startsWith('https://'))) {
+      return { success: true, url: imageFileOrDataUri, isCloudinary: imageFileOrDataUri.includes('cloudinary.com') };
+    }
+
+    // Validate File object if passed as File
+    if (typeof imageFileOrDataUri !== 'string') {
+      const file = imageFileOrDataUri as File;
+      if (!file || file.size === 0) {
+        return { success: false, url: '', message: 'Selected file is empty or invalid.' };
+      }
+      const validExts = /\.(jpe?g|png|webp|svg|gif)$/i;
+      const isTypeValid = (file.type && file.type.startsWith('image/')) || validExts.test(file.name || '');
+      if (!isTypeValid) {
+        return { success: false, url: '', message: 'Please select a valid image file (JPG, JPEG, PNG, WEBP).' };
+      }
+    }
+
     const cloudName = (import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '').trim();
     const uploadPreset = (import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || '').trim();
 
@@ -403,83 +425,54 @@ export async function uploadMediaApi(
     console.log('[Upload] Cloudinary Cloud Name configured:', cloudName ? 'YES' : 'NO');
     console.log('[Upload] Cloudinary Upload Preset configured:', uploadPreset ? 'YES' : 'NO');
 
-    // 1. Direct Cloudinary Client-Side Upload (using Unsigned Preset)
-    if (cloudName && uploadPreset) {
-      try {
-        const formData = new FormData();
-        formData.append('file', imageFileOrDataUri);
-        formData.append('upload_preset', uploadPreset);
-
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-          method: 'POST',
-          body: formData,
-        });
-        const data = await res.json();
-
-        if (data.secure_url) {
-          console.log('[Upload] Cloudinary upload successful:', data.secure_url);
-          return { success: true, url: data.secure_url, isCloudinary: true };
-        } else if (data.error) {
-          console.error('[Upload] Cloudinary API Error:', data.error.message);
-          // Return error with clear Cloudinary message
-          return {
-            success: false,
-            url: '',
-            isCloudinary: false,
-            message: `Cloudinary: ${data.error.message}`,
-          };
-        }
-      } catch (err: any) {
-        console.warn('[Upload] Direct Cloudinary upload network error, trying backend:', err.message);
-      }
+    if (!cloudName || !uploadPreset) {
+      return {
+        success: false,
+        url: '',
+        isCloudinary: false,
+        message: 'Cloudinary is not configured. Please ensure VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET are set.',
+      };
     }
 
-    // 2. Convert File to base64 data URL if needed
-    let base64Data: string;
-    if (typeof imageFileOrDataUri === 'string') {
-      base64Data = imageFileOrDataUri;
+    // Direct Cloudinary Client-Side Upload (Unsigned Upload Preset via FormData)
+    const formData = new FormData();
+    formData.append('file', imageFileOrDataUri);
+    formData.append('upload_preset', uploadPreset);
+
+    // Note: Do NOT set Content-Type header manually when using FormData; fetch handles boundary automatically
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await res.json().catch(() => null);
+
+    if (res.ok && data?.secure_url) {
+      console.log('[Upload] Cloudinary upload successful:', data.secure_url);
+      return {
+        success: true,
+        url: data.secure_url,
+        isCloudinary: true,
+        message: 'Image uploaded successfully to Cloudinary',
+      };
     } else {
-      base64Data = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(imageFileOrDataUri);
-      });
+      const errorMsg = data?.error?.message || res.statusText || 'Cloudinary upload failed';
+      console.error('[Upload] Cloudinary API Error:', errorMsg);
+      return {
+        success: false,
+        url: '',
+        isCloudinary: false,
+        message: `Cloudinary error: ${errorMsg}`,
+      };
     }
-
-    // 3. Try Backend /api/upload endpoint
-    try {
-      const backendRes = await fetch(`${API_BASE_URL}/api/upload`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ image: base64Data }),
-      });
-      const result = await backendRes.json();
-
-      if (result.success && result.url && result.isCloudinary) {
-        return {
-          success: true,
-          url: result.url,
-          isCloudinary: true,
-        };
-      }
-    } catch (e) {
-      console.warn('[Upload] Backend upload endpoint not reachable:', e);
-    }
-
-    // 4. Fallback to base64 data URI if Cloudinary is not configured
-    return {
-      success: true,
-      url: base64Data,
-      isCloudinary: false,
-      message: 'Uploaded as local image data.',
-    };
   } catch (error: any) {
-    console.error('[Upload] Media upload fatal error:', error);
-    if (typeof imageFileOrDataUri === 'string') {
-      return { success: true, url: imageFileOrDataUri, isCloudinary: false };
-    }
-    return { success: false, url: '', message: error.message };
+    console.error('[Upload] Media upload error:', error);
+    return {
+      success: false,
+      url: '',
+      isCloudinary: false,
+      message: `Upload error: ${error?.message || 'Failed to upload image'}`,
+    };
   }
 }
 

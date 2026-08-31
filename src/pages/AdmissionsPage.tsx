@@ -36,6 +36,8 @@ export const AdmissionsPage: React.FC<AdmissionsPageProps> = ({ initialAnchor = 
     city: 'Nagercoil'
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialAnchor) {
@@ -57,19 +59,31 @@ export const AdmissionsPage: React.FC<AdmissionsPageProps> = ({ initialAnchor = 
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormSubmitted(true);
-    await submitAdmissionForm({
-      fullName: formData.fullName,
-      dob: formData.dob,
-      phone: formData.phone,
-      email: formData.email,
-      academicYear: formData.academicYear,
-      category: formCategory,
-      preferredCourse: formData.preferredCourse,
-      qualification: formData.qualification,
-      percentage: formData.percentage,
-      city: formData.city,
-    });
+    setIsSubmitting(true);
+    setSubmitError(null);
+    try {
+      const result = await submitAdmissionForm({
+        fullName: formData.fullName,
+        dob: formData.dob,
+        phone: formData.phone,
+        email: formData.email,
+        academicYear: formData.academicYear,
+        category: formCategory,
+        preferredCourse: formData.preferredCourse,
+        qualification: formData.qualification,
+        percentage: formData.percentage,
+        city: formData.city,
+      });
+      if (result.success) {
+        setFormSubmitted(true);
+      } else {
+        setSubmitError(result.message || 'Submission failed. Please try again.');
+      }
+    } catch (err: any) {
+      setSubmitError(err?.message || 'Network error. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const prospectusDoc = allDocs.find(d => d.id === 'doc-prospectus') || allDocs[0];
@@ -476,7 +490,7 @@ export const AdmissionsPage: React.FC<AdmissionsPageProps> = ({ initialAnchor = 
                     Thank you, <strong>{formData.fullName}</strong>. Your online application for academic year <strong>{formData.academicYear}</strong> has been logged. Our VINS Admission Officer will reach out to you on <strong>{formData.phone}</strong> shortly.
                   </p>
                   <button
-                    onClick={() => setFormSubmitted(false)}
+                    onClick={() => { setFormSubmitted(false); setSubmitError(null); }}
                     className="px-6 py-2.5 bg-[#FF6B00] hover:bg-[#E05E00] text-white font-bold rounded-full text-xs transition-all cursor-pointer shadow-md"
                   >
                     Submit Another Registration
@@ -589,13 +603,32 @@ export const AdmissionsPage: React.FC<AdmissionsPageProps> = ({ initialAnchor = 
                     />
                   </div>
 
-                  <div className="sm:col-span-2 pt-3">
+                  <div className="sm:col-span-2 pt-3 space-y-3">
+                    {submitError && (
+                      <div className="flex items-start gap-3 bg-red-50 border border-red-300 rounded-2xl px-4 py-3">
+                        <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                        <p className="text-xs font-semibold text-red-700">{submitError}</p>
+                      </div>
+                    )}
                     <button
                       type="submit"
-                      className="w-full py-4 bg-[#FF6B00] hover:bg-[#E05E00] text-white font-bold rounded-full text-sm uppercase tracking-wider shadow-xl transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer border border-white/20"
+                      disabled={isSubmitting}
+                      className="w-full py-4 bg-[#FF6B00] hover:bg-[#E05E00] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold rounded-full text-sm uppercase tracking-wider shadow-xl transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer border border-white/20"
                     >
-                      <Send className="w-5 h-5 text-white" />
-                      Submit {formCategory} Online Admission Registration
+                      {isSubmitting ? (
+                        <>
+                          <svg className="w-5 h-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          </svg>
+                          Submitting to Database...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5 text-white" />
+                          Submit {formCategory} Online Admission Registration
+                        </>
+                      )}
                     </button>
                   </div>
                 </form>

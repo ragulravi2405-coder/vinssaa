@@ -17,6 +17,8 @@ function formatGallery(r: GalleryRow) {
     title: r.title,
     category: r.category,
     imagePath: r.image_path,
+    imageUrl: r.image_path,
+    image_url: r.image_path,
     description: r.description || null,
     sortOrder: r.sort_order,
   };
@@ -40,14 +42,15 @@ export async function getAllGalleryImages(_req: Request, res: Response) {
 
 export async function createGalleryImage(req: Request, res: Response) {
   try {
-    const { title, category = 'Campus', imagePath, description } = req.body;
-    if (!title || !imagePath) {
-      return res.status(400).json({ success: false, message: 'Title and imagePath are required' });
+    const { title, category = 'Campus', imagePath, imageUrl, image_url, description } = req.body;
+    const finalImageUrl = imagePath || imageUrl || image_url;
+    if (!title || !finalImageUrl) {
+      return res.status(400).json({ success: false, message: 'Title and image are required' });
     }
     const id = `gal-${Date.now()}`;
     await executeQuery<ResultSetHeader>(
       'INSERT INTO gallery_images (id, title, category, image_path, description) VALUES (?, ?, ?, ?, ?)',
-      [id, title, category, imagePath, description || null]
+      [id, title, category, finalImageUrl, description || null]
     );
     return res.status(201).json({
       success: true,
@@ -77,13 +80,14 @@ export async function updateGalleryImage(req: Request, res: Response) {
     }
     const current = existing[0];
 
-    const { title, category, imagePath, description } = req.body;
+    const { title, category, imagePath, imageUrl, image_url, description } = req.body;
+    const incomingImage = imagePath || imageUrl || image_url;
 
-    const newTitle       = (title       !== undefined && title       !== null && title       !== '') ? title       : current.title;
-    const newCategory    = (category    !== undefined && category    !== null && category    !== '') ? category    : current.category;
+    const newTitle       = (title          !== undefined && title          !== null && title          !== '') ? title          : current.title;
+    const newCategory    = (category       !== undefined && category       !== null && category       !== '') ? category       : current.category;
     // Preserve existing image if incoming is empty/null/undefined
-    const newImagePath   = (imagePath   !== undefined && imagePath   !== null && imagePath   !== '') ? imagePath   : current.image_path;
-    const newDescription = (description !== undefined && description !== null)                        ? description : current.description;
+    const newImagePath   = (incomingImage  !== undefined && incomingImage  !== null && incomingImage  !== '') ? incomingImage  : current.image_path;
+    const newDescription = (description   !== undefined && description   !== null)                            ? description   : current.description;
 
     await executeQuery<ResultSetHeader>(
       `UPDATE gallery_images SET

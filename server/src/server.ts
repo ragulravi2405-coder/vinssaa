@@ -12,13 +12,13 @@ const __dirname = path.dirname(__filename);
 const envPaths = [
   path.resolve(__dirname, '../../.env'),
   path.resolve(__dirname, '../.env'),
-  path.resolve(process.cwd(), '.env'),
   path.resolve(process.cwd(), 'server/.env'),
+  path.resolve(process.cwd(), '.env'),
 ];
 
 for (const envPath of envPaths) {
   if (fs.existsSync(envPath)) {
-    dotenv.config({ path: envPath });
+    dotenv.config({ path: envPath, override: true });
   }
 }
 dotenv.config();

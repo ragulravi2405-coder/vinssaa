@@ -73,18 +73,21 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
 
         /* Hero Background Image Optimization */
         .hero-responsive-bg {
-          background-image: url('/images/clg%20photo/vins%20colleg%20bg%20img.png');
+          /* Mobile View: High-res portrait mobile campus image */
+          background-image: url('/images/clg%20photo/vins%20clg%20bg%20mobile%20view%20img.png');
           background-repeat: no-repeat;
-          /* Mobile: Force edge-to-edge vertical and horizontal stretching */
-          background-size: 100% 100%;
-          background-position: center;
+          background-size: cover;
+          background-position: center center;
+          filter: brightness(0.70) contrast(1.05);
         }
         
         @media (min-width: 640px) {
           .hero-responsive-bg {
-            /* Desktop: Original positioning unchanged */
+            /* Desktop / Windows View: Full wide landscape campus image */
+            background-image: url('/images/clg%20photo/vins%20colleg%20bg%20windows%20%20img.png');
             background-size: cover;
-            background-position: 50% 22%;
+            background-position: center 22%;
+            filter: brightness(0.68) contrast(1.05);
           }
         }
       `}</style>
@@ -92,8 +95,17 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
       {/* 1. HERO SECTION - Transparent: Crisp Campus BG with direct Text */}
       <section className="relative text-white overflow-hidden hero-responsive-container">
 
-        {/* ── Layer 1: Crisp HD Campus Background Photo ── */}
+        {/* ── Layer 1: Campus Background Photo ── */}
         <div className="absolute inset-0 z-0 hero-responsive-bg" aria-hidden="true" />
+
+        {/* ── Layer 1.5: Soft Dull Shade Overlay for Text Clarity ── */}
+        <div 
+          className="absolute inset-0 z-0 pointer-events-none"
+          style={{
+            background: 'linear-gradient(180deg, rgba(6, 16, 33, 0.45) 0%, rgba(4, 10, 24, 0.52) 50%, rgba(6, 16, 33, 0.65) 100%)',
+          }}
+          aria-hidden="true" 
+        />
 
         {/* ── Layer 2: Centered Content — Transparent Card ── */}
         <div className="relative z-10 flex items-center justify-center w-full h-full min-h-[inherit] py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">

@@ -82,7 +82,9 @@ export const INITIAL_SITE_BANNER: SiteBannerAnnouncement = {
 };
 
 export const KNOWN_MEDIA_ASSETS: AvailableMediaAsset[] = [
-  // Slides
+  // Slides & Campus Backgrounds
+  { id: 'bg-windows', name: 'VINS Campus Landscape (Windows / Desktop BG)', path: '/images/clg photo/vins colleg bg windows  img.png', category: 'slides' },
+  { id: 'bg-mobile', name: 'VINS Campus Portrait (Mobile View BG)', path: '/images/clg photo/vins clg bg mobile view img.png', category: 'slides' },
   { id: 'slide-3', name: 'Hero Slide 3 - Engineering Complex', path: '/images/slide images/3.jpg', category: 'slides' },
   { id: 'slide-4', name: 'Hero Slide 4 - Central Library', path: '/images/slide images/4.jpg', category: 'slides' },
   { id: 'slide-5', name: 'Hero Slide 5 - Placement Arena', path: '/images/slide images/5.jpg', category: 'slides' },
@@ -605,6 +607,7 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (res.success && res.id) {
         newImage.id = res.id;
       }
+      await _refreshGallery();
     } catch (e) {
       console.error('Failed to sync gallery image to MySQL:', e);
     }

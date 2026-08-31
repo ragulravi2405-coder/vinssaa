@@ -16,3 +16,8 @@ coverage/
 *.cr2
 *.NEF
 *.nef
+
+# Local migration, testing & dump files
+dump.sql
+scratch/
+scripts/

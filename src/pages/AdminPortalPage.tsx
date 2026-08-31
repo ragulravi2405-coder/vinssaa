@@ -12,7 +12,7 @@ import { DocumentItem, GalleryImage, CustomNavButton, NavigationTab } from '../t
 import { CollegeDayGalleryItem } from '../data/collegeData';
 import { DocumentViewerModal } from '../components/common/DocumentViewerModal';
 import { EditImageModal, ImageEditPayload } from '../components/admin/EditImageModal';
-import { loginAdmin, uploadMediaApi } from '../services/api';
+import { loginAdmin, uploadMediaApi, fetchAdmissions } from '../services/api';
 
 export const AdminPortalPage: React.FC = () => {
   const {
@@ -59,10 +59,13 @@ export const AdminPortalPage: React.FC = () => {
   } = useAdminData();
 
   const [activeTab, setActiveTab] = useState<
-    'buttons' | 'banner' | 'gallery' | 'events' | 'slides' | 'departments' | 'documents' | 'notifications' | 'media'
+    'buttons' | 'banner' | 'gallery' | 'events' | 'slides' | 'departments' | 'documents' | 'notifications' | 'media' | 'admissions'
   >('buttons');
 
   const [passcode, setPasscode] = useState('');
+  const [admissions, setAdmissions] = useState<any[]>([]);
+  const [admissionsLoading, setAdmissionsLoading] = useState(false);
+  const [admissionsError, setAdmissionsError] = useState<string | null>(null);
   const [authError, setAuthError] = useState('');
   const [successToast, setSuccessToast] = useState<string | null>(null);
   const [selectedDocPreview, setSelectedDocPreview] = useState<DocumentItem | null>(null);
@@ -188,6 +191,24 @@ export const AdminPortalPage: React.FC = () => {
       }
     }
   };
+
+  // Fetch admissions when Admissions tab is active
+  React.useEffect(() => {
+    if (activeTab === 'admissions') {
+      setAdmissionsLoading(true);
+      setAdmissionsError(null);
+      fetchAdmissions()
+        .then((res) => {
+          if (res.success && res.data) {
+            setAdmissions(res.data);
+          } else {
+            setAdmissionsError(res.message || 'Failed to load admissions');
+          }
+        })
+        .catch((err) => setAdmissionsError(err.message))
+        .finally(() => setAdmissionsLoading(false));
+    }
+  }, [activeTab]);
 
   // Generic File Uploader for Images -> Cloudinary / Live URL / Base64 Fallback
   const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, onComplete: (url: string) => void) => {
@@ -824,9 +845,53 @@ export const AdminPortalPage: React.FC = () => {
                 <HardDrive className="w-4 h-4" />
                 <span>Media Explorer ({mediaAssets.length})</span>
               </button>
+
+              <button
+                onClick={() => setActiveTab('admissions')}
+                className={`px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                  activeTab === 'admissions'
+                    ? 'bg-[#0A2540] text-white shadow-md border-2 border-[#0A2540]'
+                    : 'bg-white text-[#0A2540] hover:bg-[#0A2540]/10 border-2 border-[#0A2540]/20'
+                }`}
+              >
+                <ShieldCheck className="w-4 h-4 text-current" />
+                <span>Admissions ({admissions?.length ?? 0})</span>
+              </button>
             </div>
 
             {/* TAB: CUSTOM NAVIGATION & ACTION BUTTONS MANAGER */}
+            {activeTab === 'admissions' && (
+              <div className="bg-white p-6 rounded-2xl border border-slate-300 shadow-sm">
+                <h3 className="font-bold text-base text-[#363538] mb-4">Manage Admission Applications</h3>
+                {admissionsLoading && <p className="text-sm">Loading applications...</p>}
+                {admissionsError && <p className="text-sm text-red-500">{admissionsError}</p>}
+                {!admissionsLoading && !admissionsError && (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs text-left">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="py-3 px-2 font-bold">Name</th>
+                          <th className="py-3 px-2 font-bold">Course</th>
+                          <th className="py-3 px-2 font-bold">Phone</th>
+                          <th className="py-3 px-2 font-bold">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {admissions.map((item, idx) => (
+                          <tr key={idx} className="border-b last:border-0">
+                            <td className="py-3 px-2">{item.name}</td>
+                            <td className="py-3 px-2">{item.course}</td>
+                            <td className="py-3 px-2">{item.phone}</td>
+                            <td className="py-3 px-2 font-bold">{item.status || 'Pending'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+
             {activeTab === 'buttons' && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 

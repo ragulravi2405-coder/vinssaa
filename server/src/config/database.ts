@@ -10,15 +10,15 @@ const __dirname = path.dirname(__filename);
 
 // Candidates for .env location depending on launch directory
 const envPaths = [
-  path.resolve(__dirname, '../../.env'), // server/.env from dist or src/config
+  path.resolve(__dirname, '../../.env'),
   path.resolve(__dirname, '../.env'),
-  path.resolve(process.cwd(), '.env'),
   path.resolve(process.cwd(), 'server/.env'),
+  path.resolve(process.cwd(), '.env'),
 ];
 
 for (const envPath of envPaths) {
   if (fs.existsSync(envPath)) {
-    dotenv.config({ path: envPath });
+    dotenv.config({ path: envPath, override: true });
   }
 }
 dotenv.config(); // fallback to default
@@ -50,7 +50,7 @@ export const pool: Pool = mysql.createPool({
   connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 10,
   queueLimit: 0,
   enableKeepAlive: true,
-  keepAliveInitialDelay: 0,
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: true } : undefined,
   charset: 'utf8mb4',
 });
 
