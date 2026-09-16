@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "dev:client": "vite --port=3000 --host=0.0.0.0",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"CLIENT,SERVER\" -c \"cyan.bold,green.bold\" \"vite\" \"tsx server/src/server.ts\"",
+    "dev:client": "vite",
     "dev:server": "tsx server/src/server.ts",
-    "dev:all": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:all": "concurrently -k \"npm run dev:client\" \"npm run dev:server\"",
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",

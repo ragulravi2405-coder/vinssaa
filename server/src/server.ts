@@ -48,8 +48,10 @@ const envOrigins = (process.env.CORS_ORIGIN || '')
 
 const defaultAllowed = [
   'http://localhost:5173',
+  'http://localhost:5174',
   'http://localhost:3000',
   'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
   'http://127.0.0.1:3000',
 ];
 
@@ -151,8 +153,20 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/upload', uploadRoutes);
 
 // ── 404 Fallback Middleware ────────────────────────────────────
-app.use((_req, res) => {
-  res.status(404).json({ success: false, message: 'API route not found' });
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `API route not found: ${req.method} ${req.originalUrl}`,
+  });
+});
+
+// ── Global Error Handler ───────────────────────────────────────
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('[Backend Global Error]:', err);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || 'Internal server error occurred',
+  });
 });
 
 // ── Start Server ───────────────────────────────────────────────

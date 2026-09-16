@@ -10,6 +10,7 @@ import { DocumentViewerModal } from '../components/common/DocumentViewerModal';
 import { DocumentItem } from '../types';
 import { submitAdmissionForm } from '../services/api';
 import { useAdminData } from '../context/AdminDataContext';
+import { ScrollReveal } from '../components/common/ScrollReveal';
 
 interface AdmissionsPageProps {
   initialAnchor?: string;
@@ -94,11 +95,12 @@ export const AdmissionsPage: React.FC<AdmissionsPageProps> = ({ initialAnchor = 
     <div className="bg-[#FFFFFF] text-[#0A2540] min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
         
-        {/* Admissions Hero Section - Deep Navy Blue (#0A2540) + Vibrant Amber Orange (#FF6B00) */}
-        <div className="bg-[#0A2540] text-white p-8 sm:p-14 lg:p-16 rounded-3xl border-2 border-white/20 shadow-2xl relative overflow-hidden space-y-6">
-          {/* Subtle Decorative Backdrop Elements */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#1E40AF]/30 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-72 h-72 bg-[#FF6B00]/20 rounded-full blur-2xl pointer-events-none" />
+        {/* Admissions Hero Section */}
+        <ScrollReveal direction="up" distance={24}>
+          <div className="bg-[#0A2540] text-white p-8 sm:p-14 lg:p-16 rounded-3xl border border-white/20 shadow-3d-deep relative overflow-hidden space-y-6">
+            {/* Decorative depth orbs */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[#1E40AF]/25 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 w-72 h-72 bg-[#FF6B00]/15 rounded-full blur-2xl pointer-events-none" />
 
           {/* Badge Label: ADMISSIONS OPEN 2026-2027 */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FF6B00] text-white font-bold text-xs tracking-wider uppercase shadow-md">
@@ -146,6 +148,7 @@ export const AdmissionsPage: React.FC<AdmissionsPageProps> = ({ initialAnchor = 
             </div>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Main Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

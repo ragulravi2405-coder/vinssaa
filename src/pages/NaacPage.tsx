@@ -5,6 +5,7 @@ import {
 import { NAAC_CRITERIA, IQAC_MEMBERS, RTI_MEMBERS, DOCUMENTS_LIST } from '../data/collegeData';
 import { DocumentViewerModal } from '../components/common/DocumentViewerModal';
 import { DocumentItem } from '../types';
+import { ScrollReveal } from '../components/common/ScrollReveal';
 
 interface NaacPageProps {
   initialView?: 'naac' | 'iqac';
@@ -30,22 +31,24 @@ export const NaacPage: React.FC<NaacPageProps> = ({ initialView = 'naac' }) => {
     <div className="bg-[#FFFFFF] text-[#0A2540] min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
         
-        {/* Header Banner - Strict Magenta Pink + White */}
-        <div className="bg-[#0A2540] text-white p-8 sm:p-12 rounded-3xl border border-white/20 shadow-2xl space-y-4 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
-          
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 text-white text-xs font-bold border border-white/30 tracking-wider font-cinzel">
-            <Sparkles className="w-4 h-4 text-white animate-sparkle" />
-            <span>INTERNAL QUALITY ASSURANCE CELL (IQAC)</span>
-          </div>
+        {/* Header Banner - Premium */}
+        <ScrollReveal direction="up" distance={20}>
+          <div className="bg-[#0A2540] text-white p-8 sm:p-12 rounded-3xl border border-white/20 shadow-3d-deep space-y-4 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white/8 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white tracking-tight">
-            NAAC Accreditation &amp; Quality Cell (IQAC)
-          </h1>
+            <div className="badge-academic bg-white/15 text-white border border-white/30 relative z-10">
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>INTERNAL QUALITY ASSURANCE CELL (IQAC)</span>
+            </div>
 
-          <p className="text-xs sm:text-sm text-white/95 max-w-3xl leading-relaxed font-medium">
-            Developing a conscious, consistent, and catalytic system for academic excellence, statutory audits, and quality culture at VINS Christian College of Engineering.
-          </p>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white tracking-tight leading-tight relative z-10">
+              NAAC Accreditation &amp; Quality Cell (IQAC)
+            </h1>
+
+            <p className="text-sm sm:text-base text-white/90 max-w-3xl leading-relaxed relative z-10">
+              Developing a conscious, consistent, and catalytic system for academic excellence, statutory audits, and quality culture at VINS Christian College of Engineering.
+            </p>
 
           {/* Action Buttons: Official NAAC SSR Portal Link & Tabs */}
           <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -89,6 +92,7 @@ export const NaacPage: React.FC<NaacPageProps> = ({ initialView = 'naac' }) => {
             </div>
           </div>
         </div>
+        </ScrollReveal>
 
         {/* Video Embed Section */}
         <div className="bg-[#0A2540] text-white rounded-3xl p-6 sm:p-8 border border-white/20 shadow-xl space-y-4">

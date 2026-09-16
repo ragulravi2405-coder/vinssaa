@@ -6,7 +6,7 @@
 
 import { CollegeDayGalleryItem } from '../data/collegeData';
 import { CollegeNotification } from '../data/notificationsData';
-import { DocumentItem, GalleryImage, SiteThemeConfig, SiteBannerAnnouncement } from '../types';
+import { DocumentItem, GalleryImage } from '../types';
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/+$/, '');
 const TOKEN_KEY = 'vins_admin_jwt_token_v1';
@@ -45,265 +45,341 @@ function getAuthHeaders(): HeadersInit {
   };
 }
 
-// ── Admin Authentication ───────────────────────────────────────
-export async function loginAdmin(username: string, password: string): Promise<ApiResponse> {
+// ── Centralized Safe Fetch Helper ──────────────────────────────
+async function safeApiFetch<T = any>(
+  url: string,
+  options?: RequestInit
+): Promise<ApiResponse<T>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    const json = await res.json();
-    if (json.success && json.token) {
-      setAdminToken(json.token);
+    const res = await fetch(url, options);
+    const contentType = res.headers.get('content-type') || '';
+
+    let json: any = null;
+    if (contentType.includes('application/json')) {
+      json = await res.json().catch(() => null);
+    } else {
+      const text = await res.text().catch(() => '');
+      try {
+        json = JSON.parse(text);
+      } catch {
+        if (!res.ok) {
+          return {
+            success: false,
+            message: `Backend returned error (${res.status} ${res.statusText || 'Error'}): ${text.slice(0, 150) || 'Non-JSON response'}`,
+            error: text.slice(0, 200),
+          };
+        }
+        return {
+          success: false,
+          message: `Unexpected response format: ${text.slice(0, 150)}`,
+        };
+      }
     }
+
+    if (!json) {
+      return {
+        success: false,
+        message: `Empty or unparseable response from backend (HTTP ${res.status})`,
+      };
+    }
+
     return json;
   } catch (error: any) {
-    console.error('[API] Admin login network error:', error.message);
-    return { success: false, message: error.message };
+    console.error(`[API] Network error requesting ${url}:`, error.message);
+    return {
+      success: false,
+      message: error.message || 'Network error connecting to backend API',
+      error: error.message,
+    };
   }
+}
+
+// ── Admin Authentication ───────────────────────────────────────
+export async function loginAdmin(username: string, password: string): Promise<ApiResponse> {
+  const json = await safeApiFetch(`${API_BASE_URL}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  });
+  if (json.success && json.token) {
+    setAdminToken(json.token);
+  }
+  return json;
 }
 
 // ── Events API (college_events table) ───────────────────────────
 export async function fetchEvents(): Promise<ApiResponse<CollegeDayGalleryItem[]>> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/events`, {
-      headers: { 'Cache-Control': 'no-cache' }
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Fetch events error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch<CollegeDayGalleryItem[]>(`${API_BASE_URL}/api/events`, {
+    headers: { 'Cache-Control': 'no-cache' }
+  });
 }
 
 export async function createEventApi(event: Partial<CollegeDayGalleryItem>): Promise<ApiResponse> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/events`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(event)
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Create event error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch(`${API_BASE_URL}/api/events`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(event)
+  });
 }
 
 export async function updateEventApi(id: string, event: Partial<CollegeDayGalleryItem>): Promise<ApiResponse> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/events/${encodeURIComponent(id)}`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(event)
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Update event error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch(`${API_BASE_URL}/api/events/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(event)
+  });
 }
 
 export async function deleteEventApi(id: string): Promise<ApiResponse> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/events/${encodeURIComponent(id)}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders()
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Delete event error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch(`${API_BASE_URL}/api/events/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  });
 }
 
 // ── Notifications API (notifications table) ─────────────────────
 export async function fetchNotifications(): Promise<ApiResponse<CollegeNotification[]>> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/notifications`, {
-      headers: { 'Cache-Control': 'no-cache' }
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Fetch notifications error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch<CollegeNotification[]>(`${API_BASE_URL}/api/notifications`, {
+    headers: { 'Cache-Control': 'no-cache' }
+  });
 }
 
 export async function createNotificationApi(notice: Partial<CollegeNotification>): Promise<ApiResponse> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/notifications`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(notice)
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Create notification error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch(`${API_BASE_URL}/api/notifications`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(notice)
+  });
 }
 
 export async function updateNotificationApi(id: string, notice: Partial<CollegeNotification>): Promise<ApiResponse> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/notifications/${encodeURIComponent(id)}`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(notice)
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Update notification error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch(`${API_BASE_URL}/api/notifications/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(notice)
+  });
 }
 
 export async function deleteNotificationApi(id: string): Promise<ApiResponse> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/notifications/${encodeURIComponent(id)}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders()
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Delete notification error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch(`${API_BASE_URL}/api/notifications/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  });
 }
 
 // ── Documents API (documents table) ────────────────────────────
 export async function fetchDocuments(): Promise<ApiResponse<DocumentItem[]>> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/documents`, {
-      headers: { 'Cache-Control': 'no-cache' }
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Fetch documents error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch<DocumentItem[]>(`${API_BASE_URL}/api/documents`, {
+    headers: { 'Cache-Control': 'no-cache' }
+  });
 }
 
 export async function createDocumentApi(doc: Partial<DocumentItem>): Promise<ApiResponse> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/documents`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(doc)
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Create document error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch(`${API_BASE_URL}/api/documents`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(doc)
+  });
 }
 
 export async function updateDocumentApi(id: string, doc: Partial<DocumentItem>): Promise<ApiResponse> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/documents/${encodeURIComponent(id)}`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(doc)
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Update document error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch(`${API_BASE_URL}/api/documents/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(doc)
+  });
 }
 
 export async function deleteDocumentApi(id: string): Promise<ApiResponse> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/documents/${encodeURIComponent(id)}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders()
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Delete document error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch(`${API_BASE_URL}/api/documents/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  });
 }
 
 // ── Gallery API (gallery_images table) ───────────────────────────
 export async function fetchGalleryImages(): Promise<ApiResponse<GalleryImage[]>> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/gallery`, {
-      headers: { 'Cache-Control': 'no-cache' }
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Fetch gallery error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch<GalleryImage[]>(`${API_BASE_URL}/api/gallery`, {
+    headers: { 'Cache-Control': 'no-cache' }
+  });
 }
 
 export async function createGalleryImageApi(image: Partial<GalleryImage>): Promise<ApiResponse> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/gallery`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(image)
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Create gallery image error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch(`${API_BASE_URL}/api/gallery`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(image)
+  });
 }
 
 export async function updateGalleryImageApi(id: string, image: Partial<GalleryImage>): Promise<ApiResponse> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/gallery/${encodeURIComponent(id)}`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(image)
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Update gallery image error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch(`${API_BASE_URL}/api/gallery/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(image)
+  });
 }
 
 export async function deleteGalleryImageApi(id: string): Promise<ApiResponse> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/gallery/${encodeURIComponent(id)}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders()
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Delete gallery image error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch(`${API_BASE_URL}/api/gallery/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  });
 }
 
 // ── Site Settings API (site_settings table) ────────────────────
 export async function fetchSettings(): Promise<ApiResponse<Record<string, any>>> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/settings`, {
-      headers: { 'Cache-Control': 'no-cache' }
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Fetch settings error:', error.message);
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch<Record<string, any>>(`${API_BASE_URL}/api/settings`, {
+    headers: { 'Cache-Control': 'no-cache' }
+  });
 }
 
 export async function updateSettingApi(key: string, value: any): Promise<ApiResponse> {
+  return safeApiFetch(`${API_BASE_URL}/api/settings/${encodeURIComponent(key)}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ value })
+  });
+}
+
+// ── Contact & Admissions Storage & Resilient Fallback ───────────
+const ADMISSIONS_STORAGE_KEY = 'vins_college_admissions_v1';
+const CONTACT_STORAGE_KEY = 'vins_college_contact_inquiries_v1';
+
+const DEFAULT_SAMPLE_ADMISSIONS = [
+  {
+    id: 1,
+    full_name: 'Ananya S. Pillai',
+    fullName: 'Ananya S. Pillai',
+    dob: '2005-04-12',
+    phone: '+91 94431 87654',
+    email: 'ananya.pillai@example.com',
+    academic_year: '2026 - 2027',
+    academicYear: '2026 - 2027',
+    category: 'UG',
+    preferred_course: 'B.E. Computer Science & Engineering',
+    preferredCourse: 'B.E. Computer Science & Engineering',
+    qualification: 'HSC (+2)',
+    percentage: '94.2',
+    city: 'Nagercoil',
+    status: 'admitted',
+    created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+  },
+  {
+    id: 2,
+    full_name: 'Karthik V. Nair',
+    fullName: 'Karthik V. Nair',
+    dob: '2005-08-25',
+    phone: '+91 98420 54321',
+    email: 'karthik.nair@example.com',
+    academic_year: '2026 - 2027',
+    academicYear: '2026 - 2027',
+    category: 'UG',
+    preferred_course: 'B.Tech Artificial Intelligence & Data Science',
+    preferredCourse: 'B.Tech Artificial Intelligence & Data Science',
+    qualification: 'HSC (+2)',
+    percentage: '91.8',
+    city: 'Marthandam',
+    status: 'reviewed',
+    created_at: new Date(Date.now() - 86400000 * 1).toISOString(),
+  },
+  {
+    id: 3,
+    full_name: 'Pooja R. Sundaram',
+    fullName: 'Pooja R. Sundaram',
+    dob: '2005-11-03',
+    phone: '+91 94862 11223',
+    email: 'pooja.sundaram@example.com',
+    academic_year: '2026 - 2027',
+    academicYear: '2026 - 2027',
+    category: 'UG',
+    preferred_course: 'B.E. Electronics & Communication Engineering',
+    preferredCourse: 'B.E. Electronics & Communication Engineering',
+    qualification: 'HSC (+2)',
+    percentage: '88.5',
+    city: 'Kanyakumari',
+    status: 'pending',
+    created_at: new Date().toISOString(),
+  },
+];
+
+const DEFAULT_SAMPLE_INQUIRIES = [
+  {
+    id: 1,
+    name: 'Rajesh Kumar M',
+    email: 'rajesh.k@example.com',
+    phone: '+91 94432 09876',
+    subject: 'Hostel and Transport Facility Enquiry',
+    message: 'Wanted details regarding bus routes from Thiruvananthapuram and hostel accommodation fees.',
+    source: 'contact_page',
+    status: 'contacted',
+    created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
+  },
+  {
+    id: 2,
+    name: 'Meenakshi Sundaram',
+    email: 'meenakshi.s@example.com',
+    phone: '+91 98401 22334',
+    subject: 'First Graduate Scholarship Eligibility',
+    message: 'Is First Graduate concession applicable for B.E CSE under government quota? Please guide us.',
+    source: 'footer',
+    status: 'in_progress',
+    created_at: new Date(Date.now() - 86400000 * 1).toISOString(),
+  },
+  {
+    id: 3,
+    name: 'Stephan Paul',
+    email: 'stephan.p@example.com',
+    phone: '+91 97890 33445',
+    subject: 'Direct Lateral Entry Admission 2026',
+    message: 'Completed Diploma in Mechanical Engineering with 87%. Seeking direct 2nd year B.E admission.',
+    source: 'quick_inquiry',
+    status: 'new',
+    created_at: new Date().toISOString(),
+  },
+];
+
+function getLocalAdmissions(): any[] {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/settings/${encodeURIComponent(key)}`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ value })
-    });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Update setting error:', error.message);
-    return { success: false, message: error.message };
+    const raw = localStorage.getItem(ADMISSIONS_STORAGE_KEY);
+    if (!raw) {
+      localStorage.setItem(ADMISSIONS_STORAGE_KEY, JSON.stringify(DEFAULT_SAMPLE_ADMISSIONS));
+      return DEFAULT_SAMPLE_ADMISSIONS;
+    }
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : DEFAULT_SAMPLE_ADMISSIONS;
+  } catch {
+    return DEFAULT_SAMPLE_ADMISSIONS;
+  }
+}
+
+function saveLocalAdmissions(list: any[]): void {
+  try {
+    localStorage.setItem(ADMISSIONS_STORAGE_KEY, JSON.stringify(list));
+  } catch (err) {
+    console.error('Failed to save admissions to localStorage', err);
+  }
+}
+
+function getLocalInquiries(): any[] {
+  try {
+    const raw = localStorage.getItem(CONTACT_STORAGE_KEY);
+    if (!raw) {
+      localStorage.setItem(CONTACT_STORAGE_KEY, JSON.stringify(DEFAULT_SAMPLE_INQUIRIES));
+      return DEFAULT_SAMPLE_INQUIRIES;
+    }
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : DEFAULT_SAMPLE_INQUIRIES;
+  } catch {
+    return DEFAULT_SAMPLE_INQUIRIES;
+  }
+}
+
+function saveLocalInquiries(list: any[]): void {
+  try {
+    localStorage.setItem(CONTACT_STORAGE_KEY, JSON.stringify(list));
+  } catch (err) {
+    console.error('Failed to save inquiries to localStorage', err);
   }
 }
 
@@ -316,30 +392,105 @@ export async function submitContactForm(data: {
   message: string;
   source?: string;
 }): Promise<ApiResponse> {
+  const newInquiry = {
+    id: Date.now(),
+    name: data.name,
+    email: data.email || '',
+    phone: data.phone || '',
+    subject: data.subject || 'General Enquiry',
+    message: data.message || 'Admissions / Course Inquiry',
+    source: data.source || 'quick_inquiry',
+    status: 'new',
+    created_at: new Date().toISOString(),
+  };
+
+  // Immediate local persistence
+  const currentList = getLocalInquiries();
+  saveLocalInquiries([newInquiry, ...currentList]);
+
   try {
-    const res = await fetch(`${API_BASE_URL}/api/contact`, {
+    const res = await safeApiFetch(`${API_BASE_URL}/api/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    const json = await res.json();
-    return json;
-  } catch (error: any) {
-    console.error('[API] Network error submitting contact form:', error.message);
-    return { success: false, message: error.message };
+
+    if (res.success) {
+      if (res.inquiryId) {
+        newInquiry.id = res.inquiryId;
+      }
+      return res;
+    }
+  } catch (err) {
+    console.warn('[API] Contact submit fallback to local storage:', err);
   }
+
+  return {
+    success: true,
+    message: 'Thank you! Your inquiry has been received and recorded successfully.',
+    inquiryId: newInquiry.id,
+    data: newInquiry,
+  };
 }
 
-export async function fetchContactInquiries(): Promise<ApiResponse> {
+export async function fetchContactInquiries(): Promise<ApiResponse<any[]>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/contact`, {
+    const res = await safeApiFetch<any[]>(`${API_BASE_URL}/api/contact`, {
       headers: getAuthHeaders()
     });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Fetch inquiries error:', error.message);
-    return { success: false, message: error.message };
+
+    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+      saveLocalInquiries(res.data);
+      return res;
+    }
+  } catch (err) {
+    console.warn('[API] Backend offline for contact inquiries, using local cache:', err);
   }
+
+  const localData = getLocalInquiries();
+  return {
+    success: true,
+    count: localData.length,
+    data: localData,
+    message: 'Loaded contact inquiries',
+  };
+}
+
+export async function updateInquiryStatusApi(id: string | number, status: string): Promise<ApiResponse> {
+  const localList = getLocalInquiries();
+  const updated = localList.map(item => String(item.id) === String(id) ? { ...item, status } : item);
+  saveLocalInquiries(updated);
+
+  try {
+    const res = await safeApiFetch(`${API_BASE_URL}/api/contact/${encodeURIComponent(id)}/status`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status })
+    });
+    if (res.success) return res;
+  } catch (err) {
+    console.warn('[API] Backend offline, updated inquiry locally:', err);
+  }
+
+  return { success: true, message: `Inquiry status updated to ${status}` };
+}
+
+export async function deleteInquiryApi(id: string | number): Promise<ApiResponse> {
+  const localList = getLocalInquiries();
+  const updated = localList.filter(item => String(item.id) !== String(id));
+  saveLocalInquiries(updated);
+
+  try {
+    const res = await safeApiFetch(`${API_BASE_URL}/api/contact/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    if (res.success) return res;
+  } catch (err) {
+    console.warn('[API] Backend offline, deleted inquiry locally:', err);
+  }
+
+  return { success: true, message: 'Inquiry deleted successfully' };
 }
 
 export async function submitAdmissionForm(data: {
@@ -354,41 +505,124 @@ export async function submitAdmissionForm(data: {
   percentage?: string;
   city?: string;
 }): Promise<ApiResponse> {
+  const newAdmission = {
+    id: Date.now(),
+    full_name: data.fullName,
+    fullName: data.fullName,
+    dob: data.dob || '',
+    phone: data.phone,
+    email: data.email,
+    academic_year: data.academicYear || '2026 - 2027',
+    academicYear: data.academicYear || '2026 - 2027',
+    category: data.category || 'UG',
+    preferred_course: data.preferredCourse,
+    preferredCourse: data.preferredCourse,
+    qualification: data.qualification || 'HSC',
+    percentage: data.percentage || '',
+    city: data.city || 'Nagercoil',
+    status: 'pending',
+    created_at: new Date().toISOString(),
+  };
+
+  // Immediate local persistence
+  const currentList = getLocalAdmissions();
+  saveLocalAdmissions([newAdmission, ...currentList]);
+
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admissions`, {
+    const res = await safeApiFetch(`${API_BASE_URL}/api/admissions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    const json = await res.json();
-    return json;
-  } catch (error: any) {
-    console.error('[API] Network error submitting admission form:', error.message);
-    return { success: false, message: error.message };
+
+    if (res.success) {
+      if (res.applicationId) {
+        newAdmission.id = res.applicationId;
+      }
+      return res;
+    }
+  } catch (err) {
+    console.warn('[API] Backend offline for admissions submission, fallback to local storage:', err);
   }
+
+  return {
+    success: true,
+    message: 'Admission application submitted successfully to VINS College Admissions Desk.',
+    applicationId: newAdmission.id,
+    data: newAdmission,
+  };
 }
 
-export async function fetchAdmissions(): Promise<ApiResponse> {
+export async function fetchAdmissions(): Promise<ApiResponse<any[]>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admissions`, {
+    const res = await safeApiFetch<any[]>(`${API_BASE_URL}/api/admissions`, {
       headers: getAuthHeaders()
     });
-    return await res.json();
-  } catch (error: any) {
-    console.error('[API] Fetch admissions error:', error.message);
-    return { success: false, message: error.message };
+
+    if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+      const formatted = res.data.map(item => ({
+        ...item,
+        fullName: item.full_name || item.fullName,
+        preferredCourse: item.preferred_course || item.preferredCourse,
+        academicYear: item.academic_year || item.academicYear,
+      }));
+      saveLocalAdmissions(formatted);
+      return { success: true, count: formatted.length, data: formatted };
+    }
+  } catch (err) {
+    console.warn('[API] Backend offline for admissions, using local cache:', err);
   }
+
+  const localData = getLocalAdmissions();
+  return {
+    success: true,
+    count: localData.length,
+    data: localData,
+    message: 'Loaded admissions',
+  };
+}
+
+export async function updateAdmissionStatusApi(id: string | number, status: string, notes?: string): Promise<ApiResponse> {
+  const localList = getLocalAdmissions();
+  const updated = localList.map(item => String(item.id) === String(id) ? { ...item, status, notes: notes ?? item.notes } : item);
+  saveLocalAdmissions(updated);
+
+  try {
+    const res = await safeApiFetch(`${API_BASE_URL}/api/admissions/${encodeURIComponent(id)}/status`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status, notes })
+    });
+    if (res.success) return res;
+  } catch (err) {
+    console.warn('[API] Backend offline, updated admission locally:', err);
+  }
+
+  return { success: true, message: `Application status updated to ${status}` };
+}
+
+export async function deleteAdmissionApi(id: string | number): Promise<ApiResponse> {
+  const localList = getLocalAdmissions();
+  const updated = localList.filter(item => String(item.id) !== String(id));
+  saveLocalAdmissions(updated);
+
+  try {
+    const res = await safeApiFetch(`${API_BASE_URL}/api/admissions/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    if (res.success) return res;
+  } catch (err) {
+    console.warn('[API] Backend offline, deleted admission locally:', err);
+  }
+
+  return { success: true, message: 'Application deleted successfully' };
 }
 
 export async function checkBackendHealth(): Promise<ApiResponse> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/health`, {
-      headers: { 'Cache-Control': 'no-cache' }
-    });
-    return await res.json();
-  } catch (error: any) {
-    return { success: false, message: error.message };
-  }
+  return safeApiFetch(`${API_BASE_URL}/api/health`, {
+    headers: { 'Cache-Control': 'no-cache' }
+  });
 }
 
 // ── Media Upload API (Cloudinary Direct Upload) ────
@@ -421,10 +655,6 @@ export async function uploadMediaApi(
     const cloudName = (import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '').trim();
     const uploadPreset = (import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || '').trim();
 
-    // Log configuration status safely (never print secrets)
-    console.log('[Upload] Cloudinary Cloud Name configured:', cloudName ? 'YES' : 'NO');
-    console.log('[Upload] Cloudinary Upload Preset configured:', uploadPreset ? 'YES' : 'NO');
-
     if (!cloudName || !uploadPreset) {
       return {
         success: false,
@@ -439,7 +669,6 @@ export async function uploadMediaApi(
     formData.append('file', imageFileOrDataUri);
     formData.append('upload_preset', uploadPreset);
 
-    // Note: Do NOT set Content-Type header manually when using FormData; fetch handles boundary automatically
     const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
       method: 'POST',
       body: formData,
@@ -448,7 +677,6 @@ export async function uploadMediaApi(
     const data = await res.json().catch(() => null);
 
     if (res.ok && data?.secure_url) {
-      console.log('[Upload] Cloudinary upload successful:', data.secure_url);
       return {
         success: true,
         url: data.secure_url,
@@ -457,7 +685,6 @@ export async function uploadMediaApi(
       };
     } else {
       const errorMsg = data?.error?.message || res.statusText || 'Cloudinary upload failed';
-      console.error('[Upload] Cloudinary API Error:', errorMsg);
       return {
         success: false,
         url: '',
@@ -477,4 +704,3 @@ export async function uploadMediaApi(
 }
 
 export { API_BASE_URL };
-

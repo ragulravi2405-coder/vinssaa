@@ -108,37 +108,63 @@ export const TopBar: React.FC<TopBarProps> = ({ onNavigate, currentTab }) => {
 
   return (
     <>
-      {/* Top Bar - Solid Deep Navy Blue (#0A2540) */}
-      <div className="bg-[#0A2540] text-white text-[11px] sm:text-[13px] border-b border-white/15 select-none shadow-md transition-all">
+      {/* Top Bar - Layer 2: Glassmorphic Deep Navy Blue (#0A2540) with 3D Depth */}
+      <div className="bg-[#0A2540] text-white text-[11px] sm:text-[13px] border-b border-white/15 select-none">
         <div className="max-w-[1600px] mx-auto px-2.5 sm:px-6 lg:px-8 py-1.5 sm:py-2 flex items-center justify-between gap-2">
           
-          {/* Left: Email & Phone Number */}
-          <div className="flex items-center gap-2 sm:gap-4 text-[11px] sm:text-[13px] font-medium text-white/95 min-w-0">
-            <a href="tel:+914651255000" className="flex items-center gap-1 hover:text-[#FF6B00] transition-all whitespace-nowrap shrink-0">
-              <Phone className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#FF6B00] shrink-0" />
-              <span className="font-semibold">+91 4651 255 000</span>
+          {/* Left: Email & Phone Number with Interactive 3D Lift */}
+          <div className="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-[13px] font-medium text-white/95 min-w-0">
+            <a 
+              href="tel:+914651255000" 
+              className="group flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/12 border border-white/10 hover:border-amber-400/40 hover:shadow-sm transition-all duration-200 transform hover:-translate-y-0.5 whitespace-nowrap shrink-0 cursor-pointer"
+            >
+              <Phone className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#FF6B00] group-hover:scale-110 transition-transform shrink-0" />
+              <span className="font-semibold group-hover:text-amber-200 transition-colors">+91 4651 255 000</span>
             </a>
-            <span className="hidden min-[480px]:inline text-white/40">|</span>
-            <a href="mailto:info@vinschristiancollege.in" className="hidden min-[420px]:flex items-center gap-1 hover:text-[#FF6B00] transition-all whitespace-nowrap truncate max-w-[170px] sm:max-w-none">
-              <Mail className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#FF6B00] shrink-0" />
-              <span className="truncate">info@vinschristiancollege.in</span>
+
+            <span className="hidden min-[480px]:inline text-white/30">|</span>
+
+            <a 
+              href="mailto:info@vinschristiancollege.in" 
+              className="hidden min-[420px]:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/12 border border-white/10 hover:border-amber-400/40 hover:shadow-sm transition-all duration-200 transform hover:-translate-y-0.5 whitespace-nowrap truncate max-w-[170px] sm:max-w-none cursor-pointer"
+            >
+              <Mail className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#FF6B00] group-hover:scale-110 transition-transform shrink-0" />
+              <span className="truncate group-hover:text-amber-200 transition-colors">info@vinschristiancollege.in</span>
             </a>
           </div>
 
-          {/* Right: Social Icons & Admin Portal Button */}
+          {/* Right: Social Icons & 3D Admin Portal Button */}
           <div className="flex items-center gap-2 sm:gap-3 text-white font-medium text-[11px] sm:text-[13px] shrink-0">
-            {/* Social Icons */}
-            <div className="hidden min-[640px]:flex items-center gap-2.5 text-white">
-              <a href="#" className="hover:text-[#FF6B00] transition-colors" title="Facebook"><span className="font-bold text-xs">f</span></a>
-              <a href="#" className="hover:text-[#FF6B00] transition-colors" title="Instagram"><span className="font-bold text-xs">📷</span></a>
-              <a href="#" className="hover:text-[#FF6B00] transition-colors" title="YouTube"><span className="font-bold text-xs">▶</span></a>
-              <span className="text-white/40 ml-1">|</span>
+            {/* Social Icons with Smooth Hover Lift */}
+            <div className="hidden min-[640px]:flex items-center gap-1.5 text-white">
+              <a 
+                href="#" 
+                className="w-6 h-6 rounded-full bg-white/10 hover:bg-[#FF6B00] flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer" 
+                title="Facebook"
+              >
+                <span className="font-bold text-[11px]">f</span>
+              </a>
+              <a 
+                href="#" 
+                className="w-6 h-6 rounded-full bg-white/10 hover:bg-[#FF6B00] flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer" 
+                title="Instagram"
+              >
+                <span className="font-bold text-[10px]">📷</span>
+              </a>
+              <a 
+                href="#" 
+                className="w-6 h-6 rounded-full bg-white/10 hover:bg-[#FF6B00] flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer" 
+                title="YouTube"
+              >
+                <span className="font-bold text-[10px]">▶</span>
+              </a>
+              <span className="text-white/30 ml-1">|</span>
             </div>
 
-            {/* Admin Portal Button */}
+            {/* Admin Portal Button with Tactile 3D Click */}
             <button 
               onClick={() => onNavigate?.('admin')}
-              className="bg-[#FF6B00] hover:bg-[#E05E00] text-white px-2.5 sm:px-3 py-1 rounded-md font-bold flex items-center gap-1 transition-all whitespace-nowrap text-[10px] sm:text-xs shadow-md cursor-pointer active:scale-95 border border-white/20"
+              className="bg-[#FF6B00] hover:bg-[#E05E00] text-white px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all whitespace-nowrap text-[10px] sm:text-xs"
               title="Open Admin Content Portal"
             >
               <Lock className="w-3 h-3 text-white shrink-0" />
@@ -217,7 +243,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onNavigate, currentTab }) => {
 
             <div className="p-2.5 sm:p-3 bg-white border-t-2 border-[#0A2540]/15 flex items-center justify-between text-xs text-[#0A2540] font-bold">
               <span>Press ESC to close</span>
-              <span className="hidden sm:inline text-[#FF6B00]">Counselling Code: 4982</span>
+              <span className="hidden sm:inline text-[#FF6B00] counselling-badge">Counselling Code: 4982</span>
             </div>
           </div>
         </div>

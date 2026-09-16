@@ -7,6 +7,8 @@ import {
   FOUNDER_CHAIRMAN_DATA, 
   PRINCIPAL_DESK_DATA 
 } from '../data/collegeData';
+import { ScrollReveal } from '../components/common/ScrollReveal';
+import { TiltCard } from '../components/common/TiltCard';
 
 interface AboutPageProps {
   initialAnchor?: string;
@@ -36,25 +38,29 @@ export const AboutPage: React.FC<AboutPageProps> = ({ initialAnchor = 'vision' }
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 font-sans">
       
-      {/* Header Banner — Deep Navy Blue */}
-      <div className="bg-[#0A2540] text-white p-8 sm:p-12 rounded-3xl border border-white/20 shadow-xl space-y-3 relative overflow-hidden">
-        <img
-          src="/images/college events and news galeery/h9.jpg"
-          alt="VINS College Campus"
-          className="absolute inset-0 w-full h-full object-cover opacity-20 filter brightness-90 pointer-events-none"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A2540] via-[#061727]/80 to-transparent pointer-events-none" />
-        <div className="relative z-10 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FF6B00] text-white text-xs font-bold border border-white/20 shadow-md">
-            <Sparkles className="w-3.5 h-3.5 text-white" />
-            <span>Established 2004 · Chunkankadai, Nagercoil</span>
+      {/* Header Banner — Deep Navy Blue with Cinematic 3D Parallax Depth */}
+      <ScrollReveal direction="up" distance={20}>
+        <div className="bg-[#0A2540] text-white p-8 sm:p-12 rounded-3xl border border-white/20 shadow-3d-deep space-y-4 relative overflow-hidden">
+          <img
+            src="/images/college events and news galeery/h9.jpg"
+            alt="VINS College Campus"
+            className="absolute inset-0 w-full h-full object-cover opacity-25 filter brightness-90 pointer-events-none scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0A2540] via-[#061727]/85 to-transparent pointer-events-none" />
+          <div className="relative z-10 space-y-3">
+            <div className="badge-academic bg-gradient-to-r from-[#FF6B00] to-[#E05E00] text-white border border-white/25 shadow-md">
+              <Sparkles className="w-3.5 h-3.5 text-white" />
+              <span>Established 2004 · Chunkankadai, Nagercoil</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white tracking-tight leading-tight">
+              About VINS Group of Engineering Colleges
+            </h1>
+            <p className="text-sm sm:text-base text-white/90 max-w-3xl leading-relaxed font-normal">
+              Founded by Shri Nanjil M. Vincent in Chunkankadai, Nagercoil, Kanyakumari District. Approved by AICTE, New Delhi &amp; Affiliated to Anna University, Chennai.
+            </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-poppins text-white">About VINS Group of Engineering Colleges</h1>
-          <p className="text-xs sm:text-sm text-white/85 max-w-3xl leading-relaxed font-normal">
-            Founded by Shri Nanjil M. Vincent in Chunkankadai, Nagercoil, Kanyakumari District. Approved by AICTE, New Delhi &amp; Affiliated to Anna University, Chennai.
-          </p>
         </div>
-      </div>
+      </ScrollReveal>
 
       {/* Main Grid: Left Sub-Nav + Right Content Column */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -103,27 +109,39 @@ export const AboutPage: React.FC<AboutPageProps> = ({ initialAnchor = 'vision' }
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Vision Card */}
-              <div className="bg-white rounded-2xl p-6 space-y-3 border-2 border-[#1E40AF]/20 hover:border-[#FF6B00]/50 transition-all shadow-xs">
-                <div className="flex items-center gap-2 text-[#0A2540] font-black text-sm uppercase tracking-wider">
-                  <Compass className="w-4 h-4 text-[#FF6B00]" />
-                  <span>Our Vision</span>
+              {/* Vision Card with 3D Tilt */}
+              <TiltCard maxTilt={5} scale={1.015} className="h-full">
+                <div className="bg-white rounded-2xl p-6 sm:p-7 space-y-3 border border-gray-200 hover:border-[#FF6B00]/40 transition-all shadow-3d-soft h-full flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-[#0A2540] font-bold text-sm uppercase tracking-wider">
+                      <div className="w-8 h-8 rounded-lg bg-orange-50 text-[#FF6B00] flex items-center justify-center">
+                        <Compass className="w-4 h-4 text-[#FF6B00]" />
+                      </div>
+                      <span className="font-playfair text-base">Our Vision</span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-[#0A2540]/85 leading-relaxed italic">
+                      &ldquo;{VISION_MISSION_DATA.vision}&rdquo;
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xs text-[#0A2540]/85 leading-relaxed italic">
-                  &ldquo;{VISION_MISSION_DATA.vision}&rdquo;
-                </p>
-              </div>
+              </TiltCard>
 
-              {/* Mission Card */}
-              <div className="bg-[#0A2540] rounded-2xl p-6 space-y-3 border border-white/15 shadow-md">
-                <div className="flex items-center gap-2 text-white font-black text-sm uppercase tracking-wider">
-                  <Target className="w-4 h-4 text-[#FF6B00]" />
-                  <span>Our Mission</span>
+              {/* Mission Card with 3D Tilt */}
+              <TiltCard maxTilt={5} scale={1.015} className="h-full">
+                <div className="bg-[#0A2540] rounded-2xl p-6 sm:p-7 space-y-3 border border-white/15 shadow-3d-card text-white h-full flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-white font-bold text-sm uppercase tracking-wider">
+                      <div className="w-8 h-8 rounded-lg bg-white/15 text-amber-300 flex items-center justify-center">
+                        <Target className="w-4 h-4 text-amber-300" />
+                      </div>
+                      <span className="font-playfair text-base">Our Mission</span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-white/90 leading-relaxed">
+                      {VISION_MISSION_DATA.mission}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xs text-white/90 leading-relaxed">
-                  {VISION_MISSION_DATA.mission}
-                </p>
-              </div>
+              </TiltCard>
             </div>
           </div>
 
@@ -178,17 +196,17 @@ export const AboutPage: React.FC<AboutPageProps> = ({ initialAnchor = 'vision' }
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-              {/* Chairman Photo */}
+              {/* Chairman Photo with 3D Depth */}
               <div className="md:col-span-4 space-y-3">
-                <div className="rounded-2xl overflow-hidden border-2 border-[#0A2540]/15 shadow-md bg-[#0A2540] aspect-[3/4] relative">
+                <div className="img-3d-frame bg-[#0A2540] aspect-[3/4] border-2 border-[#0A2540]/15 shadow-3d-card">
                   <img
                     src="/images/chairman and pricipal img/chairman img.jpg"
                     alt={FOUNDER_CHAIRMAN_DATA.name}
                     className="w-full h-full object-cover object-top"
                   />
                 </div>
-                <div className="bg-[#0A2540] text-white p-4 rounded-2xl border border-white/10 text-xs space-y-2 shadow-md">
-                  <p className="font-bold text-sm text-white">{FOUNDER_CHAIRMAN_DATA.name}</p>
+                <div className="bg-[#0A2540] text-white p-4 sm:p-5 rounded-2xl border border-white/10 text-xs space-y-2 shadow-3d-soft">
+                  <p className="font-bold text-base font-playfair text-white">{FOUNDER_CHAIRMAN_DATA.name}</p>
                   <p className="text-white/80 font-medium">{FOUNDER_CHAIRMAN_DATA.designation}</p>
                   <div className="pt-2 border-t border-white/15 text-[11px] text-white/70 space-y-1">
                     <p>📍 {COLLEGE_INFO.location}</p>
@@ -236,18 +254,18 @@ export const AboutPage: React.FC<AboutPageProps> = ({ initialAnchor = 'vision' }
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-              {/* Principal Photo */}
+              {/* Principal Photo with 3D Depth */}
               <div className="md:col-span-4 space-y-3">
-                <div className="rounded-2xl overflow-hidden border-2 border-[#0A2540]/15 shadow-md bg-[#0A2540] aspect-[3/4] relative">
+                <div className="img-3d-frame bg-[#0A2540] aspect-[3/4] border-2 border-[#0A2540]/15 shadow-3d-card">
                   <img
                     src="/images/chairman and pricipal img/principal img.jpg"
                     alt={PRINCIPAL_DESK_DATA.name}
                     className="w-full h-full object-cover object-top"
                   />
                 </div>
-                <div className="bg-white p-4 rounded-2xl border-2 border-[#0A2540]/15 text-xs space-y-1 text-center shadow-xs">
-                  <p className="font-bold text-[#0A2540]">{PRINCIPAL_DESK_DATA.name}</p>
-                  <p className="text-[#1E40AF] font-bold">Principal, Vins Christian College of Engineering</p>
+                <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 text-xs space-y-1 text-center shadow-3d-soft">
+                  <p className="font-bold text-base font-playfair text-[#0A2540]">{PRINCIPAL_DESK_DATA.name}</p>
+                  <p className="text-[#FF6B00] font-bold">Principal, Vins Christian College of Engineering</p>
                 </div>
               </div>
 

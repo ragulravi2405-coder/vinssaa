@@ -290,9 +290,9 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [runningTickerTitle, setRunningTickerTitleState] = useState<string>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.TICKER_TITLE);
-      if (saved) return saved;
+      if (saved && saved !== 'LIVE ANNOUNCEMENTS & CIRCULARS' && saved !== 'ANNOUNCEMENT') return saved;
     } catch {}
-    return 'LIVE ANNOUNCEMENTS & CIRCULARS';
+    return 'LIVE CIRCULARS';
   });
 
   // Gallery
@@ -849,7 +849,7 @@ export const AdminDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setCustomNavButtons(INITIAL_CUSTOM_NAV_BUTTONS);
     setSiteTheme(INITIAL_THEME_CONFIG);
     setSiteBanner(INITIAL_SITE_BANNER);
-    setRunningTickerTitleState('LIVE ANNOUNCEMENTS & CIRCULARS');
+    setRunningTickerTitleState('LIVE CIRCULARS');
 
     localStorage.removeItem(STORAGE_KEYS.GALLERY);
     localStorage.removeItem(STORAGE_KEYS.DOCUMENTS);

@@ -1,24 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   ArrowRight, ChevronLeft, ChevronRight, Play, Award, Users, GraduationCap, 
   Trophy, BookOpen, UserCheck, Cpu, Briefcase, FlaskConical, Bus, PartyPopper, 
   Calendar, CheckCircle2, Sparkles, ShieldCheck, HeartHandshake, Globe, Shield,
   Building, Star, Quote, Eye, Image as ImageIcon, MapPin, Clock, Share2, Pause,
-  Bell, FileText, Download, Megaphone, Video, ExternalLink
+  Bell, FileText, Download, Megaphone, Video, ExternalLink, Layers
 } from 'lucide-react';
 import { COLLEGE_INFO, STATS_COUNTERS, HERO_SLIDES, NEWS_EVENTS, GALLERY_IMAGES } from '../data/collegeData';
 import { DEPARTMENTS_DATA } from '../data/departmentsData';
 import { NOTIFICATIONS_DATA } from '../data/notificationsData';
 import { NavigationTab, DocumentItem } from '../types';
 import { RunningTickerBar } from '../components/common/RunningTickerBar';
+
 import { DocumentViewerModal } from '../components/common/DocumentViewerModal';
 import { useAdminData } from '../context/AdminDataContext';
+import { TiltCard } from '../components/common/TiltCard';
+import { FloatingElement } from '../components/common/FloatingElement';
+import { ScrollReveal } from '../components/common/ScrollReveal';
+import { EventNotificationPopup } from '../components/common/EventNotificationPopup';
+import { FloatingEventsButton } from '../components/common/FloatingEventsButton';
+import { Vins3DExplodedHeroText } from '../components/common/Vins3DExplodedHeroText';
 
 interface HomePageProps {
   onTabChange: (tab: NavigationTab, anchorId?: string, departmentId?: string) => void;
+  onOpenExplodedView?: () => void;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onTabChange, onOpenExplodedView }) => {
   const { heroSlides, galleryImages, events, departments, notifications, siteTheme } = useAdminData();
   const activeSlides = heroSlides && heroSlides.length > 0 ? heroSlides : HERO_SLIDES;
   const activeGallery = galleryImages && galleryImages.length > 0 ? galleryImages : GALLERY_IMAGES;
@@ -33,6 +42,34 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
   const [selectedGalleryImg, setSelectedGalleryImg] = useState<typeof GALLERY_IMAGES[0] | null>(null);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [selectedPdfDoc, setSelectedPdfDoc] = useState<DocumentItem | null>(null);
+
+  // Hero Section 3D Parallax Tracking
+  const heroRef = useRef<HTMLElement>(null);
+  const heroRafId = useRef<number | null>(null);
+  const [heroMouse, setHeroMouse] = useState({ x: 0, y: 0 });
+
+  const handleHeroMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    if (!heroRef.current || typeof window === 'undefined' || window.innerWidth < 768) return;
+    const rect = heroRef.current.getBoundingClientRect();
+    const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+
+    if (heroRafId.current) cancelAnimationFrame(heroRafId.current);
+    heroRafId.current = requestAnimationFrame(() => {
+      setHeroMouse({ x: nx, y: ny });
+    });
+  }, []);
+
+  const handleHeroMouseLeave = useCallback(() => {
+    if (heroRafId.current) cancelAnimationFrame(heroRafId.current);
+    setHeroMouse({ x: 0, y: 0 });
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (heroRafId.current) cancelAnimationFrame(heroRafId.current);
+    };
+  }, []);
 
   // Auto-slide image timer (5 seconds)
   useEffect(() => {
@@ -53,9 +90,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
 
   return (
     <div className="space-y-0 pb-0 bg-transparent text-[#252528] font-sans">
-      
-      {/* LIVE ANNOUNCEMENT RUNNING MARQUEE TICKER BAR */}
-      <RunningTickerBar onNavigateNotifications={() => onTabChange('notifications')} />
+      {/* RUNNING LIVE CIRCULARS MARQUEE TICKER BAR */}
+      <div className="m-0 p-0 mb-0">
+        <RunningTickerBar onNavigateNotifications={() => onTabChange('notifications')} />
+      </div>
+
 
       {/* Responsive Mobile Background Fix for Hero Section */}
       <style>{`
@@ -63,11 +102,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
         .hero-responsive-container {
           /* Mobile: Full-screen height */
           min-height: 100vh;
+          margin-top: 0 !important;
+          padding-top: 0 !important;
         }
         @media (min-width: 640px) {
           .hero-responsive-container {
             /* Desktop: Original layout and height */
             min-height: clamp(520px, 85vh, 900px);
+            margin-top: 0 !important;
+            padding-top: 0 !important;
           }
         }
 
@@ -92,13 +135,32 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
         }
       `}</style>
 
-      {/* 1. HERO SECTION - Transparent: Crisp Campus BG with direct Text */}
-      <section className="relative text-white overflow-hidden hero-responsive-container">
+      {/* 1. HERO SECTION - 5-LAYER 3D PARALLAX & CINEMATIC DEPTH */}
+      <section 
+        ref={heroRef}
+        onMouseMove={handleHeroMouseMove}
+        onMouseLeave={handleHeroMouseLeave}
+        className="relative text-white overflow-hidden hero-responsive-container perspective-1000 mt-0 pt-0"
+        style={{ marginTop: 0, paddingTop: 0 }}
+      >
 
-        {/* ── Layer 1: Campus Background Photo ── */}
-        <div className="absolute inset-0 z-0 hero-responsive-bg" aria-hidden="true" />
+        {/* Layer 1 background with animated fade/scale */}
+        <AnimatePresence>
+          <motion.div
+            key={currentSlide}
+            className="absolute inset-0 z-0 hero-responsive-bg will-change-transform"
+            initial={{ opacity: 0, scale: 1.08 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
+            style={{
+              transform: `translate3d(${-heroMouse.x * 14}px, ${-heroMouse.y * 12}px, 0px)`,
+            }}
+            aria-hidden="true"
+          />
+        </AnimatePresence>
 
-        {/* ── Layer 1.5: Soft Dull Shade Overlay for Text Clarity ── */}
+        {/* ── Layer 2: Soft Dull Shade Overlay for Text Clarity ── */}
         <div 
           className="absolute inset-0 z-0 pointer-events-none"
           style={{
@@ -107,139 +169,155 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
           aria-hidden="true" 
         />
 
-        {/* ── Layer 2: Centered Content — Transparent Card ── */}
-        <div className="relative z-10 flex items-center justify-center w-full h-full min-h-[inherit] py-16 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
+        {/* ── Layer 3: Decorative Floating 3D Depth Elements (Luminous Orbs & Geometric Rings) ── */}
+        <div 
+          className="absolute inset-0 z-[1] pointer-events-none overflow-hidden transition-transform duration-500 ease-out preserve-3d"
+          style={{
+            transform: `translate3d(${heroMouse.x * 16}px, ${heroMouse.y * 14}px, 15px)`,
+            transformStyle: 'preserve-3d',
+          }}
+          aria-hidden="true"
+        >
+          {/* Soft Blurred Luminous Ambient Glow Orbs */}
+          <div className="absolute -top-24 left-1/4 w-96 h-96 rounded-full bg-amber-400/15 blur-3xl animate-float-a" />
+          <div className="absolute bottom-12 right-1/4 w-80 h-80 rounded-full bg-blue-500/15 blur-3xl animate-float-b" />
+          
+          {/* Elegant Subtle Geometric Depth Rings */}
+          <div className="absolute top-1/4 left-8 w-44 h-44 rounded-full border border-white/10 animate-float-c hidden lg:block" />
+          <div className="absolute bottom-1/4 right-12 w-64 h-64 rounded-full border border-amber-300/15 animate-float-b hidden lg:block" />
+        </div>
 
-          {/*
-            Transparent container:
-            No background, no blur.
-            Text shadows provide readability directly over the image.
-          */}
-          <div className="w-full max-w-4xl mx-auto text-center flex flex-col items-center gap-5 sm:gap-8 px-6 sm:px-10 py-8 sm:py-12 rounded-2xl sm:rounded-3xl">
-
-            {/* Institution Crest inside a transparent ring */}
-            <div className="flex justify-center">
-              <div
-                className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl p-2 sm:p-3 flex items-center justify-center hover:scale-105 transition-transform duration-300 shrink-0"
-                style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1.5px solid rgba(255,255,255,0.25)',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-                }}
-              >
-                <img
-                  src="/images/logo/vins logooo.jpg"
-                  alt="VINS College Crest"
-                  className="w-full h-full object-contain rounded-xl filter drop-shadow-lg"
-                />
-              </div>
-            </div>
-
-            {/* "WELCOME TO" label */}
-            <span
-              className="text-[10px] sm:text-sm font-extrabold tracking-[0.28em] uppercase font-cinzel block"
-              style={{
-                color: 'rgba(255,255,255,0.95)',
-                letterSpacing: '0.28em',
-                textShadow: '0 2px 10px rgba(0,0,0,0.8), 0 0px 4px rgba(0,0,0,0.5)',
-              }}
-            >
-              WELCOME TO
-            </span>
-
-            {/* Main Heading — Solid Pure White, text shadow for readability */}
-            <div className="space-y-2 sm:space-y-3">
-              <h1
-                className="font-extrabold font-playfair leading-[1.08] tracking-tight"
-                style={{
-                  fontSize: 'clamp(2rem, 6.5vw, 5.25rem)',
-                  color: '#ffffff',
-                  textShadow: '0 2px 20px rgba(0,0,0,0.9), 0 0px 60px rgba(0,0,0,0.7)',
-                }}
-              >
-                VINS Christian College
-              </h1>
-
-              {/* Divider accent line - Premium Gold Accent */}
-              <div className="flex items-center justify-center gap-3 py-1">
-                <div className="h-px flex-1 max-w-[60px]" style={{ background: 'linear-gradient(to right, transparent, rgba(250,204,21,0.6))' }} />
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#facc15', boxShadow: '0 0 8px rgba(250,204,21,0.6)' }} />
-                <div className="h-px flex-1 max-w-[60px]" style={{ background: 'linear-gradient(to left, transparent, rgba(250,204,21,0.6))' }} />
-              </div>
-
-              {/* Sub-heading – college details in Premium Light Gold */}
-              <p
-                className="font-bold tracking-[0.18em] uppercase font-cinzel leading-relaxed"
-                style={{
-                  fontSize: 'clamp(0.6rem, 1.4vw, 0.95rem)',
-                  color: '#fde047', // Premium Light Gold
-                  textShadow: '0 2px 10px rgba(0,0,0,0.85), 0 0px 4px rgba(0,0,0,0.5)',
-                }}
-              >
-                OF ENGINEERING · NAGERCOIL · ANNA UNIVERSITY CODE: {siteTheme?.tneaCode || '4982'}
-              </p>
-            </div>
-
-            {/* Body paragraph in slightly warm white */}
-            <p
-              className="font-medium max-w-2xl mx-auto leading-relaxed"
-              style={{
-                fontSize: 'clamp(0.85rem, 1.6vw, 1.1rem)',
-                color: '#fdfbf7', // slightly warm pure white
-                textShadow: '0 2px 12px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.6)',
-              }}
-            >
-              A premier institution for engineering excellence, transformative research, and holistic career leadership in South India.
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 w-full pt-1">
-              <button
-                onClick={() => onTabChange('admissions', 'online-form')}
-                className="btn-valer-green text-xs sm:text-sm uppercase tracking-widest px-6 sm:px-10 py-3.5 sm:py-4 shadow-[0_4px_15px_rgba(0,0,0,0.4)] hover:scale-105 active:scale-95 cursor-pointer font-extrabold w-full sm:w-auto justify-center"
-              >
-                <span>EXPLORE WITH US</span>
-                <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5 text-white shrink-0" />
-              </button>
-
-              <button
-                onClick={() => setVideoModalOpen(true)}
-                className="btn-hero-outline text-xs sm:text-sm uppercase tracking-widest px-6 sm:px-9 py-3.5 sm:py-4 shadow-[0_4px_15px_rgba(0,0,0,0.4)] active:scale-95 cursor-pointer hover:border-white hover:bg-white/10 font-extrabold w-full sm:w-auto justify-center"
-                style={{ border: '1px solid rgba(255,255,255,0.7)', backgroundColor: 'rgba(0,0,0,0.2)' }}
-              >
-                <span
-                  className="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
-                  style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.5)' }}
-                >
-                  <Play className="w-3 h-3 fill-current ml-0.5 shrink-0 text-white" />
-                </span>
-                <span className="text-white drop-shadow-md">WATCH CAMPUS TOUR</span>
-              </button>
-            </div>
-
-          </div>{/* end transparent card */}
+        {/* ── Layer 4 & 5: Interactive 3D "VINS" Master Hero Typography ── */}
+        <div className="relative z-10 flex items-center justify-center w-full h-full min-h-[inherit] py-6 sm:py-8 lg:py-12 px-2 sm:px-4 lg:px-6 preserve-3d">
+          <Vins3DExplodedHeroText
+            heroMouse={heroMouse}
+            onNavigateAdmissions={() => onTabChange('admissions', 'online-form')}
+            onOpenVideo={() => setVideoModalOpen(true)}
+            onOpenExplodedView={onOpenExplodedView}
+            tneaCode={siteTheme?.tneaCode || '4982'}
+          />
         </div>
 
       </section>
 
-      {/* 2. MINIMAL DISTRACTION-FREE IMAGE SLIDER */}
-      <section className="relative w-full max-w-[1720px] mx-auto px-3 sm:px-6 lg:px-8 -mt-8 sm:-mt-12 mb-10 sm:mb-16 z-20">
-        
+      {/* 2. 3D EXPLODE TRANSITION IMAGE SLIDER */}
+      <section className="relative w-full max-w-[1720px] mx-auto px-3 sm:px-6 lg:px-8 mt-6 sm:mt-10 mb-10 sm:mb-16 z-20">
+        <style>{`
+          @keyframes kbSlider {
+            0%   { transform: scale(1.0) translate(0px, 0px); }
+            50%  { transform: scale(1.06) translate(-8px, -4px); }
+            100% { transform: scale(1.0) translate(0px, 0px); }
+          }
+          .kb-slider-img { animation: kbSlider 8s ease-in-out infinite; }
+        `}</style>
+
         {/* Floating Organic Halo Effect */}
-        <div className="relative organic-glass-slider-wrapper">
+        <div className="relative organic-glass-slider-wrapper" style={{ perspective: '1400px' }}>
           <div className="organic-glass-halo" />
-          
-          <div className="organic-glass-slider-inner aspect-[21/10] sm:aspect-[21/9] min-h-[340px] sm:min-h-[520px] lg:min-h-[620px] overflow-hidden">
-            
-            {/* Pure Slide Image with Smooth Ken-Burns Motion & Auto Transitions */}
-            <div className="absolute inset-0 z-0 overflow-hidden">
-              <img
-                key={`slide-img-${currentSlide}`}
-                src={activeSlides[currentSlide]?.visualUrl || '/images/college events and news galeery/h9.jpg'}
-                alt={activeSlides[currentSlide]?.title || 'VINS Campus Slide'}
-                className="w-full h-full object-cover object-center animate-ken-burns transition-all duration-1000"
-              />
-            </div>
+
+          <div
+            className="organic-glass-slider-inner aspect-[21/10] sm:aspect-[21/9] min-h-[340px] sm:min-h-[520px] lg:min-h-[620px] overflow-hidden"
+            style={{ transformStyle: 'preserve-3d' }}
+          >
+            {/* 3D Explode Slide Transition */}
+            <AnimatePresence mode="wait">
+              {(() => {
+                const slide = activeSlides[currentSlide];
+                const variants = [
+                  // 0: Explode Scale — centre burst outward
+                  {
+                    initial: { opacity: 0, scale: 0.55, rotateY: 0, z: -400, filter: 'blur(18px) brightness(0.4)' },
+                    animate: { opacity: 1, scale: 1, rotateY: 0, z: 0, filter: 'blur(0px) brightness(1)' },
+                    exit:    { opacity: 0, scale: 1.25, rotateY: 0, z: 200, filter: 'blur(12px) brightness(1.4)' },
+                    transition: { duration: 0.92, ease: [0.22, 1, 0.36, 1] },
+                  },
+                  // 1: Depth Rotate — flips in from left on Y-axis
+                  {
+                    initial: { opacity: 0, rotateY: -90, z: -300, scale: 0.8, filter: 'blur(10px)' },
+                    animate: { opacity: 1, rotateY: 0, z: 0, scale: 1, filter: 'blur(0px)' },
+                    exit:    { opacity: 0, rotateY: 90, z: -200, scale: 0.85, filter: 'blur(8px)' },
+                    transition: { duration: 1.0, ease: [0.16, 1, 0.3, 1] },
+                  },
+                  // 2: Slice Up — rises like a curtain with X-rotate
+                  {
+                    initial: { opacity: 0, rotateX: 55, z: -250, scale: 0.85, filter: 'blur(14px) brightness(0.5)' },
+                    animate: { opacity: 1, rotateX: 0, z: 0, scale: 1, filter: 'blur(0px) brightness(1)' },
+                    exit:    { opacity: 0, rotateX: -45, z: -150, scale: 0.9, filter: 'blur(8px) brightness(0.6)' },
+                    transition: { duration: 0.95, ease: [0.34, 1.56, 0.64, 1] },
+                  },
+                  // 3: Z-Burst — image rockets toward camera
+                  {
+                    initial: { opacity: 0, scale: 2.2, z: 800, filter: 'blur(22px) brightness(2)' },
+                    animate: { opacity: 1, scale: 1, z: 0, filter: 'blur(0px) brightness(1)' },
+                    exit:    { opacity: 0, scale: 0.4, z: -600, filter: 'blur(16px) brightness(0.3)' },
+                    transition: { duration: 1.05, ease: [0.22, 1, 0.36, 1] },
+                  },
+                  // 4: Diagonal Split — comes in from top-right corner
+                  {
+                    initial: { opacity: 0, x: '40%', y: '-35%', rotate: 8, scale: 0.7, filter: 'blur(16px)' },
+                    animate: { opacity: 1, x: '0%', y: '0%', rotate: 0, scale: 1, filter: 'blur(0px)' },
+                    exit:    { opacity: 0, x: '-40%', y: '35%', rotate: -8, scale: 0.75, filter: 'blur(12px)' },
+                    transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+                  },
+                  // 5: Roll In — rotateZ spin with scale
+                  {
+                    initial: { opacity: 0, rotate: -12, scale: 0.6, z: -300, filter: 'blur(20px) saturate(0)' },
+                    animate: { opacity: 1, rotate: 0, scale: 1, z: 0, filter: 'blur(0px) saturate(1)' },
+                    exit:    { opacity: 0, rotate: 12, scale: 0.65, z: -200, filter: 'blur(14px) saturate(0)' },
+                    transition: { duration: 1.0, ease: [0.34, 1.56, 0.64, 1] },
+                  },
+                ];
+                const v = variants[currentSlide % variants.length];
+                return (
+                  <motion.div
+                    key={currentSlide}
+                    className="absolute inset-0 z-0"
+                    initial={v.initial as any}
+                    animate={v.animate as any}
+                    exit={v.exit as any}
+                    transition={v.transition}
+                    style={{ transformStyle: 'preserve-3d' }}
+                  >
+                    {/* Slide Image — pure, no text overlay */}
+                    <img
+                      src={slide?.visualUrl || '/images/college events and news galeery/h9.jpg'}
+                      alt={slide?.title || 'VINS Campus Slide'}
+                      className="w-full h-full object-cover object-center kb-slider-img"
+                    />
+                  </motion.div>
+                );
+              })()}
+            </AnimatePresence>
+
+            {/* ── Navigation Arrows ONLY ── */}
+            <button
+              onClick={prevSlide}
+              className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-20 cursor-pointer"
+              aria-label="Previous slide"
+            >
+              <div
+                className="w-9 h-9 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-300"
+                style={{ background: 'rgba(255,255,255,0.13)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.22)' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.28)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.13)')}
+              >
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+            </button>
+            <button
+              onClick={nextSlide}
+              className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-20 cursor-pointer"
+              aria-label="Next slide"
+            >
+              <div
+                className="w-9 h-9 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-300"
+                style={{ background: 'rgba(255,255,255,0.13)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.22)' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.28)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.13)')}
+              >
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+            </button>
 
           </div>
         </div>
@@ -247,7 +325,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
       </section>
 
       {/* 3. REST OF HOME PAGE - LAYERED GLASSY CEMENT GREY */}
-      <div className="bg-transparent text-[#252528] space-y-16 sm:space-y-24 py-12 sm:py-24 relative">
+      {/* 3. REST OF HOME PAGE - LAYERED GLASSY CEMENT GREY */}
+      <div className="bg-transparent text-[#252528] space-y-16 sm:space-y-24 py-12 sm:py-24 relative overflow-hidden">
+
+        {/* Subtle Ambient 3D Depth Backdrop Orbs (Collegiate Soft Lighting) */}
+        <div className="absolute top-24 -left-28 w-96 h-96 rounded-full bg-amber-400/5 blur-3xl pointer-events-none animate-float-a" aria-hidden="true" />
+        <div className="absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-blue-600/5 blur-3xl pointer-events-none animate-float-b" aria-hidden="true" />
+        <div className="absolute bottom-1/4 -left-20 w-80 h-80 rounded-full bg-amber-500/5 blur-3xl pointer-events-none animate-float-c" aria-hidden="true" />
 
         {/* SECTION A: "CELEBRATING THE BRIGHTEST MIND" */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -302,31 +386,87 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
 
             </div>
 
-            {/* Right Column: Asymmetric Dual Image Editorial Collage with Royal Framed Layout */}
-            <div className="lg:col-span-6 relative">
-              <div className="relative">
+            {/* Right Column: 4-Layer 3D Floating Image Composition with Independent Depths */}
+            <div className="lg:col-span-6 relative perspective-1000">
+              <div className="relative preserve-3d w-full min-h-[380px] sm:min-h-[460px] flex items-center justify-center">
                 
-                {/* Grand Campus / Library Main Photo in Royal Frame */}
-                <div className="royal-image-frame w-full">
-                  <div className="royal-image-inner w-full aspect-[4/3]">
-                    <img 
-                      src="/images/college events and news galeery/h6.jpg" 
-                      alt="VINS College Central Library and Quadrangle" 
-                      className="w-full h-full object-cover img-hover-zoom"
-                    />
+                {/* Layer 3 (Deeper 3D Position): Innovation Laboratory Preview */}
+                <FloatingElement 
+                  duration={9.2} 
+                  delay={1.4} 
+                  distance={7} 
+                  translateZ={-10} 
+                  floatType="depth" 
+                  className="absolute -top-4 -left-3 sm:-top-8 sm:-left-6 w-40 sm:w-48 z-0 hidden sm:block"
+                >
+                  <div className="royal-image-frame w-full shadow-lg opacity-85 hover:opacity-100 transition-opacity">
+                    <div className="royal-image-inner w-full aspect-[4/3]">
+                      <img 
+                        src="/images/college events and news galeery/h5.jpg" 
+                        alt="VINS Innovation Lab" 
+                        className="w-full h-full object-cover img-hover-zoom"
+                      />
+                    </div>
                   </div>
-                </div>
+                </FloatingElement>
 
-                {/* Overlapping Framed Portrait Photo in Royal Frame */}
-                <div className="absolute bottom-0 right-0 sm:-bottom-6 sm:-right-4 w-1/2 royal-image-frame z-10 shadow-2xl">
-                  <div className="royal-image-inner w-full aspect-[4/3]">
-                    <img 
-                      src="/images/college events and news galeery/1 (2).jpg" 
-                      alt="VINS Academic Dignitaries and Students" 
-                      className="w-full h-full object-cover img-hover-zoom"
-                    />
+                {/* Layer 1 (Vertical Float): Grand Campus & Central Library Main Photo */}
+                <FloatingElement 
+                  duration={8.0} 
+                  delay={0.2} 
+                  distance={8} 
+                  translateZ={12} 
+                  floatType="vertical" 
+                  className="w-full max-w-md sm:max-w-none z-10"
+                >
+                  <div className="royal-image-frame w-full shadow-2xl">
+                    <div className="royal-image-inner w-full aspect-[4/3]">
+                      <img 
+                        src="/images/college events and news galeery/h6.jpg" 
+                        alt="VINS College Central Library and Quadrangle" 
+                        className="w-full h-full object-cover img-hover-zoom"
+                      />
+                    </div>
                   </div>
-                </div>
+                </FloatingElement>
+
+                {/* Layer 2 (Diagonal Float): Overlapping Dignitaries and Students */}
+                <FloatingElement 
+                  duration={6.6} 
+                  delay={0.8} 
+                  distance={10} 
+                  translateZ={28} 
+                  floatType="diagonal" 
+                  className="absolute -bottom-4 right-0 sm:-bottom-6 sm:-right-4 w-1/2 max-w-[240px] sm:max-w-[280px] z-20"
+                >
+                  <div className="royal-image-frame w-full shadow-2xl">
+                    <div className="royal-image-inner w-full aspect-[4/3]">
+                      <img 
+                        src="/images/college events and news galeery/1 (2).jpg" 
+                        alt="VINS Academic Dignitaries and Students" 
+                        className="w-full h-full object-cover img-hover-zoom"
+                      />
+                    </div>
+                  </div>
+                </FloatingElement>
+
+                {/* Layer 4 (Opposite Reverse Float): Autonomous Engineering Excellence Badge */}
+                <FloatingElement 
+                  duration={7.4} 
+                  delay={1.1} 
+                  distance={8} 
+                  translateZ={38} 
+                  floatType="reverse" 
+                  className="absolute bottom-6 left-2 sm:bottom-10 sm:-left-4 z-30"
+                >
+                  <div className="glass-navy p-3 sm:p-3.5 rounded-2xl border border-white/25 shadow-2xl flex items-center gap-2.5 backdrop-blur-md">
+                    <Award className="w-5 h-5 text-amber-400 shrink-0" />
+                    <div className="text-left">
+                      <p className="text-[10px] font-black uppercase text-amber-300 tracking-wider">Top Engineering Ranking</p>
+                      <p className="text-xs font-bold text-white">Anna University Code 4982</p>
+                    </div>
+                  </div>
+                </FloatingElement>
 
               </div>
             </div>
@@ -371,95 +511,110 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
 
               {/* Right Column: Large Vertical Chairman Photo in Royal Frame */}
               <div className="lg:col-span-5">
-                <div className="royal-image-frame w-full">
-                  <div className="royal-image-inner w-full aspect-[4/5] relative group">
-                    <img 
-                      src="/images/chairman and pricipal img/chairman img.jpg" 
-                      alt="Founder Chairman Nanjil M. Vincent" 
-                      className="w-full h-full object-cover img-hover-zoom"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#252528]/90 via-transparent to-transparent opacity-90" />
-                    <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#eceae6] block">LEADERSHIP SPOTLIGHT</span>
-                      <p className="text-sm font-playfair font-bold">VINS Group of Educational Institutions</p>
+                <FloatingElement duration={8.5} distance={5} className="w-full">
+                  <div className="royal-image-frame w-full">
+                    <div className="royal-image-inner w-full aspect-[4/5] relative group">
+                      <img 
+                        src="/images/chairman and pricipal img/chairman img.jpg" 
+                        alt="Founder Chairman Nanjil M. Vincent" 
+                        className="w-full h-full object-cover img-hover-zoom"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#252528]/90 via-transparent to-transparent opacity-90" />
+                      <div className="absolute bottom-4 left-4 right-4 text-white">
+                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#eceae6] block">LEADERSHIP SPOTLIGHT</span>
+                        <p className="text-sm font-playfair font-bold">VINS Group of Educational Institutions</p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </FloatingElement>
               </div>
 
             </div>
           </div>
         </section>
 
-        {/* SECTION C: "UPCOMING EVENTS" */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        {/* SECTION C: "UPCOMING EVENTS" - COMPACT & MODERN 3D DISPLAY */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           
-          <div className="text-center space-y-3 max-w-3xl mx-auto">
-            <div className="flex items-center justify-center gap-3">
-              <span className="h-px w-10 bg-[#dedcd7]" />
-              <span className="text-[11px] sm:text-xs font-bold tracking-[0.2em] uppercase text-[#6B4C14] font-cinzel">
-                FEEL FREE TO JOIN OUR ACADEMIC &amp; PUBLIC EVENTS
-              </span>
-              <span className="h-px w-10 bg-[#dedcd7]" />
-            </div>
-
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-[#252528] tracking-tight">
-              UPCOMING EVENTS
-            </h2>
-          </div>
-
-          {/* Valer-Style Event Rows */}
-          <div className="space-y-4">
-            {activeEvents.map((evt) => (
-              <div 
-                key={evt.id}
-                onClick={() => setSelectedEvent({
-                  id: evt.id,
-                  title: evt.title,
-                  date: evt.date,
-                  category: evt.category,
-                  imagePath: evt.imagePath,
-                  description: evt.description
-                })}
-                className="valer-event-row flex-col sm:flex-row group cursor-pointer shadow-xs rounded-2xl overflow-hidden border border-amber-400/40"
-              >
-                
-                {/* Left Dark Cement Date Badge */}
-                <div className="valer-date-badge flex flex-col justify-center items-center py-4 px-6 sm:w-56 shrink-0 bg-[#363539] text-white">
-                  <span className="text-sm sm:text-base font-bold font-playfair tracking-wide text-center">
-                    {evt.date}
-                  </span>
-                  <span className="text-[10px] text-[#eceae6] font-bold uppercase tracking-wider mt-1">
-                    {evt.category}
-                  </span>
-                </div>
-
-                {/* Right Event Content */}
-                <div className="p-5 sm:p-6 flex-1 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-amber-50/60 group-hover:bg-amber-100/70 transition-colors">
-                  
-                  <div className="space-y-1 min-w-0 pr-4">
-                    <h3 className="text-base sm:text-lg font-bold font-playfair text-[#252528] group-hover:text-[#54524e] transition-colors">
-                      {evt.title}
-                    </h3>
-                    <p className="text-xs text-[#54524e] font-sans line-clamp-1">
-                      {evt.description}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-6 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#dedcd7]">
-                    <span className="text-xs font-semibold text-[#6B4C14] font-sans whitespace-nowrap">
-                      {evt.subtitle || '10:00 am'}
-                    </span>
-
-                    <button className="text-xs font-bold uppercase tracking-wider text-[#252528] group-hover:text-[#54524e] transition-colors flex items-center gap-1.5 cursor-pointer">
-                      <span>Details</span>
-                      <ArrowRight className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  </div>
-
-                </div>
-
+          <ScrollReveal direction="up" distance={20}>
+            <div className="text-center space-y-2.5 max-w-3xl mx-auto">
+              <div className="flex items-center justify-center gap-3">
+                <span className="h-px w-10 bg-[#dedcd7]" />
+                <span className="text-[11px] sm:text-xs font-bold tracking-[0.2em] uppercase text-[#6B4C14] font-cinzel">
+                  FEEL FREE TO JOIN OUR ACADEMIC &amp; PUBLIC EVENTS
+                </span>
+                <span className="h-px w-10 bg-[#dedcd7]" />
               </div>
+
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-playfair text-[#252528] tracking-tight">
+                UPCOMING EVENTS
+              </h2>
+            </div>
+          </ScrollReveal>
+
+          {/* Compact Dynamic Events Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            {activeEvents.slice(0, 4).map((evt, idx) => (
+              <ScrollReveal key={evt.id} delay={idx * 0.1} direction="up" distance={15}>
+                <TiltCard
+                  maxTilt={5}
+                  scale={1.015}
+                  onClick={() => setSelectedEvent({
+                    id: evt.id,
+                    title: evt.title,
+                    date: evt.date,
+                    category: evt.category,
+                    imagePath: evt.imagePath,
+                    description: evt.description
+                  })}
+                  className="rounded-2xl overflow-hidden border border-amber-400/40 bg-white/90 backdrop-blur-md shadow-sm hover:shadow-xl transition-all cursor-pointer h-full"
+                >
+                  <div className="flex flex-col sm:flex-row h-full">
+                    {/* Event Image / Thumbnail with smooth zoom */}
+                    {evt.imagePath && (
+                      <div className="sm:w-44 h-40 sm:h-auto shrink-0 relative overflow-hidden bg-slate-100">
+                        <img
+                          src={evt.imagePath}
+                          alt={evt.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-2.5 left-2.5 bg-[#0A2540] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                          {evt.category || 'Event'}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Content */}
+                    <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3">
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2 text-xs font-bold text-[#FF6B00]">
+                          <Calendar className="w-3.5 h-3.5 shrink-0" />
+                          <span>{evt.date}</span>
+                          {evt.subtitle && <span className="text-slate-400 font-normal">· {evt.subtitle}</span>}
+                        </div>
+
+                        <h3 className="text-base font-bold font-playfair text-[#252528] group-hover:text-[#0A2540] transition-colors leading-snug line-clamp-2">
+                          {evt.title}
+                        </h3>
+
+                        <p className="text-xs text-[#54524e] font-sans line-clamp-2 leading-relaxed">
+                          {evt.description}
+                        </p>
+                      </div>
+
+                      <div className="pt-2 border-t border-[#dedcd7]/60 flex items-center justify-between text-xs font-bold">
+                        <span className="text-[#6B4C14] text-[11px] font-semibold">
+                          {evt.category}
+                        </span>
+                        <span className="text-[#252528] group-hover:text-[#FF6B00] transition-colors inline-flex items-center gap-1">
+                          <span>Details</span>
+                          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </TiltCard>
+              </ScrollReveal>
             ))}
           </div>
 
@@ -467,7 +622,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
           <div className="text-center pt-2">
             <button
               onClick={() => onTabChange('campus', 'events')}
-              className="btn-valer-green text-xs uppercase tracking-widest px-8 py-3.5 shadow-md cursor-pointer font-bold inline-flex items-center gap-2"
+              className="btn-valer-green btn-micro text-xs uppercase tracking-widest px-8 py-3.5 shadow-md cursor-pointer font-bold inline-flex items-center gap-2"
             >
               <span>VIEW ALL UPCOMING EVENTS</span>
               <ArrowRight className="w-4 h-4 text-white shrink-0" />
@@ -501,30 +656,32 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
           {/* 3-Column Magazine Layout */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             
-            {/* Column 1: Featured Article Card */}
-            <div className="gold-card rounded-2xl p-6 border border-amber-400/40 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-xl transition-all">
-              <div className="space-y-3">
-                <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#6B4C14] block">
-                  SEPTEMBER 8, 2026 · RESEARCH
-                </span>
-                <h3 className="text-xl font-bold font-playfair text-[#252528] leading-snug">
-                  Advanced AI &amp; Robotics Innovation Laboratory Commissioned at VINS
-                </h3>
-                <p className="text-xs text-[#3A2A08] leading-relaxed">
-                  Equipped with cutting-edge Nvidia GPUs, humanoid robotics kits, and cloud compute nodes to accelerate student research in machine intelligence and computer vision.
-                </p>
-              </div>
+            {/* Column 1: Featured Article Card with 3D Tilt */}
+            <TiltCard maxTilt={5} scale={1.015} className="h-full">
+              <div className="gold-card rounded-2xl p-6 border border-amber-400/40 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-xl transition-all h-full">
+                <div className="space-y-3">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#6B4C14] block">
+                    SEPTEMBER 8, 2026 · RESEARCH
+                  </span>
+                  <h3 className="text-xl font-bold font-playfair text-[#252528] leading-snug">
+                    Advanced AI &amp; Robotics Innovation Laboratory Commissioned at VINS
+                  </h3>
+                  <p className="text-xs text-[#3A2A08] leading-relaxed">
+                    Equipped with cutting-edge Nvidia GPUs, humanoid robotics kits, and cloud compute nodes to accelerate student research in machine intelligence and computer vision.
+                  </p>
+                </div>
 
-              <div className="pt-4 border-t border-[#dedcd7]">
-                <button
-                  onClick={() => onTabChange('notifications')}
-                  className="text-xs font-bold uppercase tracking-widest text-[#252528] hover:text-[#54524e] transition-colors flex items-center gap-1.5 group cursor-pointer"
-                >
-                  <span>READ MORE</span>
-                  <ArrowRight className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-1 transition-transform" />
-                </button>
+                <div className="pt-4 border-t border-[#dedcd7]">
+                  <button
+                    onClick={() => onTabChange('notifications')}
+                    className="text-xs font-bold uppercase tracking-widest text-[#252528] hover:text-[#54524e] transition-colors flex items-center gap-1.5 group cursor-pointer"
+                  >
+                    <span>READ MORE</span>
+                    <ArrowRight className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
               </div>
-            </div>
+            </TiltCard>
 
             {/* Column 2: Center Full-Height Featured Photo Card with Royal Frame */}
             <div className="royal-image-frame aspect-[3/4] md:aspect-auto">
@@ -542,39 +699,41 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
               </div>
             </div>
 
-            {/* Column 3: Secondary Article Card */}
-            <div className="gold-card rounded-2xl p-6 border border-amber-400/40 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-xl transition-all">
-              <div className="space-y-3">
-                <div className="royal-card-highlight w-full aspect-[16/9]">
-                  <div className="rounded-xl overflow-hidden w-full h-full bg-[#ebe9e4]">
-                    <img 
-                      src="/images/college events and news galeery/h5.jpg" 
-                      alt="VINS Architectural Complex" 
-                      className="w-full h-full object-cover img-hover-zoom"
-                    />
+            {/* Column 3: Secondary Article Card with 3D Tilt */}
+            <TiltCard maxTilt={5} scale={1.015} className="h-full">
+              <div className="gold-card rounded-2xl p-6 border border-amber-400/40 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-xl transition-all h-full">
+                <div className="space-y-3">
+                  <div className="royal-card-highlight w-full aspect-[16/9]">
+                    <div className="rounded-xl overflow-hidden w-full h-full bg-[#ebe9e4]">
+                      <img 
+                        src="/images/college events and news galeery/h5.jpg" 
+                        alt="VINS Architectural Complex" 
+                        className="w-full h-full object-cover img-hover-zoom"
+                      />
+                    </div>
                   </div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#6B4C14] block">
+                    AUGUST 17, 2026 · CAMPUS INFRASTRUCTURE
+                  </span>
+                  <h3 className="text-lg font-bold font-playfair text-[#252528] leading-snug">
+                    Expansion of High-Tech Research Quadrangle &amp; Digital Library
+                  </h3>
+                  <p className="text-xs text-[#3A2A08] leading-relaxed">
+                    State-of-the-art facility housing 50,000+ technical volumes, IEEE Xplore access, and dedicated team collaboration pods.
+                  </p>
                 </div>
-                <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#6B4C14] block">
-                  AUGUST 17, 2026 · CAMPUS INFRASTRUCTURE
-                </span>
-                <h3 className="text-lg font-bold font-playfair text-[#252528] leading-snug">
-                  Expansion of High-Tech Research Quadrangle &amp; Digital Library
-                </h3>
-                <p className="text-xs text-[#3A2A08] leading-relaxed">
-                  State-of-the-art facility housing 50,000+ technical volumes, IEEE Xplore access, and dedicated team collaboration pods.
-                </p>
-              </div>
 
-              <div className="pt-4 border-t border-[#dedcd7]">
-                <button
-                  onClick={() => onTabChange('facilities')}
-                  className="text-xs font-bold uppercase tracking-widest text-[#252528] hover:text-[#54524e] transition-colors flex items-center gap-1.5 group cursor-pointer"
-                >
-                  <span>READ MORE</span>
-                  <ArrowRight className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-1 transition-transform" />
-                </button>
+                <div className="pt-4 border-t border-[#dedcd7]">
+                  <button
+                    onClick={() => onTabChange('facilities')}
+                    className="text-xs font-bold uppercase tracking-widest text-[#252528] hover:text-[#54524e] transition-colors flex items-center gap-1.5 group cursor-pointer"
+                  >
+                    <span>READ MORE</span>
+                    <ArrowRight className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
               </div>
-            </div>
+            </TiltCard>
 
           </div>
 
@@ -583,58 +742,65 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
         {/* SECTION E: ACADEMICS & 8 ENGINEERING DEPARTMENTS */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           
-          <div className="text-center max-w-3xl mx-auto space-y-3">
-            <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#54524e] font-cinzel block">
-              DEGREE PROGRAMS &amp; DISCIPLINES
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold font-playfair text-[#252528]">
-              Engineering &amp; Management Courses
-            </h2>
-            <p className="text-xs sm:text-sm text-[#6B4C14]">
-              Anna University curriculum with state-of-the-art laboratories, expert PhD professors, and hands-on industrial projects.
-            </p>
-          </div>
+          <ScrollReveal direction="up" distance={20}>
+            <div className="text-center max-w-3xl mx-auto space-y-3">
+              <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#54524e] font-cinzel block">
+                DEGREE PROGRAMS &amp; DISCIPLINES
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-bold font-playfair text-[#252528]">
+                Engineering &amp; Management Courses
+              </h2>
+              <p className="text-xs sm:text-sm text-[#6B4C14]">
+                Anna University curriculum with state-of-the-art laboratories, expert PhD professors, and hands-on industrial projects.
+              </p>
+            </div>
+          </ScrollReveal>
 
-          {/* Departments Grid */}
+          {/* Departments Grid with Interactive 3D Perspective Tilt */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {activeDepartments.slice(0, 8).map((dept) => (
-              <div
-                key={dept.id}
-                onClick={() => onTabChange('department', undefined, dept.id)}
-                className="gold-card rounded-2xl border border-amber-400/40 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col justify-between group"
-              >
-                <div className="space-y-3 p-4">
-                  <div className="royal-card-highlight w-full aspect-[16/10]">
-                    <div className="w-full h-full rounded-xl overflow-hidden bg-[#ebe9e4] relative">
-                      <img
-                        src={dept.courseImage || dept.bannerPath}
-                        alt={dept.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <span className="absolute top-2 right-2 px-2 py-0.5 rounded bg-[#252528]/80 text-white font-extrabold text-[10px] backdrop-blur-xs">
-                        {dept.degree}
-                      </span>
+            {activeDepartments.slice(0, 8).map((dept, idx) => (
+              <ScrollReveal key={dept.id} delay={idx * 0.06} direction="up" distance={15}>
+                <TiltCard
+                  maxTilt={6}
+                  scale={1.02}
+                  onClick={() => onTabChange('department', undefined, dept.id)}
+                  className="rounded-2xl h-full cursor-pointer"
+                >
+                  <div className="gold-card rounded-2xl border border-amber-400/40 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group h-full">
+                    <div className="space-y-3 p-4">
+                      <div className="royal-card-highlight w-full aspect-[16/10]">
+                        <div className="w-full h-full rounded-xl overflow-hidden bg-[#ebe9e4] relative">
+                          <img
+                            src={dept.courseImage || dept.bannerPath}
+                            alt={dept.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <span className="absolute top-2 right-2 px-2 py-0.5 rounded bg-[#252528]/80 text-white font-extrabold text-[10px] backdrop-blur-xs">
+                            {dept.degree}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] font-bold text-[#54524e] uppercase tracking-wider block">
+                          Intake: {dept.intake} Seats
+                        </span>
+                        <h3 className="text-sm font-playfair font-bold text-[#252528] mt-1 group-hover:text-[#54524e] transition-colors line-clamp-1">
+                          {dept.name}
+                        </h3>
+                        <p className="text-[11px] text-[#6B4C14] line-clamp-2 mt-1">
+                          {dept.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-amber-800/20 border-t border-amber-400/30 flex items-center justify-between text-xs font-bold text-[#5C4010] group-hover:text-[#8A6418]">
+                      <span>Explore Curriculum</span>
+                      <ArrowRight className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
-
-                  <div>
-                    <span className="text-[10px] font-bold text-[#54524e] uppercase tracking-wider block">
-                      Intake: {dept.intake} Seats
-                    </span>
-                    <h3 className="text-sm font-playfair font-bold text-[#252528] mt-1 group-hover:text-[#54524e] transition-colors line-clamp-1">
-                      {dept.name}
-                    </h3>
-                    <p className="text-[11px] text-[#6B4C14] line-clamp-2 mt-1">
-                      {dept.description}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-3 bg-amber-800/20 border-t border-amber-400/30 flex items-center justify-between text-xs font-bold text-[#5C4010] group-hover:text-[#8A6418]">
-                  <span>Explore Curriculum</span>
-                  <ArrowRight className="w-3.5 h-3.5 shrink-0 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
+                </TiltCard>
+              </ScrollReveal>
             ))}
           </div>
 
@@ -651,7 +817,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
         </section>
 
         {/* DEDICATED FEATURED YOUTUBE VIDEOS SECTION - WITH SOLID DEEP NAVY BLUE (#0A2540) CANVAS */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{ perspective: '1200px' }}>
           <div className="bg-[#0A2540] rounded-3xl p-6 sm:p-10 shadow-2xl border-2 border-white/20 space-y-8">
             
             <div className="text-center max-w-3xl mx-auto space-y-3">
@@ -671,7 +837,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-stretch">
             
             {/* Video 1: Official Campus & Academic Tour */}
-            <div className="organic-video-card-left flex flex-col justify-between">
+            <div className="organic-video-card-left flex flex-col justify-between video-card-3d transform-gpu transition-transform duration-300 hover:scale-105">
               <div className="p-3 sm:p-5 flex flex-col h-full space-y-4">
                 
                 {/* Header bar of Video Card 1 */}
@@ -724,7 +890,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
             </div>
 
             {/* Video 2: Campus Life, Culture & Student Excellence */}
-            <div className="organic-video-card-right flex flex-col justify-between">
+            <div className="organic-video-card-right flex flex-col justify-between transform-gpu transition-transform duration-300 hover:scale-105">
               <div className="p-3 sm:p-5 flex flex-col h-full space-y-4">
                 
                 {/* Header bar of Video Card 2 */}
@@ -742,7 +908,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
                   </div>
 
                   <a
-                    href="https://youtu.be/LtP5bsUIWew?si=_WX5lBdkREoxqx1B"
+                    href="https://youtu.be/yg6Qb6HH60o?si=tIYDgG6-BiQHenr0"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-3 py-1.5 rounded-full bg-[#363538] hover:bg-[#48474b] text-white text-[11px] font-bold flex items-center gap-1.5 shrink-0 transition-colors shadow-xs"
@@ -757,7 +923,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
                 {/* Embedded Video Player 2 */}
                 <div className="organic-video-screen-right aspect-video w-full shadow-inner">
                   <iframe
-                    src="https://www.youtube-nocookie.com/embed/LtP5bsUIWew?rel=0&modestbranding=1"
+                    src="https://www.youtube-nocookie.com/embed/yg6Qb6HH60o?rel=0&modestbranding=1"
                     title="VINS Engineering Annual Day & Student Life Highlights"
                     className="w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -809,31 +975,51 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
             ))}
           </div>
 
-          {/* Gallery Image Grid with Royal Highlighted Borders */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredGallery.slice(0, 8).map((img) => (
-              <div
-                key={img.id}
-                onClick={() => setSelectedGalleryImg(img)}
-                className="royal-card-highlight aspect-[4/3] cursor-pointer"
-              >
-                <div className="group relative w-full h-full rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 bg-[#ebe9e4]">
-                  <img
-                    src={img.imagePath || 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=800'}
-                    alt={img.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#252528]/95 via-[#252528]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
-                    <span className="text-[10px] font-extrabold text-[#eceae6] uppercase tracking-wider">{img.category}</span>
-                    <p className="text-xs font-playfair font-bold line-clamp-1">{img.title}</p>
-                    <div className="mt-1 flex items-center gap-1 text-[10px] text-white/80">
-                      <Eye className="w-3 h-3 text-[#eceae6]" />
-                      <span>Click to view full photo</span>
+          {/* 3D Bento Grid Gallery with Clean Unobstructed Campus Images & Layered Depth */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredGallery.slice(0, 6).map((img, idx) => {
+              // Staggered depth and column spanning for true 3D Bento rhythm
+              const isLargeBento = idx === 0 || idx === 3;
+              const depthLevels = [20, 12, 16, 22, 14, 18];
+              const cardDepth = depthLevels[idx % depthLevels.length];
+
+              return (
+                <ScrollReveal key={img.id} delay={idx * 0.08} direction="up" distance={20} className={isLargeBento ? 'sm:col-span-2 lg:col-span-2' : 'col-span-1'}>
+                  <TiltCard
+                    maxTilt={5}
+                    scale={1.02}
+                    translateZ={cardDepth}
+                    onClick={() => setSelectedGalleryImg(img)}
+                    className="rounded-3xl overflow-hidden glass-premium border border-amber-400/35 shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer h-full flex flex-col justify-between group"
+                  >
+                    {/* Clean Pristine Image Container — Absolutely No Text Covering the Image */}
+                    <div className={`w-full overflow-hidden bg-[#ebe9e4] relative ${isLargeBento ? 'aspect-[16/9] sm:aspect-[21/10]' : 'aspect-[4/3]'}`}>
+                      <img
+                        src={img.imagePath || 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=800'}
+                        alt={img.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                      />
                     </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+
+                    {/* Dedicated Clean Caption Area Below the Image */}
+                    <div className="p-4 sm:p-5 flex items-center justify-between gap-3 bg-white/90 border-t border-amber-300/30">
+                      <div className="space-y-1 min-w-0">
+                        <span className="text-[10px] font-extrabold text-[#7A4B00] uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100/80 border border-amber-300/60 inline-block">
+                          {img.category}
+                        </span>
+                        <h3 className="text-xs sm:text-sm font-bold font-playfair text-[#252528] group-hover:text-[#0A2540] transition-colors truncate">
+                          {img.title}
+                        </h3>
+                      </div>
+
+                      <div className="w-8 h-8 rounded-full bg-[#0A2540] group-hover:bg-[#FF6B00] text-white flex items-center justify-center shrink-0 shadow-sm transition-colors duration-300">
+                        <Eye className="w-3.5 h-3.5 text-white" />
+                      </div>
+                    </div>
+                  </TiltCard>
+                </ScrollReveal>
+              );
+            })}
           </div>
 
         </section>
@@ -863,15 +1049,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
                 <button
                   onClick={() => onTabChange('admissions', 'online-form')}
-                  className="bg-[#FF6B00] hover:bg-[#E05E00] text-white hover:scale-105 active:scale-95 text-xs font-bold uppercase tracking-widest px-6 sm:px-8 py-3.5 rounded-full cursor-pointer shadow-xl transition-all flex items-center justify-center gap-2 w-full sm:w-auto border border-white/20"
+                  className="bg-[#FF6B00] hover:bg-[#E05E00] btn-micro text-white text-xs font-bold uppercase tracking-widest px-6 sm:px-8 py-3.5 rounded-full cursor-pointer shadow-xl transition-all flex items-center justify-center gap-2 w-full sm:w-auto border border-white/20"
                 >
                   <span>APPLY ONLINE NOW</span>
-                  <ArrowRight className="w-4 h-4 text-white" />
+                  <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
                 </button>
 
                 <button
                   onClick={() => onTabChange('admissions', 'scholarships')}
-                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#0A2540] hover:scale-105 active:scale-95 text-xs font-bold uppercase tracking-widest px-5 sm:px-6 py-3.5 rounded-full cursor-pointer shadow-lg transition-all flex items-center justify-center gap-2 w-full sm:w-auto"
+                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#0A2540] btn-micro text-xs font-bold uppercase tracking-widest px-5 sm:px-6 py-3.5 rounded-full cursor-pointer shadow-lg transition-all flex items-center justify-center gap-2 w-full sm:w-auto"
                 >
                   <span>SCHOLARSHIPS &amp; AID</span>
                 </button>
@@ -879,15 +1065,17 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
             </div>
 
             <div className="lg:col-span-5 relative z-10">
-              <div className="rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-white/30 shadow-2xl p-1.5 bg-white/10 backdrop-blur-xs">
-                <div className="w-full aspect-[4/3] rounded-xl sm:rounded-2xl overflow-hidden bg-[#061727]">
-                  <img 
-                    src="/images/college events and news galeery/5 (1).jpg" 
-                    alt="VINS College Students" 
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                  />
+              <FloatingElement duration={7.2} distance={6} floatType="gentle" className="w-full">
+                <div className="rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-white/30 shadow-2xl p-1.5 bg-white/10 backdrop-blur-xs">
+                  <div className="w-full aspect-[4/3] rounded-xl sm:rounded-2xl overflow-hidden bg-[#061727]">
+                    <img 
+                      src="/images/college events and news galeery/5 (1).jpg" 
+                      alt="VINS College Students" 
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
                 </div>
-              </div>
+              </FloatingElement>
             </div>
 
           </div>
@@ -1009,6 +1197,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onTabChange }) => {
 
       {/* MODAL 4: DOCUMENT VIEWER FOR PDF NOTICES */}
       <DocumentViewerModal document={selectedPdfDoc} onClose={() => setSelectedPdfDoc(null)} />
+
+      {/* SMART CURRENT / UPCOMING EVENT NOTIFICATION POPUP */}
+      <EventNotificationPopup
+        events={activeEvents}
+        onSelectEvent={(evt) => setSelectedEvent(evt)}
+        onNavigateEvents={() => onTabChange('campus', 'events')}
+      />
+
+      {/* SEPARATE FLOATING UPCOMING EVENTS BUTTON (HOME PAGE ONLY) */}
+      <FloatingEventsButton onClick={() => onTabChange('campus', 'events')} />
 
     </div>
   );

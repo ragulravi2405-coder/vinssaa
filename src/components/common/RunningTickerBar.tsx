@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Megaphone, Pause, Play, ChevronRight, Bell, FileText, Download, ExternalLink } from 'lucide-react';
-import { CollegeNotification } from '../../data/notificationsData';
+import { CollegeNotification, NOTIFICATIONS_DATA } from '../../data/notificationsData';
 import { useAdminData } from '../../context/AdminDataContext';
 import { DocumentViewerModal } from './DocumentViewerModal';
 import { DocumentItem } from '../../types';
@@ -16,103 +16,77 @@ export const RunningTickerBar: React.FC<RunningTickerBarProps> = ({ onNavigateNo
   const [selectedPdfDoc, setSelectedPdfDoc] = useState<DocumentItem | null>(null);
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
 
+  const displayNotices = (notifications && notifications.length > 0) ? notifications : NOTIFICATIONS_DATA;
+
   const handleNoticeClick = (notice: CollegeNotification) => {
     setActiveModalNotice(notice);
   };
 
   return (
     <>
-      {/* Dynamic Top Announcement Banner from Admin Portal */}
-      {(siteBanner?.enabled ?? siteBanner?.isActive ?? false) && !isBannerDismissed && (
-        <div className={`px-4 py-2 text-xs sm:text-sm font-semibold transition-all border-b shadow-xs flex items-center justify-between ${
-          siteBanner.type === 'alert' || siteBanner.type === 'urgent'
-            ? 'bg-[#363539] text-white border-[#dedcd7]/30'
-            : siteBanner.type === 'announcement' || siteBanner.type === 'admissions'
-            ? 'bg-[#48474b] text-white border-[#dedcd7]/30'
-            : 'bg-[#28272b] text-white border-[#dedcd7]/30'
-        }`}>
-          <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5 flex-1 min-w-0">
-              <span className="p-1 rounded bg-white/20 text-white shrink-0">
-                <Megaphone className="w-3.5 h-3.5" />
-              </span>
-              <span className="font-bold shrink-0 uppercase tracking-wide text-[11px] px-2 py-0.5 rounded bg-white/20">
-                {siteBanner.badge || siteBanner.type.toUpperCase()}
-              </span>
-              <p className="truncate text-white font-medium text-xs sm:text-[13px]">
-                {siteBanner.headline ? `${siteBanner.headline} - ` : ''}{siteBanner.message}
-              </p>
-            </div>
-            <div className="flex items-center gap-3 shrink-0">
-              {(siteBanner.linkUrl || siteBanner.buttonUrl) && (
-                <a
-                  href={siteBanner.linkUrl || siteBanner.buttonUrl}
-                  className="bg-white text-[#252528] px-2.5 py-1 rounded text-xs font-black hover:bg-[#ebe9e4] transition-colors uppercase tracking-wider flex items-center gap-1"
-                >
-                  <span>{siteBanner.linkText || siteBanner.buttonText || 'Learn More'}</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
-              <button
-                onClick={() => setIsBannerDismissed(true)}
-                className="text-white/80 hover:text-white p-1 rounded hover:bg-white/20 transition-colors text-xs cursor-pointer"
-                title="Dismiss Banner"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <style>{`
+        @keyframes liveTickerScroll {
+          0% {
+            transform: translate3d(0, 0, 0);
+          }
+          100% {
+            transform: translate3d(-50%, 0, 0);
+          }
+        }
+        .live-circulars-ticker {
+          display: inline-flex !important;
+          width: max-content !important;
+          will-change: transform;
+          animation: liveTickerScroll 28s linear infinite !important;
+        }
+        .live-circulars-ticker:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
 
-      {/* Main Live Ticker Bar - Light Academic Theme */}
+      {/* Main Live Circular Ticker Bar - Golden Academic Theme */}
       <div
-        className="relative z-30"
+        className="relative z-30 mb-0 m-0"
         style={{
-          background: '#f8fafc',
-          borderTop: '1px solid #e2e8f0',
-          borderBottom: '2px solid #0284c7',
+          background: '#fffdf5',
+          borderTop: '1px solid #f5e6b2',
+          borderBottom: '2px solid #b8860b',
+          marginBottom: 0,
         }}
       >
         <div className="max-w-[1600px] mx-auto px-2 sm:px-4 flex items-center h-10 sm:h-11 overflow-hidden">
 
-          {/* Badge Label - Vivid Blue Academic Tag */}
+          {/* Badge Label - Golden Academic Tag */}
           <div
             className="flex items-center gap-1.5 font-black text-xs sm:text-[13px] px-3 py-1 shrink-0 tracking-wider z-10 mr-3"
             style={{
-              background: '#0284c7',
+              background: 'linear-gradient(135deg, #b8860b 0%, #d4a017 60%, #b8860b 100%)',
               color: '#ffffff',
               borderRadius: '4px',
+              boxShadow: '0 1px 4px rgba(184,134,11,0.4)',
             }}
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
             </span>
-            <Megaphone className="w-3.5 h-3.5 text-white" />
-            <span className="hidden sm:inline font-bold uppercase">{runningTickerTitle || 'ANNOUNCEMENT'}</span>
-            <span className="sm:hidden font-bold">NEWS</span>
+            <Bell className="w-3.5 h-3.5 text-white" />
+            <span className="hidden sm:inline font-bold uppercase">{runningTickerTitle || 'LIVE CIRCULARS'}</span>
+            <span className="sm:hidden font-bold">CIRCULARS</span>
           </div>
 
           {/* Scrolling Marquee Container */}
-          <div
-            className="flex-1 overflow-hidden relative py-1 cursor-pointer"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
+          <div className="flex-1 overflow-hidden relative py-1">
             <div
-              className={`flex items-center gap-8 whitespace-nowrap text-xs sm:text-sm font-semibold transition-all ${
-                isPaused ? '[animation-play-state:paused]' : ''
-              } animate-marquee`}
+              className="live-circulars-ticker flex items-center gap-8 whitespace-nowrap text-xs sm:text-sm font-semibold select-none"
               style={{
-                animation: 'marquee 35s linear infinite',
-                animationPlayState: isPaused ? 'paused' : 'running',
-                color: '#0f172a',
+                animationPlayState: isPaused ? 'paused' : undefined,
+                color: '#2d1a00',
               }}
             >
-              {notifications.map((item) => (
+              {displayNotices.map((item) => (
                 <button
-                  key={item.id}
+                  key={`orig-${item.id}`}
                   onClick={() => handleNoticeClick(item)}
                   className="inline-flex items-center gap-2 px-3 py-1 rounded text-left shrink-0 cursor-pointer group transition-colors"
                   style={{ background: 'transparent', border: 'none' }}
@@ -122,7 +96,7 @@ export const RunningTickerBar: React.FC<RunningTickerBarProps> = ({ onNavigateNo
                       item.isUrgent ? 'animate-pulse' : ''
                     }`}
                     style={{
-                      background: '#0284c7',
+                      background: '#b8860b',
                       color: '#ffffff',
                       borderRadius: '4px',
                     }}
@@ -131,27 +105,27 @@ export const RunningTickerBar: React.FC<RunningTickerBarProps> = ({ onNavigateNo
                   </span>
                   <span
                     className="font-semibold group-hover:underline transition-colors"
-                    style={{ color: '#0f172a' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#0284c7')}
-                    onMouseLeave={e => (e.currentTarget.style.color = '#0f172a')}
+                    style={{ color: '#2d1a00' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#b8860b')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#2d1a00')}
                   >
                     {item.title}
                   </span>
                   {item.pdfAttachment && (
                     <span
                       className="inline-flex items-center gap-0.5 text-[10px] px-1.5 rounded"
-                      style={{ background: '#e0f2fe', color: '#0284c7', border: '1px solid #bae6fd' }}
+                      style={{ background: '#fef3c7', color: '#b8860b', border: '1px solid #f5e6b2' }}
                     >
                       <FileText className="w-3 h-3" />
                       PDF
                     </span>
                   )}
-                  <span className="font-bold ml-2" style={{ color: '#94a3b8' }}>•</span>
+                  <span className="font-bold ml-2" style={{ color: '#c4a35a' }}>•</span>
                 </button>
               ))}
 
-              {/* Duplicate array for continuous loop */}
-              {notifications.map((item) => (
+              {/* Duplicate array for continuous infinite loop */}
+              {displayNotices.map((item) => (
                 <button
                   key={`dup-${item.id}`}
                   onClick={() => handleNoticeClick(item)}
@@ -163,7 +137,7 @@ export const RunningTickerBar: React.FC<RunningTickerBarProps> = ({ onNavigateNo
                       item.isUrgent ? 'animate-pulse' : ''
                     }`}
                     style={{
-                      background: '#0284c7',
+                      background: '#b8860b',
                       color: '#ffffff',
                       borderRadius: '4px',
                     }}
@@ -172,43 +146,44 @@ export const RunningTickerBar: React.FC<RunningTickerBarProps> = ({ onNavigateNo
                   </span>
                   <span
                     className="font-semibold group-hover:underline transition-colors"
-                    style={{ color: '#0f172a' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#0284c7')}
-                    onMouseLeave={e => (e.currentTarget.style.color = '#0f172a')}
+                    style={{ color: '#2d1a00' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#b8860b')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#2d1a00')}
                   >
                     {item.title}
                   </span>
                   {item.pdfAttachment && (
                     <span
                       className="inline-flex items-center gap-0.5 text-[10px] px-1.5 rounded"
-                      style={{ background: '#e0f2fe', color: '#0284c7', border: '1px solid #bae6fd' }}
+                      style={{ background: '#fef3c7', color: '#b8860b', border: '1px solid #f5e6b2' }}
                     >
                       <FileText className="w-3 h-3" />
                       PDF
                     </span>
                   )}
-                  <span className="font-bold ml-2" style={{ color: '#94a3b8' }}>•</span>
+                  <span className="font-bold ml-2" style={{ color: '#c4a35a' }}>•</span>
                 </button>
               ))}
             </div>
           </div>
 
+
           {/* Marquee Play/Pause & View All Button */}
           <div
             className="flex items-center gap-2 pl-3 z-10 shrink-0"
-            style={{ borderLeft: '1px solid #e2e8f0' }}
+            style={{ borderLeft: '1px solid #f5e6b2' }}
           >
             <button
               onClick={() => setIsPaused(!isPaused)}
               className="p-1 rounded transition-colors cursor-pointer"
-              style={{ background: '#e0f2fe', color: '#0284c7' }}
+              style={{ background: '#fef3c7', color: '#b8860b' }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = '#0284c7';
+                (e.currentTarget as HTMLButtonElement).style.background = '#b8860b';
                 (e.currentTarget as HTMLButtonElement).style.color = '#ffffff';
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = '#e0f2fe';
-                (e.currentTarget as HTMLButtonElement).style.color = '#0284c7';
+                (e.currentTarget as HTMLButtonElement).style.background = '#fef3c7';
+                (e.currentTarget as HTMLButtonElement).style.color = '#b8860b';
               }}
               title={isPaused ? "Play Marquee" : "Pause Marquee"}
             >
@@ -219,9 +194,9 @@ export const RunningTickerBar: React.FC<RunningTickerBarProps> = ({ onNavigateNo
               <button
                 onClick={onNavigateNotifications}
                 className="font-bold px-3 py-1 rounded text-xs flex items-center gap-1 transition-all shrink-0 cursor-pointer"
-                style={{ background: '#0284c7', color: '#ffffff', borderRadius: '4px' }}
-                onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = '#0369a1')}
-                onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = '#0284c7')}
+                style={{ background: 'linear-gradient(135deg, #b8860b 0%, #d4a017 100%)', color: '#ffffff', borderRadius: '4px', boxShadow: '0 1px 4px rgba(184,134,11,0.35)' }}
+                onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = '#96700a')}
+                onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg, #b8860b 0%, #d4a017 100%)')}
               >
                 <span>All Circulars</span>
                 <ChevronRight className="w-3.5 h-3.5" />

@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { DEPARTMENTS_DATA } from '../data/departmentsData';
 import { NavigationTab } from '../types';
+import { ScrollReveal } from '../components/common/ScrollReveal';
 
 interface DepartmentDetailPageProps {
   departmentId: string;
@@ -35,29 +36,31 @@ export const DepartmentDetailPage: React.FC<DepartmentDetailPageProps> = ({
         </button>
 
         {/* 1. Wide Banner Header */}
-        <div className="relative aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl bg-[#0A2540] border border-white/20">
-          <img
-            src={dept.courseImage || dept.bannerPath}
-            alt={dept.name}
-            className="w-full h-full object-cover opacity-75"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A2540] via-[#0A2540]/60 to-transparent p-6 sm:p-10 flex flex-col justify-end text-white">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="space-y-2">
-                <span className="px-3.5 py-1.5 rounded-full bg-white text-[#0A2540] font-black text-xs uppercase tracking-wider shadow-md">
-                  Department of {dept.degree}
-                </span>
-                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-playfair font-bold text-white tracking-tight">{dept.name}</h1>
-                <p className="text-xs sm:text-sm text-white/95 max-w-2xl font-medium">{dept.description}</p>
-              </div>
-              
-              <div className="bg-white text-[#0A2540] p-5 rounded-2xl border border-white text-right shrink-0 shadow-lg">
-                <p className="text-3xl font-black text-[#0A2540] font-playfair leading-none">{dept.placementPercentage}%</p>
-                <p className="text-xs text-[#0A2540] font-bold mt-1">Placement Record</p>
+        <ScrollReveal direction="up" distance={16}>
+          <div className="relative aspect-[21/9] rounded-3xl overflow-hidden shadow-3d-deep bg-[#0A2540] border border-white/20">
+            <img
+              src={dept.courseImage || dept.bannerPath}
+              alt={dept.name}
+              className="w-full h-full object-cover opacity-75"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0A2540] via-[#0A2540]/60 to-transparent p-6 sm:p-10 flex flex-col justify-end text-white">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="space-y-2">
+                  <span className="px-3.5 py-1.5 rounded-full bg-white text-[#0A2540] font-black text-xs uppercase tracking-wider shadow-md">
+                    Department of {dept.degree}
+                  </span>
+                  <h1 className="text-2xl sm:text-4xl lg:text-5xl font-playfair font-bold text-white tracking-tight">{dept.name}</h1>
+                  <p className="text-xs sm:text-sm text-white/90 max-w-2xl">{dept.description}</p>
+                </div>
+                
+                <div className="bg-white/95 text-[#0A2540] p-5 rounded-2xl border border-white/30 text-right shrink-0 shadow-3d-soft">
+                  <p className="text-3xl font-black text-[#0A2540] font-playfair leading-none">{dept.placementPercentage}%</p>
+                  <p className="text-xs text-[#0A2540]/70 font-bold mt-1">Placement Record</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Main Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { NavigationTab } from './types';
 import { TopBar } from './components/layout/TopBar';
 import { Navbar } from './components/layout/Navbar';
@@ -23,16 +24,64 @@ import { ContactPage } from './pages/ContactPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { AdminPortalPage } from './pages/AdminPortalPage';
 import { AdminDataProvider } from './context/AdminDataContext';
+import { FloatingHomeButton } from './components/common/FloatingHomeButton';
+import { ExplodedWebsiteView } from './components/common/ExplodedWebsiteView';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<NavigationTab>('home');
+  const [isExplodedViewOpen, setIsExplodedViewOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname.toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+      return (
+        path.includes('explode') ||
+        path.includes('exlodview') ||
+        hash.includes('explode') ||
+        hash.includes('exlodview')
+      );
+    }
+    return false;
+  });
   const [activeAnchor, setActiveAnchor] = useState<string | undefined>(undefined);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
 
-  // Sync hash routing if desired
+  // Sync /exlodview & /explode routes
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentTab, selectedDepartmentId]);
+    const handleRoute = () => {
+      const path = window.location.pathname.toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+      if (
+        path.includes('explode') ||
+        path.includes('exlodview') ||
+        hash.includes('explode') ||
+        hash.includes('exlodview')
+      ) {
+        setIsExplodedViewOpen(true);
+      }
+    };
+    window.addEventListener('popstate', handleRoute);
+    window.addEventListener('hashchange', handleRoute);
+    return () => {
+      window.removeEventListener('popstate', handleRoute);
+      window.removeEventListener('hashchange', handleRoute);
+    };
+  }, []);
+
+  // Sync hash routing & anchor scroll
+  useEffect(() => {
+    if (activeAnchor) {
+      setTimeout(() => {
+        const el = document.getElementById(activeAnchor);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 300);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [currentTab, selectedDepartmentId, activeAnchor]);
 
   const handleTabChange = (tab: NavigationTab, anchorId?: string, departmentId?: string) => {
     setCurrentTab(tab);
@@ -52,7 +101,12 @@ export default function App() {
   const renderCurrentView = () => {
     switch (currentTab) {
       case 'home':
-        return <HomePage onTabChange={handleTabChange} />;
+        return (
+          <HomePage
+            onTabChange={handleTabChange}
+            onOpenExplodedView={() => setIsExplodedViewOpen(true)}
+          />
+        );
 
       case 'about':
         return <AboutPage initialAnchor={activeAnchor || 'vision'} />;
@@ -108,20 +162,63 @@ export default function App() {
     <AdminDataProvider>
       <div className="min-h-screen bg-[#FFFFFF] text-[#0A2540] font-sans selection:bg-[#FF6B00] selection:text-white flex flex-col justify-between">
         <div>
-          {/* Global Sticky Layout Header (TopBar + Navbar) */}
-          <div className="sticky top-0 z-50 shadow-md">
-            <TopBar onNavigate={handleTabChange} currentTab={currentTab} />
-            <Navbar currentTab={currentTab} onTabChange={handleTabChange} />
-          </div>
+          {/* Top Contact & Utility Bar */}
+          <TopBar onNavigate={handleTabChange} currentTab={currentTab} />
 
-          {/* Main View Page */}
-          <main className="transition-all duration-200">
-            {renderCurrentView()}
+          {/* Global Sticky Main Navigation Bar - Always visible at top of viewport across all pages */}
+          <header 
+            className="sticky top-0 z-[999] w-full bg-white shadow-md transition-shadow duration-300"
+            style={{ position: 'sticky', top: 0, zIndex: 999 }}
+          >
+            <Navbar currentTab={currentTab} onTabChange={handleTabChange} />
+          </header>
+
+          {/* Main View Page with Seamless Motion Transition */}
+          <main className="transition-all duration-200 overflow-x-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentTab + (selectedDepartmentId || '')}
+                initial={{ opacity: 0, y: 10, scale: 0.995 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.995 }}
+                transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                {renderCurrentView()}
+              </motion.div>
+            </AnimatePresence>
           </main>
         </div>
 
         {/* Global Layout Footer */}
         <Footer onTabChange={handleTabChange} />
+
+        {/* Global Persistent Floating Home Button - Always visible across all pages */}
+        <FloatingHomeButton
+          currentTab={currentTab}
+          onNavigateHome={() => handleTabChange('home')}
+        />
+
+        {/* Full Interactive 3D Exploded Architecture View Modal */}
+        <AnimatePresence>
+          {isExplodedViewOpen && (
+            <ExplodedWebsiteView
+              onClose={() => {
+                setIsExplodedViewOpen(false);
+                if (
+                  typeof window !== 'undefined' &&
+                  (window.location.hash.includes('explode') ||
+                    window.location.hash.includes('exlodview'))
+                ) {
+                  window.history.pushState(null, '', window.location.pathname);
+                }
+              }}
+              onNavigateSection={(tab, anchorId) => {
+                setIsExplodedViewOpen(false);
+                handleTabChange(tab, anchorId);
+              }}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </AdminDataProvider>
   );

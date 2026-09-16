@@ -6,6 +6,8 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line 
 } from 'recharts';
 import { PLACEMENT_STATS, PLACEMENT_OFFICER_INFO } from '../data/collegeData';
+import { ScrollReveal } from '../components/common/ScrollReveal';
+import { TiltCard } from '../components/common/TiltCard';
 
 export const PlacementPage: React.FC = () => {
   const topRecruitersList = [
@@ -48,36 +50,28 @@ export const PlacementPage: React.FC = () => {
     <div className="bg-[#FFFFFF] text-[#0A2540] min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
         
-        {/* Header Banner - Strict Magenta Pink + White */}
-        <div className="bg-[#0A2540] text-white p-8 sm:p-12 rounded-3xl border border-white/20 shadow-2xl space-y-4 relative overflow-hidden">
-          {/* Subtle Sparkle Particle Effects */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
-          <div className="absolute bottom-2 left-10 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-          
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 text-white text-xs font-bold border border-white/30 tracking-wider">
-            <Sparkles className="w-4 h-4 text-white animate-sparkle" />
-            <span>TRAINING &amp; PLACEMENT CELL</span>
-          </div>
+        {/* Header Banner - Premium Academic */}
+        <ScrollReveal direction="up" distance={20}>
+          <div className="bg-[#0A2540] text-white p-8 sm:p-12 rounded-3xl border border-white/20 shadow-3d-deep space-y-4 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white/8 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-72 h-72 bg-[#FF6B00]/10 rounded-full blur-3xl pointer-events-none" />
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white tracking-tight">
-            Placement Activity &amp; Career Guidance
-          </h1>
-
-          <p className="text-xs sm:text-sm text-white/95 max-w-3xl leading-relaxed font-medium">
-            Guided by our strict &ldquo;One Person One Job&rdquo; policy, dedicated corporate placement panel, 6-8 week summer internships, and continuous MNC interview preparation.
-          </p>
-
-          <div className="pt-2 flex flex-wrap items-center gap-4 text-xs">
-            <div className="bg-white text-[#0A2540] font-black px-4 py-2 rounded-full border border-white flex items-center gap-2 shadow-md">
-              <Award className="w-4 h-4 text-[#0A2540]" />
-              <span>90%+ Placement Track Record</span>
+            <div className="badge-academic bg-white/15 text-white border border-white/30 relative z-10">
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>TRAINING &amp; PLACEMENT CELL</span>
             </div>
-            <div className="bg-white/20 text-white font-bold px-4 py-2 rounded-full border border-white/30 flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-white" />
-              <span>50+ Visiting MNCs &amp; Corporates</span>
-            </div>
+
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white tracking-tight leading-tight relative z-10">
+              Campus Placements &amp; Career Development
+            </h1>
+
+            <p className="text-sm sm:text-base text-white/90 max-w-3xl leading-relaxed relative z-10">
+              Our dedicated Training &amp; Placement Cell bridges the gap between academic knowledge and industry requirements, ensuring every student achieves their career goals.
+            </p>
           </div>
-        </div>
+        </ScrollReveal>
+
+
 
         {/* Grid: About Placement Cell & Placement Officer Contact */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

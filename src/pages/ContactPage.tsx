@@ -3,8 +3,9 @@ import {
   MapPin, Phone, Mail, Clock, Send, CheckCircle2, Building2, Sparkles 
 } from 'lucide-react';
 import { COLLEGE_INFO } from '../data/collegeData';
-
 import { submitContactForm } from '../services/api';
+import { ScrollReveal } from '../components/common/ScrollReveal';
+import { TiltCard } from '../components/common/TiltCard';
 
 export const ContactPage: React.FC = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -35,23 +36,26 @@ export const ContactPage: React.FC = () => {
     <div className="bg-[#FFFFFF] text-[#0A2540] min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
         
-        {/* Header Banner - Strict Magenta Pink + White */}
-        <div className="bg-[#0A2540] text-white p-8 sm:p-12 rounded-3xl border border-white/20 shadow-2xl space-y-3 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
-          
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 text-white text-xs font-bold border border-white/30 font-cinzel">
-            <Sparkles className="w-4 h-4 text-white animate-sparkle" />
-            <span>GET IN TOUCH</span>
+        {/* Header Banner - Premium */}
+        <ScrollReveal direction="up" distance={20}>
+          <div className="bg-[#0A2540] text-white p-8 sm:p-12 rounded-3xl border border-white/20 shadow-3d-deep space-y-4 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white/8 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-[#FF6B00]/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="badge-academic bg-white/15 text-white border border-white/30 relative z-10">
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>GET IN TOUCH</span>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white tracking-tight leading-tight relative z-10">
+              Contact VINS Christian College
+            </h1>
+
+            <p className="text-sm sm:text-base text-white/90 max-w-2xl leading-relaxed relative z-10">
+              Reach our admission desk, principal&apos;s office, or campus administration located at Chunkankadai, Nagercoil, Kanyakumari District, Tamil Nadu.
+            </p>
           </div>
-
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white tracking-tight">
-            Contact VINS Christian College
-          </h1>
-
-          <p className="text-xs sm:text-sm text-white/95 max-w-2xl leading-relaxed font-medium">
-            Reach our admission desk, principal&apos;s office, or campus administration located at Chunkankadai, Nagercoil, Kanyakumari District, Tamil Nadu.
-          </p>
-        </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           

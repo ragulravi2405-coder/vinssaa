@@ -4,6 +4,7 @@ import {
 } from 'lucide-react';
 import { CAMPUS_CLUBS, COLLEGE_DAY_GALLERY, CollegeDayGalleryItem } from '../data/collegeData';
 import { useAdminData } from '../context/AdminDataContext';
+import { ScrollReveal } from '../components/common/ScrollReveal';
 
 export const CampusPage: React.FC = () => {
   const { galleryImages, events } = useAdminData();
@@ -34,23 +35,26 @@ export const CampusPage: React.FC = () => {
     <div className="bg-[#FFFFFF] text-[#0A2540] min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
         
-        {/* Header Banner - Strict Magenta Pink + White */}
-        <div className="bg-[#0A2540] text-white p-8 sm:p-12 rounded-3xl border border-white/20 shadow-2xl space-y-3 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
-          
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 text-white text-xs font-bold border border-white/30 tracking-wider">
-            <Sparkles className="w-4 h-4 text-white animate-sparkle" />
-            <span>CAMPUS LIFE &amp; CULTURAL FESTS</span>
+        {/* Header Banner - Premium */}
+        <ScrollReveal direction="up" distance={20}>
+          <div className="bg-[#0A2540] text-white p-8 sm:p-12 rounded-3xl border border-white/20 shadow-3d-deep space-y-4 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white/8 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-[#FF6B00]/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="badge-academic bg-white/15 text-white border border-white/30 relative z-10">
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>CAMPUS LIFE &amp; CULTURAL FESTS</span>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white tracking-tight leading-tight relative z-10">
+              Campus Events &amp; Student Life
+            </h1>
+
+            <p className="text-sm sm:text-base text-white/90 max-w-3xl leading-relaxed relative z-10">
+              Extracurricular student development through NSS, YRC, EDC, Innovation Center, Nature Club, and our Annual College Day Stage Extravaganza.
+            </p>
           </div>
-
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-playfair text-white tracking-tight">
-            Campus Events &amp; Student Life
-          </h1>
-
-          <p className="text-xs sm:text-sm text-white/95 max-w-3xl leading-relaxed font-medium">
-            Extracurricular student development through NSS, YRC, EDC, Innovation Center, Nature Club, and our Annual College Day Stage Extravaganza.
-          </p>
-        </div>
+        </ScrollReveal>
 
         {/* DEDICATED COLLEGE DAY CELEBRATIONS GALLERY SECTION */}
         <div className="bg-white rounded-3xl p-6 sm:p-10 border-2 border-[#0A2540]/20 shadow-md space-y-8">
